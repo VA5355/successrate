@@ -23,6 +23,8 @@
    <link type="text/css" rel="Stylesheet" href="/asset/css/style_new.css" />
      <script type="text/javascript">
       $(document).ready(function () {
+        let client_id =  `<%= client_id%>`;
+        let secret_key =  `<%= secret_key%>`;
         let s = `<%= s%>`;
         let code = `<%= code%>`;
         let auth_code= `<%= auth_code%>`;
@@ -34,8 +36,10 @@
         $('#authenticated').click(function(){
                 localStorage.setItem("fyersToken",JSON.stringify(token));
                 if(triggerredirectpython ==='true'){
-                 window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
-       
+                    if(client_id ==='true'){
+                      window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
+                     if(client_id ==='true'){
+                     if(client_id ==='true'){     
                 }
                 else { 
                 window.close();
@@ -50,7 +54,22 @@
         var query = "auth_code="+selText;
         //window.location.assign( "https://localhost:56322/fyersgetaccess?"+query);
        // window.location.assign( "http://192.168.1.8:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccess?"+query);
-         window.location.assign( "http://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+         if(client_id ==="TRLV2A6GPL-100"){
+          window.location.assign( "https://192.168.1.4:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+         }
+         if(client_id ==="7GSQW68AZ4-100"){  
+           window.location.assign( "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+
+         }   
+           if(client_id ==="P67RJAS1M6-100"){  
+           window.location.assign( "http://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+
+         }
+
+          if(client_id ==="V8BNUWJ4WQ-100"){
+              window.location.assign( "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+
+           }
         //window.location.assign( "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
             // DO GET
         /*$.ajax({

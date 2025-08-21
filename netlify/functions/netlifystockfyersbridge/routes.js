@@ -1827,6 +1827,8 @@ router.get('/fyersauthcodeverify', async function (req,res) {
 		  {
 		  requesterName : "Vinayak Anvekar",
 		  lastlogin: new Date(),
+		  client_id: client_id,
+		  secret_key: secret_key,
 		  s: s+'',
 		  code: code +'',
 		  auth_code : auth_code  +'',
