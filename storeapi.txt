@@ -1,0 +1,144 @@
+CKFRQC4GPZQUB56W  
+
+not workign 
+https://www.alphavantage.co/query/support/#CKFRQC4GPZQUB56W 
+https://api.tfl.gov.uk/Line/25/Timetable/1000205
+https://api.tfl.gov.uk/Line/Mode/bus
+https://api.tfl.gov.uk/StopPoint/Search/oxford%20circus
+https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=CKFRQC4GPZQUB56W
+https://financialmodelingprep.com/stable/search-symbol?query=AAPL&apikey=RRruKf6R5dSRtXcODq8XYnEWL4rEVCym
+https://site.financialmodelingprep.com/developer/docs/stable#all-index-quotes
+https://site.financialmodelingprep.com/developer/docs/stable
+https://site.financialmodelingprep.com/developer/docs/pricing
+
+https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=CKFRQC4GPZQUB56W
+https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=ICICIBANK.BSE&interval=5min&apikey=CKFRQC4GPZQUB56W
+https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=BALUFORGE.BSE&interval=5min&apikey=CKFRQC4GPZQUB56W
+https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&region='India/Bombay'&symbol=ICICIBANK.BSE&interval=5min&apikey=CKFRQC4GPZQUB56W
+
+https://www.alphavantage.co/query?function=OVERVIEW&symbol=ICICIBANK.BSE&apikey=CKFRQC4GPZQUB56W
+https://www.alphavantage.co/query?function=OVERVIEW&symbol=BALUFORGE.BSE&apikey=CKFRQC4GPZQUB56W
+
+https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&region='India/Bombay'&apikey=CKFRQC4GPZQUB56W
+
+https://www.alphavantage.co/query?function=SYMBOL_SEARCH&symbol=ICICI&apikey=CKFRQC4GPZQUB56W
+
+https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=ICICI&apikey=CKFRQC4GPZQUB56W
+
+exlore this D:\n\stock-market-india  for the INDIAN top gainer 
+
+
+{
+    "bestMatches": [
+        {
+            "1. symbol": "ICICI500.BSE",
+            "2. name": "ICICI Prudential S&P BSE 500 ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.6250"
+        },
+        {
+            "1. symbol": "ICICIB22.BSE",
+            "2. name": "BHARAT 22 ETF - ICICI Prudential AMC",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.6250"
+        },
+        {
+            "1. symbol": "ICICIFIN.BSE",
+            "2. name": "ICICI Prudential Nifty Financial Services Ex-Bank ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.6250"
+        },
+        {
+            "1. symbol": "ICICIAUTO.BSE",
+            "2. name": "ICICI Prudential Nifty Auto ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5882"
+        },
+        {
+            "1. symbol": "ICICIBANK.BSE",
+            "2. name": "ICICI Bank Limited",
+            "3. type": "Equity",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5882"
+        },
+        {
+            "1. symbol": "ICICIALPLV.BSE",
+            "2. name": "ICICI Prudential Nifty Alpha Low- Volatility 30 ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5556"
+        },
+        {
+            "1. symbol": "ICICIBANKN.BSE",
+            "2. name": "ICICI Prudential Nifty Bank ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5556"
+        },
+        {
+            "1. symbol": "ICICIBANKP.BSE",
+            "2. name": "ICICI Prudential Nifty Private Bank ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5556"
+        },
+        {
+            "1. symbol": "ICICICOMMO.BSE",
+            "2. name": "ICICI Prudential Nifty Commodities ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5556"
+        },
+        {
+            "1. symbol": "ICICICONSU.BSE",
+            "2. name": "ICICI Prudential Nifty India Consumption ETF",
+            "3. type": "ETF",
+            "4. region": "India/Bombay",
+            "5. marketOpen": "09:15",
+            "6. marketClose": "15:30",
+            "7. timezone": "UTC+5.5",
+            "8. currency": "INR",
+            "9. matchScore": "0.5556"
+        }
+    ]
+}

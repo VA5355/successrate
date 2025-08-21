@@ -1,0 +1,434 @@
+//import type { Context } from 'https://edge.netlify.com'
+import type { Context } from "@netlify/edge-functions";
+ import queue from './queue.js';
+//export default async (request: Request, context: Context) =>
+//  Response.json({ hello: 'world', location: context.geo.city })
+import axios from 'axios';
+import otplib from 'otplib';
+import crypto from 'crypto';
+import { URL } from 'url';
+import { Http2ServerRequest } from "http2";
+var fyersV3= require("fyers-api-v3");
+//import { fyersDataSocket as  FyersSocket }  from  "fyers-api-v3" // .fyersDataSocket
+const FyersSocket = require("fyers-api-v3").fyersDataSocket
+
+// Client Information (ENTER YOUR OWN INFO HERE! Data varies from users and app types)
+const CLIENT_ID ='XV31360';// "XM44577";       // Your Fyers Client ID
+const PIN = "7892";                // User pin for Fyers account
+const APP_ID = "7GSQW68AZ4";       //7GSQW68AZ4-100 // App ID from MyAPI dashboard (https://myapi.fyers.in/dashboard)
+const APP_TYPE = "100";
+const APP_SECRET = "MGY8LRIY0M" ;// "4O7FS21OSQ";  //MGY8LRIY0M
+var client_id= "P67RJAS1M6-100"; // "7GSQW68AZ4-100" ; // PROD 
+var secret_key = "4LXEKKMFUL"; 		 // "MGY8LRIY0M"; // PROD 
+
+ // App Secret from myapi dashboard (https://myapi.fyers.in/dashboard)
+const TOTP_SECRET_KEY =  "CO5MMHUS4CY4RABN6XEUGAQ6YZV6DC3Z" ;   //"UN4JGYCRUJ2NFNNHAFU5XENHPMEKCUMB";  // TOTP secret key
+// 
+
+const REDIRECT_URI = "https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify";
+//"https://trade.fyers.in/api-login/redirect-uri/index.html";  // Redirect URL from the app
+
+// API endpoints
+const BASE_URL = "https://api-t2.fyers.in/vagator/v2";
+const BASE_URL_2 = "https://api-t1.fyers.in/api/v3";
+const URL_VERIFY_CLIENT_ID = BASE_URL + "/send_login_otp";
+const URL_VERIFY_TOTP = BASE_URL + "/verify_otp";
+const URL_VERIFY_PIN = BASE_URL + "/verify_pin";
+const URL_TOKEN = BASE_URL_2 + "/token";
+const URL_VALIDATE_AUTH_CODE = BASE_URL_2 + "/validate-authcode";
+
+const SUCCESS = 1;
+const ERROR = -1;
+var authcode: any=undefined;
+var globalUserCheck: any=undefined;
+var global_auth_code: any=undefined;
+var globalTickerInterval: any = undefined;
+var globalTickerFyersSocket: any = undefined;
+var currentAccToken: any = undefined;
+var globlaTickerFyersSocketConnected = false;
+ 
+var body:any =undefined;
+
+
+async function verifyClientId(clientId:any) {
+    try {
+        const payload = {
+            fy_id: clientId,
+            app_id: "2"
+        };
+
+        const response = await axios.post(URL_VERIFY_CLIENT_ID, payload);
+        if (response.status !== 200) {
+            return [ERROR, response.data];
+        }
+
+        const requestKey = response.data.request_key;
+        return [SUCCESS, requestKey];
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+function generateTotp(secret:any) {
+    try {
+        const totp = otplib.authenticator.generate(secret);
+        return [SUCCESS, totp];
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+async function verifyTotp(requestKey:any, totp:any) {
+    try {
+        const payload = {
+            request_key: requestKey,
+            otp: totp
+        };
+
+        const response = await axios.post(URL_VERIFY_TOTP, payload);
+        if (response.status !== 200) {
+            return [ERROR, response.data];
+        }
+
+        const newRequestKey = response.data.request_key;
+        return [SUCCESS, newRequestKey];
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+async function verifyPin(requestKey:any, pin:any) {
+    try {
+        const payload = {
+            request_key: requestKey,
+            identity_type: "pin",
+            identifier: pin
+        };
+
+        const response = await axios.post(URL_VERIFY_PIN, payload);
+        if (response.status !== 200) {
+            return [ERROR, response.data];
+        }
+
+        const accessToken = response.data.data.access_token;
+        return [SUCCESS, accessToken];
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+async function getToken(clientId:any, appId:any, redirectUri:any, appType:any, accessToken:any) {
+    try {
+        const payload = {
+            fyers_id: clientId,
+            app_id: appId,
+            redirect_uri: redirectUri,
+            appType: appType,
+            code_challenge: "",
+            state: "sample_state",
+            scope: "",
+            nonce: "",
+            response_type: "code",
+            create_cookie: true
+        };
+
+        const headers = {
+            Authorization: `Bearer ${accessToken}`
+        };
+
+        const response = await axios.post(URL_TOKEN, payload, { headers, maxRedirects: 0, validateStatus: (status) => status === 308 });
+        
+        // First try to get location from headers
+        let redirectUrl = response.headers.location;
+        
+        // If not in headers, check response data (handle both Url and url cases)
+        if (!redirectUrl && response.data) {
+            redirectUrl = response.data.Url || response.data.url || 
+                         (response.data.data && response.data.data.Url) || 
+                         (response.data.data && response.data.data.url);
+        }
+
+        if (!redirectUrl) {
+            console.log('Full response structure:', {
+                status: response.status,
+                headers: response.headers,
+                data: JSON.stringify(response.data, null, 2),
+                config: response.config
+            });
+            return [ERROR, "No redirect URL found in response. Check full response structure above"];
+        }
+
+        console.log('Found redirect URL:', redirectUrl);
+
+        try {
+            // Parse the redirect URL
+            const url = new URL(redirectUrl);
+            const authCode = url.searchParams.get('auth_code');
+            
+            if (!authCode) {
+                return [ERROR, "No auth_code found in redirect URL"];
+            }
+
+            return [SUCCESS, authCode];
+        } catch (e:any) {
+            return [ERROR, `Error processing redirect: ${e.message}`];
+        }
+
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+function sha256Hash(appId:any, appType:any, appSecret:any) {
+    const message = `${appId}-${appType}:${appSecret}`;
+    return crypto.createHash('sha256').update(message).digest('hex');
+}
+
+async function validateAuthCode(authCode:any) {
+    try {
+        const appIdHash = sha256Hash(APP_ID, APP_TYPE, APP_SECRET);
+        const payload = {
+            grant_type: "authorization_code",
+            appIdHash: appIdHash,
+            code: authCode,
+        };
+
+        const response = await axios.post(URL_VALIDATE_AUTH_CODE, payload);
+        if (response.status !== 200) {
+            return [ERROR, response.data];
+        }
+
+        const accessToken = response.data.access_token;
+        return [SUCCESS, accessToken];
+    } catch (error:any) {
+        return [ERROR, error.message];
+    }
+}
+
+async function main() {
+    // Step 1 - Retrieve request_key from verifyClientId Function
+    const verifyClientIdResult = await verifyClientId(CLIENT_ID);
+    if (verifyClientIdResult[0] !== SUCCESS) {
+        console.log(`verifyClientId failure - ${verifyClientIdResult[1]}`);
+       // process.exit();
+    } else {
+        console.log("verifyClientId success");
+        // Step 3 - Verify totp and get request key from verifyTotp Function.
+    const requestKey = verifyClientIdResult[1];
+
+    // Step 2 - Generate totp
+    const generateTotpResult = generateTotp(TOTP_SECRET_KEY);
+    if (generateTotpResult[0] !== SUCCESS) {
+        console.log(`generateTotp failure - ${generateTotpResult[1]}`);
+      //  process.exit();
+    } else {
+        console.log("generateTotp success");
+       const totp = generateTotpResult[1];
+        const verifyTotpResult = await verifyTotp(requestKey, totp);
+        if (verifyTotpResult[0] !== SUCCESS) {
+            console.log(`verifyTotp failure - ${verifyTotpResult[1]}`);
+        //  process.exit();
+        } else {
+            console.log("verifyTotp success");
+            // Step 4 - Verify pin and send back access token
+        const requestKey2 = verifyTotpResult[1];
+        const verifyPinResult = await verifyPin(requestKey2, PIN);
+        if (verifyPinResult[0] !== SUCCESS) {
+            console.log(`verifyPin failure - ${verifyPinResult[1]}`);
+       //     process.exit();
+        } else {
+            console.log("verifyPin success");
+          // Step 5 - Get auth code for API V3 App from trade access token
+            const tokenResult = await getToken(
+                CLIENT_ID, APP_ID, REDIRECT_URI, APP_TYPE, verifyPinResult[1]
+            );
+            if (tokenResult[0] !== SUCCESS) {
+                console.log(`token failure - ${tokenResult[1]}`);
+              //  process.exit();
+            } else {
+                console.log("token success");
+        // Step 6 - Get API V3 access token from validating auth code
+            const authCode = tokenResult[1];
+            const validateAuthCodeResult = await validateAuthCode(authCode);
+            if (validateAuthCodeResult[0] !== SUCCESS) {
+                console.log(`validateAuthCode failure - ${validateAuthCodeResult[1]}`);
+                // TIME SPANE active till next day morning 
+
+              //  process.exit();
+            } else {
+                console.log("validateAuthCode success");
+
+                  const accessToken = `${APP_ID}-${APP_TYPE}:${validateAuthCodeResult[1]}`;
+                currentAccToken = validateAuthCodeResult[1];
+                 console.log(`\naccess_token - ${accessToken}\n`);
+
+            }
+
+
+
+            }   
+
+
+
+        }   
+
+
+
+
+        }
+
+
+
+    }    
+
+    
+    }
+
+    
+  
+}
+
+main();
+//
+function getFormattedTimeKey()  {
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, '0');
+  const hour = now.getHours().toString().padStart(2, '0');
+  const min = now.getMinutes().toString().padStart(2, '0');
+  const sec = now.getSeconds().toString().padStart(2, '0');
+  const ms = now.getMilliseconds().toString().padStart(3, '0');
+  return `${day}-${hour}-${min}-${sec}-${ms}`;
+}
+//
+function onmsg(message:any, symboltick:any, res:any){
+          queue.enqueue({ time:getFormattedTimeKey(), data: message });
+        if( queue.size() > 0){
+            let isIndexQuote =  Object.assign( {} ,   queue.dequeue());
+            let data = isIndexQuote.data;
+            let symbol = data['symbol'];
+            let ltp = data['ltp'];
+            if(symbol !== undefined && symbol===symboltick ){ //"NSE:NIFTY50-INDEX""MCX:CRUDEOIL25JULFUT"
+          //   console.log(" queue   ", isIndexQuote.data);
+            console.log("symbol   "+symbol+ ": "+ltp);
+            const ticker = { time: new Date().toISOString(), price: ltp  , symbol: symbol };
+              res.write(`data: ${JSON.stringify(ticker)}\n\n`);     
+            //  buffer.push(ltp);
+              //res.write(JSON.stringify(data));
+            }
+        }
+          console.log(message)
+      }
+//
+function onconnect(symboltick:any){
+    //fyersdata.subscribe(['NSE:TCS-EQ']) //not subscribing for market depth data
+      //globalTickerFyersSocket.subscribe(['NSE:NIFTY50-INDEX'])
+      globalTickerFyersSocket.subscribe([symboltick])
+      globlaTickerFyersSocketConnected = true;
+    // fyersdata.subscribe(['MCX:CRUDEOIL25JULFUT']) 
+    // fyersdata.mode(fyersdata.LiteMode) //set data mode to lite mode
+    // fyersdata.mode(fyersdata.FullMode) //set data mode to full mode is on full mode by default
+      globalTickerFyersSocket.autoreconnect() //enable auto reconnection mechanism in case of disconnection
+}   
+
+function onerror(err:any){
+    console.log(err)
+    
+}
+
+function onclose(){
+    console.log("socket closed")
+    globlaTickerFyersSocketConnected = false;
+}
+
+// FYERs SOCKET START 
+function SocketStart () { 
+   globalTickerInterval =  setInterval (() => {
+    if(globalTickerFyersSocket === undefined && currentAccToken !== undefined && currentAccToken !==null){  
+       globalTickerFyersSocket  =  new FyersSocket(client_id+":"+currentAccToken);
+                            
+                     
+    } 
+    if(globalTickerFyersSocket !==undefined ){
+         globalTickerFyersSocket.on("message",onmsg)
+                globalTickerFyersSocket.on("connect",onconnect)
+                globalTickerFyersSocket.on("error",onerror)
+                globalTickerFyersSocket.on("close",onclose)
+              if(!globlaTickerFyersSocketConnected ){  
+                globalTickerFyersSocket.connect() 
+              }
+          }
+            
+        } ,4000);
+       // res.write(": connected.\n\n");
+  }
+
+
+
+ 
+ 
+export default async (request: Request, context: Context) => {
+  let index = 0
+  const encoder = new TextEncoder();
+  Http2ServerRequest
+  if( request !== null &&  request instanceof  Http2ServerRequest ){  // request.query !== undefined
+       const reqUrl = new URL(request.url, `http://${request.headers.host}`);
+        console.log(reqUrl.searchParams.get('ticker')); // "123"
+       console.log(Object.fromEntries(reqUrl.searchParams.entries()));
+	
+	//	var queryJSON  = JSON.parse(JSON.stringify(req.query));
+	//	s = queryJSON['interval'];
+	//	  limit =queryJSON['limit'];
+		// auth_code= queryJSON['authcode'];
+		// let access_token = queryJSON['access_token'];
+        let  symboltick = reqUrl.searchParams.get('ticker'); //NIFTY50-INDEX
+       	console.log("Ticker symboltick " +JSON.stringify(symboltick))
+      if (symboltick !==null && symboltick !== undefined ){
+             body = new ReadableStream({
+            start(controller) {
+              setInterval(() => {
+                    if( queue.size() > 0){
+                        let isIndexQuote =  Object.assign( {} ,   queue.dequeue());
+                    let data = isIndexQuote.data;
+                    let symbol = data['symbol'];
+                    let ltp = data['ltp'];
+                    if(symbol !== undefined && symbol===symboltick ){ //"NSE:NIFTY50-INDEX""MCX:CRUDEOIL25JULFUT"
+                      //   console.log(" queue   ", isIndexQuote.data);
+                      console.log("symbol   "+symbol+ ": "+ltp);
+                      const ticker = { time: new Date().toISOString(), price: ltp  , symbol: symbol };
+                      //  res.write(`data: ${JSON.stringify(ticker)}\n\n`);     
+                        //  buffer.push(ltp);
+                      //res.write(JSON.stringify(data));
+                       controller.enqueue(encoder.encode(`data: ${JSON.stringify(ticker)}\n\n`));
+                    }
+                     
+                    }
+                    else {
+                       controller.enqueue(encoder.encode(`data: ${JSON.stringify('websocket not ready ')}\n\n`));
+                    }
+              }, 1000);
+            },
+          }); 
+
+      }
+
+
+  }
+  else {
+        body = new ReadableStream({
+            start(controller) {
+              setInterval(() => {
+                   
+                      controller.enqueue(encoder.encode(`data: Provide Proper Input /fyersticker?ticker=INDEX ${index++}\n\n`));
+                   
+              }, 1000);
+            },
+          }); 
+
+  }
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+    },
+  });
+};
