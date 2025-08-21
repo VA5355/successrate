@@ -36,10 +36,9 @@
         $('#authenticated').click(function(){
                 localStorage.setItem("fyersToken",JSON.stringify(token));
                 if(triggerredirectpython ==='true'){
-                    if(client_id ==='true'){
+                  
                       window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
-                     if(client_id ==='true'){
-                     if(client_id ==='true'){     
+                        
                 }
                 else { 
                 window.close();
@@ -51,7 +50,7 @@
         console.log("... FYERS ACCESS QUOTED initated "  );
         var   parameters = [] ;
         parameters["auth_code"] =`${selText}`;
-        var query = "auth_code="+selText;
+        var query = "auth_code="+auth_code;
         //window.location.assign( "https://localhost:56322/fyersgetaccess?"+query);
        // window.location.assign( "http://192.168.1.8:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccess?"+query);
          if(client_id ==="TRLV2A6GPL-100"){
