@@ -246,7 +246,7 @@ const fetchFreshOrdersToCancel = () => {
                console.log( "Fresh Order book is not proper JSON");
              }
           
-       },1500) ;     ///  ROUGH  ESTIMATE ----->  3.5 SECONDS  IT TAKES for the ORDER BOOK ACTION TO FETCH ALL ORDERS PLASE in CommonConstants.cancelOrderDataCacheKey
+       },3500) ;     /// 1500 ROUGH  ESTIMATE ----->  3.5 SECONDS  IT TAKES for the ORDER BOOK ACTION TO FETCH ALL ORDERS PLASE in CommonConstants.cancelOrderDataCacheKey
     //  */
 }
 
@@ -273,7 +273,7 @@ useEffect( () => {
       clearInterval(orderBookPollInt);
       // store the interval for refrence and close the poll 
        setOrderGlobalPollInt((prev) => prev = false);
-  }, 12000)
+  }, 42000) // 12000
 
 } , [])*/
 
@@ -603,7 +603,7 @@ if((  isOrderPolling ) && userLogged ){
             }
             else {console.warn("User not logged in --> no fetch the orders :" ); }
     }
-  }, 400); // poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
+  }, 9400); // 400 poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
   // store the interval for refrence and close the poll 
   setOrderGlobalPollInt((prev) => prev = interval);        // GLOBAL POLL AFTER EVERY 11 SECONDS ...    
  }
