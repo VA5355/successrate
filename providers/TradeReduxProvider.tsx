@@ -32,7 +32,7 @@ export const TradeReduxProvider = ({children}: { children: React.ReactNode }) =>
   const [tradeData, setTradeData] = useState< any[]>( );
  // const CSV_URL = 'https://drive.google.com/uc?export=download&id=1UjjQcDHiRIPxbzZOTZaWrLQjKtVzZjp_';
   const TRADE_URL  = [   FYERSAPITRADEBOOKURL  ] ;
-  //'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgettradebook'
+  //'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgettradebook'
   const CSV_URL  = [   FYERSAPINSECSV +'/NSE_CM.csv' ] ;  //'http://localhost:8888/NSE_CM.csv' ,
   const dispatch = useDispatch();
 

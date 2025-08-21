@@ -15,7 +15,7 @@ const APP_SECRET = "MGY8LRIY0M" ;// "4O7FS21OSQ";  //MGY8LRIY0M
 const TOTP_SECRET_KEY =  "CO5MMHUS4CY4RABN6XEUGAQ6YZV6DC3Z" ;   //"UN4JGYCRUJ2NFNNHAFU5XENHPMEKCUMB";  // TOTP secret key
 // 
 
-const REDIRECT_URI = "https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify";
+const REDIRECT_URI = "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify";
 //"https://trade.fyers.in/api-login/redirect-uri/index.html";  // Redirect URL from the app
 
 // API endpoints

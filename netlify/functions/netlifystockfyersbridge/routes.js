@@ -15,10 +15,10 @@ var fyersModel= fyersV3.fyersModel
  // var fyersAPI =  new fyersModel({"path":"./","enableLogging":true}); // new require("fyers-api-v3").fyersModel();
 	// var fyersAPI = new FyersAPI()
 //var client_id= "7GSQW68AZ4-100"
-var client_id= "P67RJAS1M6-100"; // "7GSQW68AZ4-100" ; // PROD 
-var secret_key = "4LXEKKMFUL"; 		 // "MGY8LRIY0M"; // PROD 
+var client_id= "V8BNUWJ4WQ-100"; // "7GSQW68AZ4-100" ; // PROD 
+var secret_key = "KOA61TZLP4"; 		 // "MGY8LRIY0M"; // PROD 
 //var redirectUrl  = "https://192.168.1.8:56322/fyersauthcodeverify"
-var redirectUrl  = "https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
+var redirectUrl  = "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 //var redirectUrl  = "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 var fyers= new fyersModel({"path":"./","enableLogging":true})
 fyers.setAppId(client_id)

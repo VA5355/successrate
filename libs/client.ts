@@ -18,26 +18,26 @@ import axios from "axios";
 const FYERSAPI = axios.create({
    //   baseURL: 'https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api'
   //baseURL: 'http://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api'
-  baseURL: 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api'
+  baseURL: 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api'
 })
 //const FYERSAPILOGINURL = 'https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscallback'
 //const FYERSAPINSECSV = 'https://store-stocks.netlify.app';
 //const FYERSAPILOGINURL = 'http://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscallback'
-const FYERSAPILOGINURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscallback'
-const FYERSAPITRADEBOOKURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgettradebook'
-const FYERSAPIPOSITIONBOOKURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetpositionbook'
-const FYERSAPIHOLDINGSURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetholdings'
-const FYERSAPIORDERBOOKSURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetorderbook'
-const FYERSAPICANCELORDER = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscancelorder'
-const FYERSAPIBUYORDER = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersplacebuyorder'
-const FYERSAPISELLORDER = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersplacesellorder'
+const FYERSAPILOGINURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscallback'
+const FYERSAPITRADEBOOKURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgettradebook'
+const FYERSAPIPOSITIONBOOKURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetpositionbook'
+const FYERSAPIHOLDINGSURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetholdings'
+const FYERSAPIORDERBOOKSURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetorderbook'
+const FYERSAPICANCELORDER = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyerscancelorder'
+const FYERSAPIBUYORDER = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersplacebuyorder'
+const FYERSAPISELLORDER = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersplacesellorder'
 
-const FYERSAPITICKERURL = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker'
-const FYERSAPITHREESECQUOTE = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetbsecequote'
+const FYERSAPITICKERURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker'
+const FYERSAPITHREESECQUOTE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetbsecequote'
 const FYERSAPIMARKETFEEDRENDER = 'https://fyersmarketfeed.onrender.com/stream' // ?accessToken=
-const FYERSAPITICKERACCESTOKEN = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersaccesstoken'
-const FYERSAPITICKERURLCLOSE = 'https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersticker/api/close'
-const FYERSAPINSECSV = 'https://fyersbook.netlify.app';
+const FYERSAPITICKERACCESTOKEN = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersaccesstoken'
+const FYERSAPITICKERURLCLOSE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/close'
+const FYERSAPINSECSV = 'https://successrate.netlify.app';
 
 export { API , FYERSAPI ,FYERSAPILOGINURL , FYERSAPINSECSV , FYERSAPITRADEBOOKURL ,FYERSAPIHOLDINGSURL ,
   FYERSAPICANCELORDER,FYERSAPIBUYORDER,FYERSAPISELLORDER
