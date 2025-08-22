@@ -61,21 +61,28 @@ const PositionGrid = ({   positionDataB   }) => {
       const tickerMap = useSelector(state => state.ticker.tickerMap);
    const currentPlatform = useSelector((state ) => state.misc.platformType)
    const [parsedData, setParsedData] = useState(() =>  
-     {  let g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
+     {  try { 
+        let g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
           if(g !==null && g!==undefined && Array.isArray(g)){
              return g;
           }
           else {
             g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey));
             if(g !==null && g!==undefined && Array.isArray(g)){
-              console.log(` Position Grid: CommonConstants.positionDataCacheKey ${CommonConstants.positionDataCacheKey} ::  ${JSON.stringify(g)} `); 
+              console.log(` Position Grid: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.positionDataCacheKey} ::  ${JSON.stringify(g)} `); 
               return g;
             }
             else {
+             console.log(` Position Grid:  parsedData :  CommonConstants.positionDataCacheKey ${CommonConstants.positionDataCacheKey} :: [] `); 
+    
               return [];
             }
           }
-
+           }
+        catch(ere){
+          console.log(` Position Grid: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.positionDataCacheKey} :: not available set to [] `); 
+          return [];
+        }
       });
    // useState(() => []);//StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data
      const [platformType, setPlatformType] = useState('1')

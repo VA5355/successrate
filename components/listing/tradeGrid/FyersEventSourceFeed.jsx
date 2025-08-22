@@ -201,9 +201,15 @@ const startEventSource = () => {
          }
        }; 
        const fetchIndicesQuote = async (acctoken) => {   
-        let indicesFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data;
+
+        let marketFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
+
+        let indicesFeed = marketFeed !==undefined ?  StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data : null;
         console.log(" indices "+JSON.stringify(indicesFeed));
-          let indices = indicesFeed.data;
+       
+           let indices =  (indicesFeed !==undefined && indicesFeed !==null ) ? ( (indicesFeed.data !==undefined &&
+            indicesFeed.data !==null ) ? indicesFeed.data : null )  : null;
+
             if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
                // gethe 
                let ctoken =  StorageUtils._retrieve(CommonConstants.recentCancelledOrderToken).data ;

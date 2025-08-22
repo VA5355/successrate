@@ -234,10 +234,14 @@ export const startEventSource = (connectionStatus, onFeed) => {
             return '';
          }
        }; 
-       const fetchIndicesQuote = async (acctoken) => {   
-        let indicesFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data;
+       const fetchIndicesQuote = async (acctoken) => {  
+        
+        let marketFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
+
+        let indicesFeed = marketFeed !==undefined ?  StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data : null;
         console.log(" indices "+JSON.stringify(indicesFeed));
-          let indices = indicesFeed.data;
+          let indices =  (indicesFeed !==undefined && indicesFeed !==null ) ? ( (indicesFeed.data !==undefined &&
+            indicesFeed.data !==null ) ? indicesFeed.data : null )  : null;
             if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
                // gethe 
                let ctoken =  StorageUtils._retrieve(CommonConstants.recentCancelledOrderToken).data ;
@@ -461,7 +465,7 @@ const setSensex = (tickQuote) => {
     const setNifty = (tickQuote) => { 
         let el = document.getElementById(NIFTYTICKERDOMID);  // GLOBAL DOM ID sensex-status
         let tickerData = tickQuote;
-        const nifty = tickerMap["NSE:NIFTY50-INDEX"];
+        const nifty =  ( tickerMap !==undefined&&  tickerMap["NSE:NIFTY50-INDEX"] !== undefined)  ? tickerMap["NSE:NIFTY50-INDEX"] : tickQuote;
          let {ltp1 , type1 } = tickQuote;
          let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'NIFTY-INDEX';  // tickerData["symbol"];
