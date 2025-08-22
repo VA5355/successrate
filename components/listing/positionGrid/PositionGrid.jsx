@@ -866,7 +866,7 @@ const getSortIndicator = (column) =>
 
             <div className="ml-auto"> <StreamToggleButton /></div>
             {/*colorSENSEXClass={colorSensex} colorBankNIFTYClass={colorBank} colorNIFTYClass={colorNifty} */}
-             <div className="ml-auto"> <FyersEventSourceFeed  onFeed={handleFeedData}   /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
+             <div className="ml-auto"> <FyersEventSourceFeed  onFeed={handleFeedData} sortedData={sortedData}  /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
            </div>
           </div>
            

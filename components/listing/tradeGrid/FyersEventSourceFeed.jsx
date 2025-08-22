@@ -14,7 +14,7 @@ import { saveBankNiftyBook } from '@/redux/slices/tickerBankNiftySlice';
 import { savePositionTickerBook } from '@/redux/slices/positionSlice';  
 import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER ,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 
-const FyersEventSourceFeed = ({ onFeed , colorSensex , colorBank ,colorNifty}) => {
+const FyersEventSourceFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,colorNifty}) => {
      const [tickerData, setTickerData] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const eventSourceRef = useRef(null);
@@ -253,6 +253,36 @@ const startEventSource = () => {
             //NOTE this is a single Tick Price for either of the Symbols 
             // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
             // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
+
+            /* parsedData = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data
+            '[{"netQty":1,"qty":1,"avgPrice":72256,"netAvg":71856,"side":1,"productType":"MARGIN","realized_profit":400,"unrealized_profit":461,"pl":861,"ltp":72717,"buyQty":2,"buyAvg":72256,"buyVal":144512,"sellQty":1,"sellAvg":72656,"sellVal":72656,"slNo":0,"fyToken":"1120200831217406","crossCurrency":"N","rbiRefRate":1,"qtyMulti_com":1,"segment":20,"symbol":"MCX:SILVERMIC20AUGFUT","id":"MCX:SILVERMIC20AUGFUT-MARGIN","cfBuyQty":0,"cfSellQty":0,"dayBuyQty":0,"daySellQty":1,"exchange":10}]'
+            
+            
+            [{"netQty":1,"qty":1,"avgPrice":72256,"netAvg":71856,"side":1,"productType":"MARGIN","realized_profit":400,"
+             unrealized_profit":461,"pl":861,"ltp":72717,"buyQty":2,"buyAvg":72256,"buyVal":144512,"sellQty":1,
+             "sellAvg":72656,"sellVal":72656,"slNo":0,"fyToken":"1120200831217406","crossCurrency":"N","rbiRefRate":1,
+             "qtyMulti_com":1,"segment":20,"symbol":"MCX:SILVERMIC20AUGFUT","id":"MCX:SILVERMIC20AUGFUT-MARGIN",
+             "cfBuyQty":0,"cfSellQty":0,"dayBuyQty":0,"daySellQty":1,"exchange":10}]
+
+            */
+            let dataToSort = [...parsedData]; let positionTickerData = [];
+              if( Array.isArray(dataToSort)) { 
+                        positionTickerData = dataToSort.map(p => {
+                        if ( data.indexOf(p.symbol) > -1) {
+                            console.log(`FyersEventSource: updating ${p.symbol} LTP to ${data.ltp}`);
+                            return { ...p, ltp: data.ltp };
+                        }
+                        return p;
+                        });
+
+                    }
+                    else {
+                         console.log(`FyersEventSource: positionBook not array `);
+                    }
+            // set parseData with the updated ticker price 
+            if(positionTickerData.length >0){  
+            parsedData = positionTickerData;
+             }
             dispatch( savePositionTickerBook(data));
               onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
                      "colorSENSEX": colorNIFTYClass} ) )
