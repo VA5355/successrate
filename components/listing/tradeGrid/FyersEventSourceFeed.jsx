@@ -180,14 +180,14 @@ const startEventSource = () => {
   if (!isConnected) {
     // Prevent duplicate connections
     if (eventSourceRef.current) {
-      console.warn("EventSource already running.");
+      console.warn("EventSource already running. ---------------FYERS EVENT SOURCE FEED");
       return;
     }
 
     try {
       userLoggedIn();
      if (userAuthCode && userAuthCode !== null && userAuthCode !== undefined) {
-       console.log("User is Authorized ");  
+       console.log("User is Authorized ---------------------FYERS EVENT SOURCE FEED ");  
        const fetchAuthToken = async () => {
           try {  //
              const res = await API.get(FYERSAPITICKERACCESTOKEN , {params: { "auth_code" : userAuthCode }});
@@ -196,7 +196,7 @@ const startEventSource = () => {
              return text;
           }
           catch(erer){
-            console.log("Auth token fetch Error ")
+            console.log("Auth token fetch Error  ---------------FYERS EVENT SOURCE FEED ")
             return '';
          }
        }; 
@@ -234,6 +234,9 @@ const startEventSource = () => {
            }
 
         const es = new EventSource(FYERSAPIMARKETFEEDRENDER+`?${params.toString()}`, { withCredentials: true });
+
+         console.log(`✅ Markeet Feed Indices-${params.toString()} --------------FYERS EVENT SOURCE FEED`);
+
         es.onopen = () => {
             console.log("✅ EventSource connection opened.");
             setIsConnected(true);
@@ -245,7 +248,7 @@ const startEventSource = () => {
            const {ltp, symbol, type  } = data;   
            setTickerData(data); 
            if (typeof ltp !== "undefined" && typeof type !== "undefined") {
-             console.log("Indices Quote availalbe.");
+             console.log("Indices Quote availalbe. -----------FYERS EVENT SOURCE FEED");
              StorageUtils._save(CommonConstants.tickerIndicesCacheKey, data );
             if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data);dispatch(saveSensexBook(data)) }
             if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data);  dispatch(saveNiftyBook(data))}
@@ -283,6 +286,9 @@ const startEventSource = () => {
             // set parseData with the updated ticker price 
             if(positionTickerData.length >0){  
             parsedData = positionTickerData;
+             }
+             else {
+              console.log(" POSITION  INDICES .................no TICKER UPDATES -----------FYERS EVENT SOURCE FEED")
              }
             dispatch( savePositionTickerBook(data));
               onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
@@ -328,12 +334,12 @@ const startEventSource = () => {
 
   const stopEventSource = () => {
     if (eventSourceRef.current) {
-      console.log("🛑 Closing EventSource...");
+      console.log("🛑 Closing EventSource...-----------FYERS EVENT SOURCE FEED");
       eventSourceRef.current.close();
       eventSourceRef.current = null;
       setIsConnected(false);
     } else {
-      console.warn("⚠ No EventSource to close.");
+      console.warn("⚠ No EventSource to close.-----------FYERS EVENT SOURCE FEED");
     }
   };
  const localISTDateTimeSec = (inStr) => {
