@@ -463,7 +463,7 @@ const setSensex = (tickQuote) => {
         let tickerData = tickQuote;
         const nifty = tickerMap["NSE:NIFTY50-INDEX"];
          let {ltp1 , type1 } = tickQuote;
-         let {ltp , type } = nifty;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'NIFTY-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         

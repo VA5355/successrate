@@ -268,7 +268,8 @@ const startEventSource = () => {
             let dataToSort = [...parsedData]; let positionTickerData = [];
               if( Array.isArray(dataToSort)) { 
                         positionTickerData = dataToSort.map(p => {
-                        if ( data.indexOf(p.symbol) > -1) {
+                          let tickSym  = (p.symbol.indexOf('NIFTY')  -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
+                        if ( data.indexOf(tickSym) > -1) {
                             console.log(`FyersEventSource: updating ${p.symbol} LTP to ${data.ltp}`);
                             return { ...p, ltp: data.ltp };
                         }
