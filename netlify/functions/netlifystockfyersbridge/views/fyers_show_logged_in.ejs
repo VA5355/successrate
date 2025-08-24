@@ -29,6 +29,7 @@
         let code = `<%= code%>`;
         let auth_code= `<%= auth_code%>`;
         let triggerredirectpython = `<%= triggerredirectpython%>`;
+        let state = `<%= state%>`;
         let now =  Date.now();
         //let v = '
                 let token ={ "value" : {"auth_code" :auth_code , "code" :code, "s" :s ,"ttl" :now}};
@@ -36,9 +37,12 @@
         $('#authenticated').click(function(){
                 localStorage.setItem("fyersToken",JSON.stringify(token));
                 if(triggerredirectpython ==='true'){
-                  
+                     if(state === 'python_state'){ 
                       window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
-                        
+                     }
+                      else if (state === 'python_order_state'){
+                         window.location.assign( "https://fyersorders.onrender.com//redirect-start?auth_code="+auth_code+"&state=python_order");
+                      }
                 }
                 else { 
                 window.close();
@@ -54,7 +58,7 @@
         //window.location.assign( "https://localhost:56322/fyersgetaccess?"+query);
        // window.location.assign( "http://192.168.1.8:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccess?"+query);
          if(client_id ==="TRLV2A6GPL-100"){
-          window.location.assign( "https://192.168.1.4:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
+          window.location.assign( "https://192.168.1.6:8888/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);
          }
          if(client_id ==="7GSQW68AZ4-100"){  
            window.location.assign( "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetaccessauthcode?"+query);

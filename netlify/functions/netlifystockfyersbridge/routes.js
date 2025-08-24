@@ -1783,7 +1783,7 @@ router.get('/fyersauthcodeverify', async function (req,res) {
 		 console.log(`s: ${s}  code : ${code}  auth_code:  ${auth_code} `);
 		 // CHECK the LOGIN REQUEST from a PYTON WEB APP for STREAMING 
 		  isfrompython= queryJSON['state'];
-		if( isfrompython !== null && isfrompython !== undefined && isfrompython ==='python_state'  ){
+		if( isfrompython !== null && isfrompython !== undefined && ( isfrompython ==='python_state' || isfrompython ==='python_order_state' ) ){
 			 console.log(` request from python we app isfrompython:  ${isfrompython} `);
 			  console.log(` should trigger return redirect to python running in local   ${isfrompython} `);
 	          triggerredirectpython= true;
@@ -1833,6 +1833,7 @@ router.get('/fyersauthcodeverify', async function (req,res) {
 		  code: code +'',
 		  auth_code : auth_code  +'',
 	      triggerredirectpython: triggerredirectpython+'',
+		  state: isfrompython+'',
 		  fnoresult : {},
 		     TRADECHECKKEY :"7`xZ6=v63s37L227e214j454mFN#h5Q4", //process.env.BREEZE_API_KEY,
 		  })

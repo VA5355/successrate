@@ -273,12 +273,71 @@ const startEventSource = () => {
              "qtyMulti_com":1,"segment":20,"symbol":"MCX:SILVERMIC20AUGFUT","id":"MCX:SILVERMIC20AUGFUT-MARGIN",
              "cfBuyQty":0,"cfSellQty":0,"dayBuyQty":0,"daySellQty":1,"exchange":10}]
 
-            */
-            let dataToSort = [...parsedData]; let positionTickerData = [];
+            */ 
+          // debugger;
+             // CHECK parsedData already contains the FETCHED position of not 
+             if(parsedData  == null || parsedData  == undefined){
+                 try { 
+               // let g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
+                let g = undefined;
+                    try { 
+                      g =     JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
+                    }
+                    catch(er2){
+                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey}).data) failed `);
+                    }
+                  if(g !==null && g!==undefined && Array.isArray(g)){
+                     parsedData = g
+                  }
+                  else {
+                   // g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey));
+                   // g = JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey)); // no need to parse 
+                      try { 
+                        g =     JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey));
+                     }
+                      catch(er3){
+                          g =  StorageUtils._retrieve(CommonConstants.recentPositionsKey) ;
+                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey})) failed `);
+                     }
+
+                  
+                    if(g !==null && g!==undefined ){
+                       let kt   = Object.fromEntries(
+                                  Object.entries(g).map(([key, value]) => [key, String(value)])
+                                      );
+                         Object.entries(g).forEach(([key, value]) =>{
+                               if (value !==null && value !==undefined &&  Array.isArray(value) ){
+                                  g = value;
+                                  
+                               } 
+                         } );
+
+                      console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} ::  ${JSON.stringify(g)} `); 
+                      parsedData = g
+                    }
+                    else {
+                      console.log(` FyersEventSource:  parsedData :  CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: [] `); 
+                      parsedData = g
+                     // return [];
+                    }
+                  }
+                    }
+                catch(ere){
+                  console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: not available set to [] `); 
+                   parsedData =[];
+                  //return [];
+                }
+               
+             }
+
+
+             if(parsedData !== null && parsedData !== undefined &&  Array.isArray(parsedData)) {
+              let dataToSort = [...parsedData]; let positionTickerData = [];
+               console.log(`FyersEventSource: positionBook state ${JSON.stringify(dataToSort)} `);
               if( Array.isArray(dataToSort)) { 
                         positionTickerData = dataToSort.map(p => {
                           let tickSym  = (p.symbol.indexOf('NIFTY')  -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
-                        if ( data.indexOf(tickSym) > -1) {
+                        if ( data.symbol.indexOf(tickSym) > -1) {
                             console.log(`FyersEventSource: updating ${p.symbol} LTP to ${data.ltp}`);
                             return { ...p, ltp: data.ltp };
                         }
@@ -289,12 +348,18 @@ const startEventSource = () => {
                     else {
                          console.log(`FyersEventSource: positionBook not array `);
                     }
-            // set parseData with the updated ticker price 
-            if(positionTickerData.length >0){  
-            parsedData = positionTickerData;
+                // set parseData with the updated ticker price 
+                if(positionTickerData.length >0){  
+                  parsedData = positionTickerData;
+                }
+                else {
+                  console.log(" POSITION  INDICES .................no TICKER UPDATES -----------FYERS EVENT SOURCE FEED")
+                }
              }
              else {
-              console.log(" POSITION  INDICES .................no TICKER UPDATES -----------FYERS EVENT SOURCE FEED")
+                   console.log(`FyersEventSource: please FETCH the Position's manually for TICKER UPATES IN POSITONS `);
+                   //  console.log(" PositionGrid after login state.position.positionBook "+JSON.stringify(positionData))
+                   console.log(`FyersEventSource: parsedData  ${parsedData} `);
              }
             dispatch( savePositionTickerBook(data));
               onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,

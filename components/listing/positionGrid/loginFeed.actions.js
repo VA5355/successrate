@@ -13,6 +13,8 @@ import { saveNiftyBook } from '@/redux/slices/tickerNiftySlice';
 import { saveBankNiftyBook } from '@/redux/slices/tickerBankNiftySlice';  
 import { savePositionTickerBook } from '@/redux/slices/positionSlice';  
 import { updateTickerMap } from "@/redux/slices/tickerSlice";
+import { store } from "@/redux/store";
+import isEqual from 'lodash.isequal';
 import { API, FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER ,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 
 //const PositionLoginFeed = ({ onFeed , colorSensex , colorBank ,colorNifty}) => {
@@ -208,7 +210,7 @@ export const userLoggedIn = () => {
           }
         }
  }
-export const startEventSource = (connectionStatus, onFeed) => {
+export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
  return async (dispatch) => {
      
   if (!connectionStatus) {
@@ -276,7 +278,7 @@ export const startEventSource = (connectionStatus, onFeed) => {
             console.log("✅ EventSource connection opened.");
             setIsConnected(true);
         };
-        es.onmessage = (event) => {
+        es.onmessage = async (event) => {
          try {
           const data = JSON.parse(event.data);
           if (data !== undefined) { // last price
@@ -294,20 +296,48 @@ export const startEventSource = (connectionStatus, onFeed) => {
               ...prev,
               [symbol]: { ...data }, // clone to avoid mutation
             })); */
-            dispatch(updateTickerMap(data));
+             let   tickerMap2 =undefined;
+              try {
+                 // const result = await  dispatch(updateTickerMap(data));  //dispatch(orderBookData("")); 
+                  // dispatch(updateTickerMap(data));
+                    const result = store.getState().ticker.tickerMap;
+                  if(result !==undefined && result !== null && Array.isArray(result)){
+                      tickerMap2 =     result ;
+                                //= useSelector(state => state.ticker.tickerMap);
+                    if (!isEqual(tickerMap, tickerMap2)) {
+                        if(Array.isArray(tickerMap2) && tickerMap2.length >0 ){ 
+                          console.log(`loginFeed.actions.js ticker map from PositionGrid ${tickerMap} `)
+                          tickerMap = tickerMap2;
+                          console.log(`loginFeed.actions.js ticker map in loginFeed ${tickerMap2} `)
+                        }
 
-
-            if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data); dispatch(saveSensexBook(data)) }
-            if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data);  dispatch(saveNiftyBook(data))}
-            if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data);  dispatch(saveBankNiftyBook(data))}
-             if(symbol.indexOf('4450CE')>-1){   console.log( `1 CE ${ JSON.stringify(data)}  `)}
-            //NOTE this is a single Tick Price for either of the Symbols 
-            // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
-            // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
-            dispatch( savePositionTickerBook(data));
+                    }
+                  if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data,tickerMap); dispatch(saveSensexBook(data)) }
+                  if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data , tickerMap);  dispatch(saveNiftyBook(data))}
+                  if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data,tickerMap);  dispatch(saveBankNiftyBook(data))}
+                  if(symbol.indexOf('4450CE')>-1){   console.log( `1 CE ${ JSON.stringify(data)}  `)}
+                  //NOTE this is a single Tick Price for either of the Symbols 
+                  // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
+                  // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
+                  dispatch( savePositionTickerBook(data));
+                }
+           
              /* onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
                      "colorSENSEX": colorNIFTYClass} ) )
                      */
+              
+                    //fetchOrdersBookDataCacheKey();
+                     // setOrdersShowModal(true);  
+                  } catch (err) {
+
+                     console.error("❌ loginFeed.action: Ticker prices tickerMap Update failed :", err);
+                  //  console.error(err);
+                  // setResource(null);
+                   // setOrdersShowModal(true);
+                 }
+
+
+          
            }
           }               
          } catch (err) {
@@ -392,10 +422,12 @@ export   const stopEventSource = () => {
    }
 
 
-const setSensex = (tickQuote) => { 
+const setSensex = (tickQuote,tickerMap) => { 
         let el = document.getElementById(SENSEXTICKERDOMID);  // GLOBAL DOM ID sensex-status
         let tickerData = tickQuote;
-         let {ltp , type } = tickQuote;
+            const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["BSE:SENSEX-INDEX"] !== undefined)  ? tickerMap["BSE:SENSEX-INDEX"] : tickQuote;
+         let {ltp1 , type1 } = tickQuote;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'SENSEX-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         
@@ -462,10 +494,10 @@ const setSensex = (tickQuote) => {
             }
         }
   }
-    const setNifty = (tickQuote) => { 
+    const setNifty = (tickQuote,tickerMap) => { 
         let el = document.getElementById(NIFTYTICKERDOMID);  // GLOBAL DOM ID sensex-status
         let tickerData = tickQuote;
-        const nifty =  ( tickerMap !==undefined&&  tickerMap["NSE:NIFTY50-INDEX"] !== undefined)  ? tickerMap["NSE:NIFTY50-INDEX"] : tickQuote;
+        const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["NSE:NIFTY50-INDEX"] !== undefined)  ? tickerMap["NSE:NIFTY50-INDEX"] : tickQuote;
          let {ltp1 , type1 } = tickQuote;
          let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'NIFTY-INDEX';  // tickerData["symbol"];
@@ -525,10 +557,12 @@ const setSensex = (tickQuote) => {
             }
         }
   }
-    const setBankNifty = (tickQuote) => { 
+    const setBankNifty = (tickQuote,tickerMap) => { 
         let el = document.getElementById(BANKNIFTYTICKERDOMID);  // GLOBAL DOM ID BANKNIFTY-status
         let tickerData = tickQuote;
-        let {ltp , type } = tickQuote;
+         const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["NSE:BANKNIFTY-INDEX"] !== undefined)  ? tickerMap["NSE:BANKNIFTY-INDEX"] : tickQuote;
+         let {ltp1 , type1 } = tickQuote;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'BANKNIFTY-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         

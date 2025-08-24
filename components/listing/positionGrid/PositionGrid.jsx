@@ -196,7 +196,8 @@ const PositionGrid = ({   positionDataB   }) => {
     });
   }
   dataToSort = dataToSort.filter( ord => parseInt(ord.avgPrice) !=0 &&  parseInt(ord.netQty)  !=0 &&  parseInt(ord.unrealized_profit) !=0  )
-
+  // SET the parsedDATA
+  setParsedData(() => prev = dataToSort);
   return dataToSort.sort((a, b) => {
     const valA = a[sortColumn];
     const valB = b[sortColumn];
@@ -579,7 +580,7 @@ const getSortIndicator = (column) =>
                                 console.log("User is Authorized ");
                                 setUserLogged (true);
                                clearInterval(globalUserCheck);
-                               dispatch(startEventSource(false,callBackFeedData));
+                               dispatch(startEventSource(false , tickerMap,callBackFeedData));
                               // dispatch(orderBookData());
                             }
                             else{
@@ -889,7 +890,7 @@ const getSortIndicator = (column) =>
 
             <div className="ml-auto"> <StreamToggleButton /></div>
             {/*colorSENSEXClass={colorSensex} colorBankNIFTYClass={colorBank} colorNIFTYClass={colorNifty} */}
-             <div className="ml-auto"> <FyersEventSourceFeed  onFeed={handleFeedData} sortedData={sortedData}  /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
+             <div className="ml-auto"> <FyersEventSourceFeed  onFeed={handleFeedData}   /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
            </div>
           </div>
            

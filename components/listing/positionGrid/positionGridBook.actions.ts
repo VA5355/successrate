@@ -239,6 +239,7 @@ export const getPositionData = (_id: string | string[]) => {
                             let lines = json.netPositions ; //json['netPositions'] ;
                                 console.log('lines :', JSON.stringify (lines));  
 
+                          if( lines !== null && lines !== undefined) {      
                           const parsed = lines.map((line:any) => {
                            //const [symbol, name, ...rest] = line.split(','); // modify based on CSV structure
                            const result =  parseLine(line); // ;undefined
@@ -304,6 +305,7 @@ export const getPositionData = (_id: string | string[]) => {
                             }
                                return positionRow;
                             });
+                           } //  lines not null not undefined 
                            if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
                            {  
                              console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);

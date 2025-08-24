@@ -52,6 +52,8 @@ export const tickerSlice = createSlice({
                 if (data?.symbol) {
                     state.tickerMap[data.symbol] = data;   // 👈 same as setTickerMap
                 }
+               let ft = JSON.parse(JSON.stringify(state.tickerMap));
+                return ft;
          },
     },
 })
