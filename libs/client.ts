@@ -35,6 +35,10 @@ const FYERSAPISELLORDER = 'https://successrate.netlify.app/.netlify/functions/ne
 const FYERSAPITICKERURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker'
 const FYERSAPITHREESECQUOTE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetbsecequote'
 const FYERSAPIMARKETFEEDRENDER = 'https://fyersmarketfeed.onrender.com/stream' // ?accessToken=
+
+const FYERSAPIORDERSRENDER = 'https://fyersorders.onrender.com/stream' // ?accessToken=
+const FYERSAPIPOSITIONSRENDER = 'https://fyers-positions-socket-git.onrender.com/stream' // ?accessToken=
+
 const FYERSAPITICKERACCESTOKEN = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersaccesstoken'
 const FYERSAPITICKERURLCLOSE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/close'
 const FYERSAPINSECSV = 'https://successrate.netlify.app';
@@ -42,6 +46,6 @@ const FYERSAPINSECSV = 'https://successrate.netlify.app';
 export { API , FYERSAPI ,FYERSAPILOGINURL , FYERSAPINSECSV , FYERSAPITRADEBOOKURL ,FYERSAPIHOLDINGSURL ,
   FYERSAPICANCELORDER,FYERSAPIBUYORDER,FYERSAPISELLORDER
   ,FYERSAPIORDERBOOKSURL ,FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE ,FYERSAPITICKERACCESTOKEN,FYERSAPITHREESECQUOTE,
-  FYERSAPIMARKETFEEDRENDER,
+  FYERSAPIMARKETFEEDRENDER,FYERSAPIORDERSRENDER,FYERSAPIPOSITIONSRENDER,
   FYERSAPIPOSITIONBOOKURL
 };
