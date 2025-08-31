@@ -14,6 +14,7 @@ export interface TickerSliceProps {
    sensexBook:  any[]  | undefined,
    bankNiftyBook:  any[]  | undefined,
    tickerMap: Record<string, any>;   // 👈 add this
+   orderBook:  any[]  | undefined,
 }
 const initialState: TickerSliceProps = {
     symbol: null,
@@ -26,6 +27,7 @@ const initialState: TickerSliceProps = {
      sensexBook: undefined,
      bankNiftyBook: undefined,
       tickerMap: {},   // 👈 initialize empty object
+        orderBook: undefined,
 
 }
 
@@ -53,12 +55,35 @@ export const tickerSlice = createSlice({
                     state.tickerMap[data.symbol] = data;   // 👈 same as setTickerMap
                 }
                let ft = JSON.parse(JSON.stringify(state.tickerMap));
-                return ft;
+               console.log("update Ticker Map done :  Ticker set "+JSON.stringify(ft));
+               // return ft;
+         },
+           updateOrderBook: (state, action: PayloadAction<any>) => {
+                const orderModifiedBook = action.payload;
+                if (orderModifiedBook !==null && orderModifiedBook !== undefined && Array.isArray(orderModifiedBook)) {
+                    if( state.orderBook == undefined ) {  //[...orderModifiedBook];
+                       state.orderBook =[...orderModifiedBook];
+                    }
+                    else {
+                     console.log("update Order Book done : old  "+JSON.stringify(state.orderBook));    
+                       state.orderBook =  
+                        [
+                        ...state.orderBook.filter(
+                            existing => !orderModifiedBook.some(newItem => newItem.id === existing.id)
+                        ),
+                        ...orderModifiedBook
+                        ];
+
+                    }    
+                }
+               let ft = JSON.parse(JSON.stringify(state.orderBook));
+               console.log("new book "+JSON.stringify(ft));
+               // return ft;
          },
     },
 })
 
-export const { saveSymbol, saveName ,saveStockTickers: saveStockTickers ,saveTickerBook ,
+export const { saveSymbol, saveName ,saveStockTickers: saveStockTickers ,saveTickerBook ,updateOrderBook,
      updateTickerMap,   // 👈 add this
   } = tickerSlice.actions;
  // tickerSlice ;

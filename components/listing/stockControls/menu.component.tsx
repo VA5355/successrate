@@ -124,7 +124,7 @@ const Menu = () => {
                  // IFF Logged in cehck
         let logd = false;
          const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-        if (res1.isValid && res1.data !== null && res1.data !== undefined) {
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined && res1.data !== undefined) {
             
             let auth_code = res1.data['auth_code'];
             if (auth_code&& auth_code !== null && auth_code !== undefined) {

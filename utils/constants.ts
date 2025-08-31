@@ -326,6 +326,11 @@ export const CommonConstants = {
      quickOrderCancelledOrderToken:'quickOrderCancelledOrderToken',
      quickOrderCancellOrderPlaced:'quickOrderCancellOrderPlaced',
      quickOrderCancelledOrderStatus:'quickOrderCancelledOrderStatus',
+
+     tickerOrdersSocketCacheKey:'tickerOrdersSocketCacheKey',
+     tickerPositionsSocketCacheKey:'tickerPositionsSocketCacheKey',
+     recentOrdersSocketKey:'recentOrdersSocketKey',
+     recentPositionsSocketKey:'recentPositionsSocketKey',
 // SELL PLUS 2 ORDER 
     pendingOrderDataCacheKey: 'pendingOrderDataCacheKey',
 
@@ -341,6 +346,7 @@ export const CommonConstants = {
     tickerIndicesCacheKey1:"tickerIndicesCacheKey",
     tickerIndicesCacheKey:"INDX:",
      marketFeedDataCacheKey:'marketFeedDataCacheKey',
+     positionFeedDataCacheKey:'positionFeedDataCacheKey',
      threeIndicesDataCacheKey: 'indicesThreeSec',
      tickerNiftyDataCacheKey: 'niftyTicker',
       holdingsDataCacheKey: 'holdingsData',

@@ -15,7 +15,8 @@ const initialState: TickerBankNiftySliceProps = {
 
     bankNiftyBook: undefined,
     niftyBook: undefined,
-    tickerMap: {}
+    tickerMap: {},
+      orderBook:  undefined,
 }
 
 

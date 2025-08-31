@@ -14,6 +14,7 @@ import { quickOrderBookData } from "../positionGrid/orderBook.actions";
 import { saveOrderBook } from '@/redux/slices/orderBookSlice';
 import { saveBuyOrderBook } from '@/redux/slices/buyOrderBookSlice';  
 import {API, FYERSAPI, FYERSAPILOGINURL} from "@/libs/client"
+import QuickOrderTable  from './QuickOrderTable'
  
 import isEqual from 'lodash.isequal';
 //CUSTOME HOOK to DETECT MOBILE 
@@ -273,7 +274,7 @@ useEffect( () => {
       clearInterval(orderBookPollInt);
       // store the interval for refrence and close the poll 
        setOrderGlobalPollInt((prev) => prev = false);
-  }, 42000) // 12000
+  }, 120000)
 
 } , [])*/
 
@@ -470,7 +471,7 @@ const refreshOrderBook = () => {
 useEffect(() => {    // BAASED ON the POLL ORDER's BUTTON in PARENT POSITION GRID (TOGGLED to TRUE ) this EFFECT wILL TRIGGER 
 
   const res = StorageUtils._retrieve(CommonConstants.fyersToken);
-  if (res.isValid && res.data !== null) {   // CHECK FOR                   ----> USER LOGGED IN 
+  if (res.isValid && res.data !== null  && res.data !== undefined) {   // CHECK FOR                   ----> USER LOGGED IN 
       
       let auth_code = res.data['auth_code'];
       if (auth_code&& auth_code !== null && auth_code !== undefined) {
@@ -935,7 +936,23 @@ const handleCancel = async (orderId) => {
  
   return (
     <> 
-       <button id="POLLORDERBOOK"
+
+      <QuickOrderTable sortedSocketData={[]}  sortedDataP={parsedData}   isOrderPolling={isOrderPolling}
+      parseStoreUtilsOrder={parseStoreUtilsOrder} fetchOrdersBookDataCacheKey={fetchOrdersBookDataCacheKey} 
+      setOrderGlobalPollInt={setOrderGlobalPollInt} setUserLogged={setUserLogged}
+      setParsedData={setParsedData} userLogged={userLogged}
+      handleSort={handleSort}  getSortIndicator={getSortIndicator}  handleCancel={handleCancel}/>
+
+</>
+  );
+     
+};
+
+export default QuickOrderBook;
+/*
+  MOBED due to QUICKORDERTABLE 
+
+ <button id="POLLORDERBOOK"
         onClick={handleOrderBookPoll}
         className={` flex items-start justify-start gap-2 px-1 py-2 h-[35px] rounded-lg mx-4 mt-1 font-semibold
             hover:bg-blue-200 bg-brandgreenlight dark:text-white   ${
@@ -951,85 +968,4 @@ const handleCancel = async (orderId) => {
         )}  
             <span className="text-sm font-semibold font-medium" > {isOrderPolling ? 'Fetching' : 'Poll Orders'} </span>
       </button>
-   <div className="overflow-x-auto bg-zinc-100 border border-gray-300 rounded-md w-[460px]">
-  
-  {/* Table Header */}
-  <div className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
-    <div
-      className="py-[1px] px-1 cursor-pointer truncate"
-      onClick={() => handleSort("symbol")}
-    >
-      Inst{getSortIndicator("symbol")}
-    </div>
-     <div
-      className="py-[1px] px-1 cursor-pointer"
-     
-    >
-     Cancel
-    </div>
-    <div
-      className="py-[1px] px-1 cursor-pointer"
-      onClick={() => handleSort("qty")}
-    >
-      Qty{getSortIndicator("qty")}
-    </div>
-    <div
-      className="py-[1px] px-1 cursor-pointer"
-      onClick={() => handleSort("limitPrice")}
-    >
-      Avg{getSortIndicator("limitPrice")}
-    </div>
-    <div
-      className="py-[1px] px-1 cursor-pointer"
-      onClick={() => handleSort("lp")}
-    >
-      LTP{getSortIndicator("lp")}
-    </div>
-  </div>
-
-  {/* Table Body */}
-  {/*  {Array.isArray(otherObjOrderBookData) && otherObjOrderBookData.length > 0 && userLogged   ? (   */}
-  <div className="max-h-[200px] overflow-y-auto divide-y divide-gray-200  text-[11px] leading-[1.1rem]">
-    {sortedData && sortedData.length > 0 ? (
-    sortedData.map((row, index) => (
-      <div
-        key={index}
-        className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))]  text-gray-800 transition
-          ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-          hover:bg-gray-100
-          ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
-      >
-        <div className="py-[1px] px-1 text-base font-bold truncate">{row.symbol}</div>
-        <div className="py-[1px] px-1 text-base font-bold truncate"> {/* Cross circle */}
-          <button className="w-2 h-2 text-gray-600 hover:bg-gray-200" onClick={(e) => { 
-             if (e.target === e.currentTarget) {
-              // Click came directly on the button
-              handleCancel(row.id);
-            } else {
-              console.log("Click came from a child element inside the button");
-            }
-            }}>
-            ✕
-          </button></div>
-
-        <div className="py-[1px] px-1 text-base font-bold">{row.qty}</div>
-        <div className="py-[1px] px-1  text-base font-bold">{row.limitPrice}</div>
-        <div className="py-[1px] px-1  text-base  font-bold">{row.lp}</div>
-      </div>
-      ))
-    ) : (
-    <div className="grid grid-cols-4 text-[11px] text-gray-500 py-[1px] px-1">
-     <div className="py-[1px] px-1 text-base font-bold"> No orders</div>
-    </div>
-  )}
-</div>
-   <div id="QUICKORDERSTATUS" className="grid grid-cols-1 bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
-
-   </div>
-</div>
-</>
-  );
-     
-};
-
-export default QuickOrderBook;
+*/

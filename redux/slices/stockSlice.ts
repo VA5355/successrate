@@ -4,6 +4,7 @@ export interface StockSliceProps {
     gainers: any,
     losers: any,
     activelyTraded: any,
+    activelyTradedBook:   any[]  | undefined,
     searchResults: any,
     companyData: any,
     selectedCard: any,
@@ -14,6 +15,7 @@ const initialState:StockSliceProps = {
     losers: null,
     searchResults: null,
     activelyTraded: null,
+    activelyTradedBook: undefined,
     companyData: null,
     selectedCard: null,
     holdingData:null
@@ -38,7 +40,12 @@ const stockSlice = createSlice({
             state.selectedCard=action.payload
         },
         saveActivelyTraded: (state, action) => {
+            if(Array.isArray(action.payload)){
+                 state.activelyTradedBook = action.payload;
+            }
+            else if(action.payload !==null && action.payload !== undefined) { 
             state.activelyTraded=action.payload
+            }
         },
         saveCompanyData: (state, action) => {
             state.companyData=action.payload

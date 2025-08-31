@@ -4,7 +4,7 @@ const fs = require('fs');
 const next = require('next');
 
 const dev = true;
-const hostname = '192.168.1.4'; // or 'localhost'
+const hostname = '192.168.1.7'; // or 'localhost'
 const port = 3000;
 
 const app = next({ dev, hostname, port });

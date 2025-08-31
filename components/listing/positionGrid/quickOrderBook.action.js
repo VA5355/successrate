@@ -292,7 +292,7 @@ export const stopSensexTickerData =   (symb ) => {
        
        
      try { 
-       if (res1.isValid && res1.data !== null) {
+       if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
             
             tokenKey = res1.data['auth_code'];
          // ["NSE:NIFTY50-INDEX" , "NSE:NIFTYBANK-INDEX"]
@@ -480,7 +480,7 @@ export const quickOrderBookData = (_id ) => {
  
                // IFF Logged in fetch the ORDER BOOK Book 
          const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-        if (res1.isValid && res1.data !== null) {
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
             
             let auth_code = res1.data['auth_code'];
             if (auth_code&& auth_code !== null && auth_code !== undefined) {

@@ -11,6 +11,7 @@ import './buttonOverride.css';
 import { getPositionData } from '../positionGrid/positionGridBook.actions';
 import { orderBookData } from '../positionGrid/orderBook.actions';
 import { savePositionBook } from '@/redux/slices/positionSlice';
+import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 
 const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => {
   const [isStreaming, setIsStreaming] = useState(false);
@@ -35,7 +36,7 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
   const handlePositions = () => {
      console.log("Fetch Position enter ");
 const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-  if (res1.isValid && res1.data !== null) {
+  if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
     let auth_code = res1.data['auth_code'];
     if (auth_code&& auth_code !== null && auth_code !== undefined) {
         console.log("User is Authorized ");
@@ -67,6 +68,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
                 StorageUtils._save(CommonConstants.marketFeedDataCacheKey, CommonConstants.sampleObjTickerTDataVersion1);
 
                 dispatch( savePositionBook(([...redentPositionData.data])));
+                dispatch( savePositionStreamBook(([...redentPositionData.data])));
 
                // hope fully the above save Positionbook will include inte new symbols into
                // the 

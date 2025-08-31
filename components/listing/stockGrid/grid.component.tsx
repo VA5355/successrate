@@ -14,6 +14,7 @@ import { getPositionData } from '../positionGrid/positionGridBook.actions';
 import { orderBookData } from '../positionGrid/orderBook.actions';
 import { StorageUtils } from '@/libs/cache';
 import { savePositionBook } from '@/redux/slices/positionSlice';
+import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 import { CommonConstants } from '@/utils/constants';
 
 const StockGrid = () => {
@@ -58,6 +59,7 @@ const StockGrid = () => {
             redentPositionData = dataFromCache2;
         }
          dispatch( savePositionBook(([...redentPositionData.data])));
+         dispatch( savePositionStreamBook(([...redentPositionData.data])));
          setPositionOneFetch(prev => prev+1);
           StorageUtils._save(CommonConstants.fetchPositions, false)
         // FETCH the ORDER BOOK DATA ALSO ONCE 

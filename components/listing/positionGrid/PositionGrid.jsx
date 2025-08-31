@@ -20,6 +20,7 @@ import FyersEventSourceFeed from '../tradeGrid/FyersEventSourceFeed';
 import QuickOrderBook from '../quickorder/QuickOrderBook';
 import CancelOrderButtonWithSuspense from './CancelButton';
 import PlaceOrderButton from './PlaceOrderButton';
+import PositionsTabs from './PositionsTabs';
 import SellPlus2Order from './SellPlus2Order';
 import FetchPositionButton from './FetchPositionButton';
 import isEqual from 'lodash.isequal';
@@ -61,11 +62,17 @@ const PositionGrid = ({   positionDataB   }) => {
       const tickerMap = useSelector(state => state.ticker.tickerMap);
    const currentPlatform = useSelector((state ) => state.misc.platformType)
    const [parsedData, setParsedData] = useState(() =>  
-     {  try { 
-        let g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
-          if(g !==null && g!==undefined && Array.isArray(g)){
+     {  try {             // recentPositionnsKey is updated by the grid.action fetchMoreStocks function on click of Load More.
+        let g = JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
+
+         if(g !==null && g!==undefined && Array.isArray(g)){
              return g;
           }
+         else {
+            g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
+           if(g !==null && g!==undefined && Array.isArray(g)){
+             return g;
+           }
           else {
             g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey));
             if(g !==null && g!==undefined && Array.isArray(g)){
@@ -78,6 +85,7 @@ const PositionGrid = ({   positionDataB   }) => {
               return [];
             }
           }
+          }  
            }
         catch(ere){
           console.log(` Position Grid: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.positionDataCacheKey} :: not available set to [] `); 
@@ -167,7 +175,88 @@ const PositionGrid = ({   positionDataB   }) => {
     };
   }, [tooltipData]);
 
+ useEffect(() => {
+    let isMounted = true;
 
+    const fetchParsedData = () => {
+      try {
+        let g =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)  || "null" ;
+        let positions = undefined;
+          const dataFromCache = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
+         if( g['data'] !== ''  && g['data'] !== null && g['data'] !==undefined){
+                     console.log(" recentTrades  position data empty "+JSON.stringify(g))
+                     let tr = JSON.parse((JSON.stringify(g)));
+                     if(tr !==null && tr !== undefined ){
+                         if(tr['data'] !==null && tr['data']!== undefined ){
+                           positions =tr['data'];
+                            console.log(" positions useEffect   ")
+
+                         }
+                     }
+                     
+            }else {
+               console.log("position data fro cahce "+JSON.stringify(dataFromCache))
+               positions = JSON.parse(dataFromCache.data) ;
+            }
+
+
+
+        if (positions && Array.isArray(positions)) {
+          setParsedData(positions);
+          console.log("..........positions grid recentPositions polled parsedData updated")
+          return;
+        }
+
+        g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey)?.data || "null");
+        if (g && Array.isArray(g)) {
+          setParsedData(g);
+          return;
+        }
+
+        g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey) || "null");
+        if (g && Array.isArray(g)) {
+          setParsedData(g);
+          return;
+        }
+
+        setParsedData([]);
+      } catch (err) {
+        setParsedData([]);
+      }
+    };
+
+    // Fibonacci delay generator
+    const fibonacci = (n )  => {
+      if (n <= 1) return 5000; // first interval = 5s
+      let a = 5000,
+        b = 8000; // second interval = 8s
+      for (let i = 2; i <= n; i++) {
+        const next = a + b;
+        a = b;
+        b = next;
+      }
+      return b;
+    };
+
+    let timeoutId ;
+
+    const startPolling = (i ) => {
+     // if (!isMounted) return;
+      fetchParsedData();
+
+      const delay = fibonacci(i);
+      console.log(`Next poll in ${delay / 1000}s`);
+      timeoutId = setTimeout(() => startPolling(i + 1), delay);
+    };
+
+    // start from iteration 0
+    startPolling(0);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
 
 
@@ -196,8 +285,8 @@ const PositionGrid = ({   positionDataB   }) => {
     });
   }
   dataToSort = dataToSort.filter( ord => parseInt(ord.avgPrice) !=0 &&  parseInt(ord.netQty)  !=0 &&  parseInt(ord.unrealized_profit) !=0  )
-  // SET the parsedDATA
-  setParsedData(() => prev = dataToSort);
+  // SET the parsedDATA =>
+  setParsedData( dataToSort);
   return dataToSort.sort((a, b) => {
     const valA = a[sortColumn];
     const valB = b[sortColumn];
@@ -452,7 +541,7 @@ const getSortIndicator = (column) =>
              const validRow = Object.fromEntries(Object.keys(PositionRow).map(key => [key, undefined]));
                let isValidPositionJSON = false;
                 try{
-                      const parsedObject = JSON.parse(dataLocal);
+                      const parsedObject =  typeof dataLocal ==='string'? JSON.parse(dataLocal) : dataLocal;
                         console.log(parsedObject);
                         isValidPositionJSON= true;
                   }   
@@ -573,7 +662,7 @@ const getSortIndicator = (column) =>
                         let data =    result.data.value;
                         StorageUtils._save(CommonConstants.fyersToken,data)
                         const res = StorageUtils._retrieve(CommonConstants.fyersToken);
-                        if (res.isValid && res.data !== null) {
+                        if (res.isValid && res.data !== null  && res.data  !== undefined) {
                            
                             let auth_code = res.data['auth_code'];
                             if (auth_code&& auth_code !== null && auth_code !== undefined) {
@@ -664,21 +753,31 @@ const getSortIndicator = (column) =>
                          //dispatch(getPositionData('adfg'));
                         let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
                                 const dataFromCache = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
-                                if( redentPositionData !== null && redentPositionData !==undefined){
-                    
+                          let positions = undefined;      
+                         if( redentPositionData['data'] !== ''  && redentPositionData['data'] !== null && redentPositionData['data'] !==undefined){       
+                                  console.log("positions "+JSON.stringify(redentPositionData))
+                                  let tr = JSON.parse((JSON.stringify(redentPositionData)));
+                                  if(tr !==null && tr !== undefined ){
+                                      if(tr['data'] !==null && tr['data']!== undefined ){
+                                        positions =tr['data'];
+                                          console.log(" positions   ")
+
+                                      }
+                                  }
+                                  
                                 }else {
                                 console.log("position data fro cahce ")
-                                redentPositionData = dataFromCache.data;
+                                  positions = dataFromCache.data;
                                 }
                                 console.log(" PositionGrid after login state.position.positionBook "+JSON.stringify(positionData))
                             
                             
-                                let positionLocal  =   positionData !== undefined? positionData : redentPositionData;
+                                let positionLocal  =   positionData !== undefined? positionData : positions;
 
                         if ( positionLocal   !== null && positionLocal !==undefined){
                           let isValidPositionJSON = false;
                              try{
-                                    const parsedObject = JSON.parse(positionLocal?.data);
+                                    const parsedObject =  typeof dataLocal ==='string'? JSON.parse(dataLocal) : dataLocal; //  JSON.parse(positionLocal?.data);
                                       console.log(parsedObject);
                                       isValidPositionJSON= true;
                                 }   
@@ -796,7 +895,7 @@ const getSortIndicator = (column) =>
 
 
   return (
-    <div className="overflow-x-auto w-full bg-zinc-100">
+    <div className=" w-full bg-zinc-100"> {/* overflow-x-auto removed for horizontal scrooll  */}
         <br/>
         <br/>
       <h1 className='text-black font-semibold mb-2 dark:text-white text-lg'>Positions</h1>
@@ -1019,70 +1118,13 @@ const getSortIndicator = (column) =>
     </tbody>
   </table>
 </div> */}
-
-     {isMobile ? <MobileView sortedData={sortedData}
-      userLogged={userLogged}
-      handleSort={handleSort}
-      getSortIndicator={getSortIndicator}
-       /> : 
-     (  
-     <div className="overflow-x-auto w-full">  
-    {/*  <table className="min-w-full text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden"> */} 
-         <div className="grid grid-cols-11 bg-gray-100 text-gray-700 font-semibold text-sm ">
-            <div className="py-1 px-1  cursor-pointer"  >SrNo </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("symbol")}>Instrument{getSortIndicator("symbol")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("productType")}>Product{getSortIndicator("productType")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("netQty")}>Quantity{getSortIndicator("netQty")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("avgPrice")}>Avg Price{getSortIndicator("avgPrice")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("totCh")}>Total Charges{getSortIndicator("totCh")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("ltp")}>LTP {getSortIndicator("ltp")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("calPrf")}>Act {getSortIndicator("calPrf")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("buyVal")}>Buy Value{getSortIndicator("buyVal")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("realized_profit")}>Realized {getSortIndicator("realized_profit")} </div>
-            <div className="py-1 px-1  cursor-pointer" onClick={() => handleSort("unrealized_profit")}>Unrealized{getSortIndicator("unrealized_profit")} </div>
-  
-        </div>
-     
-   {/*  
-      <table className="min-w-full table-auto text-sm border-collapse">
-        <thead className="bg-gray-100 text-gray-700 font-semibold">
-          <tr>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("symbol")}>Instrument{getSortIndicator("symbol")}</th>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("productType")}>Product Type{getSortIndicator("productType")}</th>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("positiondQty")}>Quantity{getSortIndicator("positiondQty")}</th>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("positionPrice")}>Price{getSortIndicator("positionPrice")}</th>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("orderDateTime")}>Time{getSortIndicator("orderDateTime")}</th>
-            <th className="py-2 px-4 border-b cursor-pointer" onClick={() => handleSort("positionValue")}>Trade Value{getSortIndicator("positionValue")}</th>
-            <th className="py-2 px-4 border-b">Buy/Sell</th>
-          </tr>
-        </thead> */}
-         {/* Table Body Rows  */}
-    <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200" ref={tableRef}>
-       {/*  Example Row  */}    {/* handleSymbolClick(e, row["symbol"]) */}
-        { (Array.isArray(sortedData) &&  sortedData.length > 0 && userLogged  ) ? sortedData?.map((row, index) => (
-      <div key={index}  className={`grid grid-cols-11 text-sm text-gray-800 hover:bg-gray-50 hover:bg-gray-50 bg-brandgreenlight transition ${row['side'] === '-1' ? 'position-row-sell' : 'position-row-buy'}`} >
-        <div className="py-1 px-1 inline-block overflow-x-hidden h-auto  ">{index}</div>
-        <div className="py-1 px-1 inline-block overflow-x-hidden  w-auto h-auto text-blue-700 font-bold cursor-pointer hover:underline "  onClick={(e) => {  let r = e.target;  
-               let symm = r.textContent; console.log("clicked " +symm);
-               let avgPrice = row["avgPrice"];
-               let netBought = row["netQty"];
-                //alert("clicked "+symm); 
-                  handleSymbolClick(e, symm, avgPrice,netBought)
-                } } >{row["symbol"]}</div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto"> {row["productType"]}  </div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto">{row["netQty"]}</div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto">{row["avgPrice"]}</div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto">{row["totCh"]}</div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto">{row["ltp"]}</div>
-        <div className={`"py-1 px-1 inline-block  w-auto h-auto  ${row['realized_profit'] <= 0 ? 'position-row-sell' : 'position-row-buy'}`  }>{row["calPrf"]}</div>
-        <div className="py-1 px-1 inline-block  w-auto h-auto">{row["buyVal"]}</div>
-        <div className={`py-1 px-1 inline-block  w-auto h-auto  ${row['realized_profit'] <= 0 ? 'position-row-sell' : 'position-row-buy'}`  }>{row["realized_profit"]}</div>
-        <div className={`py-1 px-1 inline-block  w-auto h-auto  ${row['unrealized_profit'] <= 0 ? 'position-row-sell' : 'position-row-buy'}`  }>{row["unrealized_profit"]}</div>
-       
-        </div>  )) : (    <div className="grid grid-cols-8 text-sm text-gray-800 hover:bg-gray-50">No positions found</div>
-          )}
-      </div>
-       <div className="max-h-[100px] overflow-y-auto   divide-gray-200">
+      <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
+  userLogged={userLogged}
+  handleSort={handleSort}
+  getSortIndicator={getSortIndicator}
+  handleSymbolClick={handleSymbolClick} />
+       {/*  MOBILE or DESKTOP VIEW  */}
+     <div className="max-h-[100px] overflow-y-auto   divide-gray-200">
            {/*<BuyButton />*/}
            <div className="flex justify-between items-center">
             <CancelOrderButtonWithSuspense/>
@@ -1090,26 +1132,7 @@ const getSortIndicator = (column) =>
             <div className="ml-auto"><PlaceOrderButton /></div>
            </div>
       </div>
-
-       {/* <tbody>
-          { (Array.isArray(sortedData) &&  sortedData.length > 0 && userLogged  ) ? sortedData?.map((row, index) => (
-            <tr key={index} className={`hover:bg-gray-50 transition ${row['side'] === '-1' ? 'position-row-sell' : 'position-row-buy'}`}>
-              <td className="py-2 px-4 border-b">{row["symbol"]}</td>
-              <td className="py-2 px-4 border-b">{row["productType"]}</td>
-              <td className="py-2 px-4 border-b">{row["positiondQty"]}</td>
-              <td className="py-2 px-4 border-b">{row["positionPrice"]}</td>
-              <td className="py-2 px-4 border-b">{row["orderDateTime"]}</td>
-              <td className="py-2 px-4 border-b">{row["positionValue"]}</td>
-              <td className="py-2 px-4 border-b">{row['side'] === '-1' ? 'SELL' : 'BUY'}</td>
-            </tr>
-          )) : (
-            <tr><td colSpan="7" className=" py-4">No positions found</td></tr>
-          )}
-        </tbody>
-      </table>*/} 
-    </div>
-    )}   {/*  MOBILE or DESKTOP VIEW  */}
-
+ 
     {showOrdersModal && (
   <>
         {/* Backdrop */}

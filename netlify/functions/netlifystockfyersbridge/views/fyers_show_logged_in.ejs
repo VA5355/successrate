@@ -41,7 +41,10 @@
                       window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
                      }
                       else if (state === 'python_order_state'){
-                         window.location.assign( "https://fyersorders.onrender.com//redirect-start?auth_code="+auth_code+"&state=python_order");
+                         window.location.assign( "https://fyersorders.onrender.com/redirect-start?auth_code="+auth_code+"&state=python_order");
+                      }
+                      else if (state === 'python_position_state'){
+                         window.location.assign( "https://fyers-positions-socket-git.onrender.com/redirect-start?auth_code="+auth_code+"&state=python_position");
                       }
                 }
                 else { 

@@ -12,7 +12,7 @@ import { saveSensexBook } from '@/redux/slices/tickerSensexSlice';
 import { saveNiftyBook } from '@/redux/slices/tickerNiftySlice';  
 import { saveBankNiftyBook } from '@/redux/slices/tickerBankNiftySlice';  
 import { savePositionTickerBook } from '@/redux/slices/positionSlice';  
-import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER ,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
+import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER , FYERSAPIORDERSRENDER,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 
 const FyersEventSourceFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,colorNifty}) => {
      const [tickerData, setTickerData] = useState(null);
@@ -167,7 +167,7 @@ let  stringMap  = null;
  const userLoggedIn = () => {
          console.log("Fyers Feed user login check  ");
       const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-        if (res1.isValid && res1.data !== null) {
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined &&  res1.data !==  undefined) {
           let auth_code = res1.data['auth_code'];
           if (auth_code&& auth_code !== null && auth_code !== undefined) {
               console.log("User is Authorized ");

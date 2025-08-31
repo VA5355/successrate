@@ -68,7 +68,7 @@ const handler = async (event,context) => {
     if(app !==null && app !==undefined) { 
 
       console.log("App is created "+app)
-       console.log("App routes " +JSON.stringify(app.routes))
+     
        app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
       //let routes = routes1(app);
@@ -88,6 +88,8 @@ const handler = async (event,context) => {
        next();
         //res.send("Welcome to Gmail API with NodeJS");
       });
+
+        console.log("App routes " +JSON.stringify(app.routes))
     }
     else { 
       console.log("App creation failed ")

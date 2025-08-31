@@ -9,6 +9,7 @@ import {CommonConstants} from "@/utils/constants"
 import toast from "react-hot-toast"
 import { getPositionData } from "../positionGrid/positionGridBook.actions"
 import { savePositionBook } from "@/redux/slices/positionSlice"
+import { savePositionStreamBook } from "@/redux/slices/positionSlice"
 
 export const fetchStockList = () => {
    //  _save: (key: string, value: any) => {
@@ -99,7 +100,12 @@ export const fetchMoreStocks = (_gainers: any, _losers: any, _activelyTraded: an
             console.log(res.data)
             dispatch(saveGainers([..._gainers, ...res.data.top_gainers]))
             dispatch(saveLosers([..._losers, ...res.data.top_losers]))
-            dispatch(saveActivelyTraded([..._activelyTraded, ...res.data.most_actively_traded]))
+            try { 
+              dispatch(saveActivelyTraded([..._activelyTraded, ...res.data.most_actively_traded]))
+            }
+            catch(actR){
+                console.log("Caught proceeding ahead .....")
+            }
             dispatch(getHoldingData);
              const resholdings =   StorageUtils._retrieve(CommonConstants.holdingsDataCacheKey)
             console.log("holdings " + resholdings.data)
@@ -127,20 +133,24 @@ export const fetchMoreStocks = (_gainers: any, _losers: any, _activelyTraded: an
             if(fetchPostion ===true){  
                // FETHE POSITION BOOK DATA 
             dispatch(getPositionData(''));
-            // FETH The recentTRades from storage if above call succeeded data will be there
-            let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
-            const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
-            if( redentPositionData !== null && redentPositionData !==undefined  &&  Array.isArray(redentPositionData.data )){
-                 console.log(" GRID aCTIONS recenPositions  "+JSON.stringify(redentPositionData.data))
+             // WE have to place this in a time out as the get Position make take time to fetch 
+           setTimeout( () => {
+                // FETH The recentTRades from storage if above call succeeded data will be there
+                let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
+                const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
+                if( redentPositionData !== null && redentPositionData !==undefined  &&  Array.isArray(redentPositionData.data )){
+                    console.log(" GRID aCTIONS recenPositions  "+JSON.stringify(redentPositionData.data))
 
-            }else {
-                console.log("positions data from cahce ")
-                redentPositionData = dataFromCache2;
-            }
-            dispatch( savePositionBook(([...redentPositionData.data])));
-             StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
+                }else {
+                    console.log("positions data from cahce ")
+                    redentPositionData = dataFromCache2;
+                }
+                dispatch( savePositionBook(([...redentPositionData.data])));
+                dispatch( savePositionStreamBook(([...redentPositionData.data])));
+                StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
+           } , 9000);  
              }   
-
+             
 
         } catch (error) {
             console.log(error)

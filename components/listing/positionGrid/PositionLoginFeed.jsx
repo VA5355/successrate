@@ -167,7 +167,7 @@ let  stringMap  = null;
  const userLoggedIn = () => {
          console.log("Fyers Feed user login check  ");
       const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-        if (res1.isValid && res1.data !== null) {
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
           let auth_code = res1.data['auth_code'];
           if (auth_code&& auth_code !== null && auth_code !== undefined) {
               console.log("User is Authorized ");
