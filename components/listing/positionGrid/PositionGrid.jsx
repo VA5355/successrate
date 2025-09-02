@@ -61,7 +61,9 @@ const PositionGrid = ({   positionDataB   }) => {
   // QUICK ORDER BOOK DEFAULT initialization 
    StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey,CommonConstants.sampleOrderBookDataVersionNonString1);
       const tickerMap = useSelector(state => state.ticker.tickerMap);
+      const streamOrderBook = useSelector(state => state.ticker.orderBook);
    const currentPlatform = useSelector((state ) => state.misc.platformType)
+   const [streamOrderData, setStreamOrderData] = useState();
    const [parsedData, setParsedData] = useState(() =>  
      {  try {             // recentPositionnsKey is updated by the grid.action fetchMoreStocks function on click of Load More.
         let g = JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
@@ -310,6 +312,46 @@ const handleFetchComplete = (newData) => {
     setParsedData([...newData]);
   }
 };
+
+function callBackOrderStreamData (ordersFeed) {
+ if(ordersFeed !==null && ordersFeed !==undefined && Array.isArray(ordersFeed)){
+      let pendingOrdersFeed = ordersFeed.filter(or => or.status === 6 );
+       console.log("Position Grid  : quick Order FEED ACTION pending orders ");
+       console.log(JSON.stringify(pendingOrdersFeed));
+      setStreamOrderData(ordersFeed);
+     /* setComputedSocketData((oldBook) =>    [
+                        ...oldBook.filter(
+                            existing => !pendingOrdersFeed.some(newItem => newItem.id === existing.id) 
+                        ),
+                        ...pendingOrdersFeed
+                        ] );
+       if(ordersFeed.length > 0 && pendingOrdersFeed.length==0){
+        // remove the order's that are no more pending from computed socket data 
+           setComputedSocketData((oldBook) =>    [
+                        ...oldBook.filter(
+                            existing => {  ordersFeed.some(newItem => newItem.id === existing.id) &&
+                                            ordersFeed.some(newItem => newItem.status !== existing.status &&  newItem.status !==6 )     } 
+                        )
+                        
+                        ] );
+       } */
+       // check if pending orders are fetched by orderbook.actions 
+       // set it as is to the computedSocketData
+         console.log("checking pending orders actual with status 6 : fetched by orderbook.actions in case quickOrderFeed.action is wrong "+JSON.stringify(pendingCancelableOrders));
+        let pOrders =    StorageUtils._retrieve(CommonConstants.orderBookOrderDataCacheKey)
+          if(pOrders !==null && pOrders !==undefined &&  pOrders['data'] !== ''  && pOrders['data'] !== null && pOrders['data'] !==undefined){      
+                  setStreamOrderData(pOrders['data']);
+       // setComputedSocketData(ordersFeed);
+          }
+         
+          console.log("Position Grid   : UPDATES FOUND in  Quick ORDER  FEED ACTION ");
+    }
+    else {
+
+      console.log(" Position Grid   :  No updates in Quick ORDER ACTION ");
+    }
+
+}
 function callBackFeedData (feedColors) {
   if (feedColors !==null && feedColors !== undefined) {
       // setParsedData([...newData]);
@@ -671,6 +713,7 @@ const getSortIndicator = (column) =>
                                 setUserLogged (true);
                                clearInterval(globalUserCheck);
                                dispatch(startEventSource(false , tickerMap,callBackFeedData));
+                               dispatch(startEventOrderSource(false , streamOrderBook,callBackOrderStreamData));
                               // dispatch(orderBookData());
                             }
                             else{

@@ -84,7 +84,98 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
       setSortDirection("asc");
     }
   };
+ const streamOrderLTPTimer = () => { 
+        
+                //    all the orders that have been fetcehd from orderBook.action in quickOrderFeed.action , and streamed wuth 
+                // events from the Order General Socket are also being catched using updateOrderBook tickerSlice.ts in quickOrderFeed
+                //  let  quickOrderBookFeed   = useSelector((state ) => state.ticker.orderBook);
+           let g =  quickOrderBookFeed;  //StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
+           let indKey = g; 
+           if ( indKey !== null && indKey  !==undefined ) { 
+               let indData = indKey ;
+               //let actualData = indData.data;
+               console.log(`  ${JSON.stringify(indKey)}  typeof state.ticker.orderBook ${JSON.stringify(typeof indKey )} `);
+             //  console.log(`  ${JSON.stringify(actualData)}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
+               console.log(` Array.isArray(state.ticker.orderBook) ::  ${JSON.stringify(Array.isArray(indData))}  typeof state.ticker.orderBook ${JSON.stringify(typeof indData )} `);
 
+           if( indData !== ''  && indData !== null && indData !==undefined){ 
+         //  if( actualData !== ''  && actualData !== null && actualData !==undefined){ 
+              /*
+               {
+                      "s":"ok",                           state.ticker.orderBook  has to be a array of following type of orders 
+                      "orders":{                              this is a single order response from General Socket 
+                          "clientId":"XV20986",
+                          "id":"23080400089344",
+                          "exchOrdId":"1100000009596016",
+                          "qty":1,
+                          "filledQty":1,
+                          "limitPrice":7.95,
+                          "type":2,
+                          "fyToken":"101000000014366",
+                          "exchange":10,
+                          "segment":10,
+                          "symbol":"NSE:IDEA-EQ",
+                          "instrument":0,
+                          "offlineOrder":false,
+                          "orderDateTime":"04-Aug-2023 10:12:58",
+                          "orderValidity":"DAY",
+                          "productType":"INTRADAY",
+                          "side":-1,
+                          "status":90,
+                          "source":"W",
+                          "ex_sym":"IDEA",
+                          "description":"VODAFONE IDEA LIMITED",
+                          "orderNumStatus":"23080400089344:2"
+                      }
+                    }
+              */
+                  let indexWebSocketFeeds = indData;
+                  if(Array.isArray(indexWebSocketFeeds)){   
+
+                    const result = indexWebSocketFeeds.filter(item => item.status ==6);  // PENDING ORDERS 
+
+                    result.forEach( (webSockOrders) => {
+                         // CHECK YOU HAVE the INDX:: localstore with same symbol as in the order with the limitPrice and LTP  
+                         ;let prefix =  webSockOrders.symbol 
+                        let ticker =    StorageUtils._retrieve("INDX::" +prefix );
+                      if ( ticker.isValid && ticker.data !== null && ticker.data !==undefined ) { 
+                        let tickerData = ticker.data;
+                          let actualTicker = tickerData.data;
+
+                       if(  tickerData !==null &&  tickerData !==undefined  ){
+                        let symbC =   prefix;    //webSockOrders.split(":")[1]; //.map(item => item.split(":")[1]);
+                         const streamLTPDiv = document.getElementById("quickOrdersStreamedLTP_"+symbC);
+                          if(streamLTPDiv !==null && streamLTPDiv !== undefined ){
+                               let ltp = ticker['data'].ltp;
+                              streamLTPDiv.textContent = ltp;
+                              console.log(`quickOrdersStreamedLTP_${symbC} updated with ${ltp}`);
+                          }
+                          else {
+                           console.log(` quickOrdersStreamedLTP_${symbC} :::: UNDEFINED `);
+                         }
+                        }
+                        else {
+                           console.log(` INDX::${+prefix} :::: UNDEFINED `);
+                        }
+                    }
+                  });
+
+                  } 
+                else {
+                    console.log(` state.ticker.orderBook not a array `);
+                } 
+           //   }
+              } else {
+                console.log(`  state.ticker.orderBook   ::: not found  `);
+             }
+
+            }
+          else {
+                console.log(`unable to read :::  state.ticker.orderBook `);
+          }
+
+         
+    };
 useEffect(() => {    // BAASED ON the POLL ORDER's BUTTON in PARENT POSITION GRID (TOGGLED to TRUE ) this EFFECT wILL TRIGGER 
 
   const res = StorageUtils._retrieve(CommonConstants.fyersToken);
@@ -239,6 +330,11 @@ if((  isOrderPoll ) && userLogged ){
  else { 
       console.log("No poll Order Book  requested   " );
  }
+     // get ticker prices for orders streamed and captiure in the to update 
+     setInterval( () => {   streamOrderLTPTimer(); },
+        
+        4000 );
+
 
   //return () => clearInterval(interval);
 }, [ isOrderPoll,filteredData]); 
@@ -1044,8 +1140,9 @@ const callBackEventSource = (eventOrderData) => {
                 {/* Tab Content */}
                 {activeTab === "normal" &&  renderNormalFetchTable(sortedData)}
                
-               {activeTab === "streaming" && (<> 
-                   <div id="quickOrdersHeader" style="display:none;" className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
+               {activeTab === "streaming" && ( <>
+                {computedSocketData && computedSocketData.length > 0 ? ( <>
+                   <div id="quickOrdersHeader" className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
                       <div
                         className="py-[1px] px-1 cursor-pointer truncate"
                         
@@ -1073,17 +1170,17 @@ const callBackEventSource = (eventOrderData) => {
                       </div>
                     </div>
 
-                     <div  id ="quickOrders1"  style="display:none;" className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
-                      
+                     <div  id ="quickOrders1"  className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
+                      {computedSocketData.map((row, index) => (
                         <div id ="quickOrdersRow1"
-                          
+                             key={index}
                           className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
                             ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
                             hover:bg-gray-100
                             ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
                         >
                           <div id="quickOrdersSymbol" className="py-[1px] px-1 text-base font-bold truncate">
-                            
+                            {row["symbol"]}
                           </div>
                           <div className="py-[1px] px-1 text-base font-bold truncate">
                             <button
@@ -1098,25 +1195,28 @@ const callBackEventSource = (eventOrderData) => {
                             </button>
                           </div>
                           <div id="quickOrdersQty" className="py-[1px] px-1 text-base font-bold">
-                             
+                              {row["qty"]}
                           </div>
                           <div  id="quickOrdersLimitPrice" className="py-[1px] px-1 text-base font-bold">
-                            
+                            {row["limitPrice"]}
                           </div>
-                          <div id="quickOrdersLp" className="py-[1px] px-1 text-base font-bold">
+                          <div id={ `quickOrdersStreamedLTP_${row["symbol"]}`}   className="py-[1px] px-1 text-base font-bold">
                            
                           </div>
                         </div>
-                     
+                      ))}
                     </div>
-                     <div id="quickOrdersNoOrders" style="display:block;" className="text-gray-500 text-center py-2 text-[12px]">
+                    </>
+                     ) : (
+                        <div id="quickOrdersNoOrders" style={{ display:'block' }} className="text-gray-500 text-center py-2 text-[12px]">
                         No {activeTab === "normal" ? "normal" : "streaming"} orders
                       </div>
-                   </>
-                  
-                  
-                  
-                  ) }
+                      )
+                    
+                         }
+              </>
+                )}   
+               
                
                 {/* can pass diff dataset renderTable(computedSocketData)*/}
                 </div>    
