@@ -22,6 +22,7 @@ export default function PositionsTabs({
       try {
          let g =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)  || "null" ;
         let positions = undefined;
+        console.log(` ${CommonConstants.recentPositionsKey}  :::   ${JSON.stringify(g)}`)
           const dataFromCache = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
         if( g['data'] !== ''  && g['data'] !== null && g['data'] !==undefined){
                     console.log(" recentTrades  position data empty "+JSON.stringify(g))
@@ -60,7 +61,68 @@ export default function PositionsTabs({
           console.log(" filteredData error useState  "+JSON.stringify(err));
          return [] 
       } } );
+ const streamPostionLTPTimer = () => { 
+        
+                // INDX::NSE:NIFTY2590924250CE
+                // marketFeedDataCacheKey
+           let g =   StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
+           let indKey = g; 
+           if ( indKey.isValid && indKey.data !== null && indKey.data !==undefined ) { 
+               let indData = indKey.data;
+               let actualData = indData.data;
+               console.log(`  ${JSON.stringify(indKey.data)}  typeof CommonConstants.marketFeedDataCacheKey ${JSON.stringify(typeof indKey.data )} `);
+               console.log(`  ${JSON.stringify(actualData)}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
+               console.log(` Array.isArray(actualData) ::  ${JSON.stringify(Array.isArray(actualData))}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
 
+           if( indData !== ''  && indData !== null && indData !==undefined){ 
+           if( actualData !== ''  && actualData !== null && actualData !==undefined){ 
+
+                  let indexWebSocketFeeds = actualData;
+                  if(Array.isArray(indexWebSocketFeeds)){
+
+                    const result = indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX"));
+
+                    result.forEach( (webSockIndx) => {
+                         // CHECK YOU HAVE the ticker in localstore 
+                        let ticker =    StorageUtils._retrieve("INDX::" +webSockIndx );
+                      if ( ticker.isValid && ticker.data !== null && ticker.data !==undefined ) { 
+                        let tickerData = ticker.data;
+                          let actualTicker = tickerData.data;
+
+                       if(  tickerData !==null &&  tickerData !==undefined  ){
+                        let symbC =   webSockIndx.split(":")[1]; //.map(item => item.split(":")[1]);
+                         const streamLTPDiv = document.getElementById("streamedLTP_"+symbC);
+                          if(streamLTPDiv !==null && streamLTPDiv !== undefined ){
+                               let ltp = ticker['data'].ltp;
+                              streamLTPDiv.textContent = ltp;
+                              console.log(`streamedLTP_${symbC} updated with ${ltp}`);
+                          }
+                          else {
+                           console.log(` streamedLTP_${symbC} :::: UNDEFINED `);
+                         }
+                        }
+                        else {
+                           console.log(` INDX::${+webSockIndx} :::: UNDEFINED `);
+                        }
+                    }
+                  });
+
+                  } 
+                else {
+                    console.log(` ${CommonConstants.marketFeedDataCacheKey} not a array `);
+                } 
+              }
+              } else {
+                console.log(`  ${CommonConstants.marketFeedDataCacheKey}.data  ::: not found  `);
+             }
+
+            }
+          else {
+                console.log(`unable to read :::  ${CommonConstants.marketFeedDataCacheKey}`);
+          }
+
+         
+    };
  useEffect(() => {
     let isMounted = true;
 
@@ -126,12 +188,16 @@ export default function PositionsTabs({
       fetchParsedData();
 
       const delay = fibonacci(i);
-      console.log(`Next poll in ${delay / 1000}s : POSITON TAB`);
+      console.log(`Next poll in ${delay / 500}s : POSITON TAB`);
       timeoutId = setTimeout(() => startPolling(i + 1), delay);
     };
 
     // start from iteration 0
     startPolling(0);
+    // get ticker prices to update 
+     setInterval( () => { streamPostionLTPTimer(); },
+        
+        4000 );
 
     return () => {
       isMounted = false;
@@ -244,8 +310,8 @@ const callBackPositionFeedAction = (positionsFeed) => {
 
       {/* Body rows */}
       <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200">
-        {Array.isArray(computedSocketData) && computedSocketData.length > 0 && userLogged ? (
-          computedSocketData.map((row, index) => (
+        {Array.isArray(filteredData) && filteredData.length > 0 && userLogged ? (
+          filteredData.map((row, index) => (
             <div
               key={index}
               className={`grid grid-cols-11 text-sm text-gray-800 hover:bg-gray-50 transition ${
@@ -265,7 +331,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
               <div className="py-1 px-1">{row["netQty"]}</div>
               <div className="py-1 px-1">{row["avgPrice"]}</div>
               <div className="py-1 px-1">{row["totCh"]}</div>
-              <div className="py-1 px-1">{row["ltp"]}</div>
+              <div id={ `streamedLTP_${row["symbol"]}`} className="py-1 px-1">{row["ltp"]}</div>
               <div
                 className={`py-1 px-1 ${
                   row["realized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"

@@ -119,7 +119,7 @@ export      const userLoggedIn = () => {
     }
 
  
-export const startEventSource = (connectionStatus,orderBook, onFeed) => {
+export const startEventSource = (connectionStatus,orderBook , canceledOrd, onFeed) => {
  return async (dispatch) => {
      
   if (!connectionStatus) {
@@ -132,6 +132,7 @@ export const startEventSource = (connectionStatus,orderBook, onFeed) => {
     try {
            let userAuthCode1 = userLoggedIn();
           let  sortedSocketData   = tickerData;
+          let existingOrderBok = orderBook;
          if (userAuthCode1 && userAuthCode1 !== null && userAuthCode1 !== undefined) {
           console.log("User is Authorized ");  
     
@@ -149,7 +150,7 @@ export const startEventSource = (connectionStatus,orderBook, onFeed) => {
              }
            }; 
 
-         const fetchSocketOrders = async (acctoken) => {   
+         const fetchSocketOrders = async (acctoken,exOrdBk) => {   
             // NOT NEEED oNLY ACCESS TOKEN 
             //let marketFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
     
@@ -278,22 +279,61 @@ export const startEventSource = (connectionStatus,orderBook, onFeed) => {
                                 } 
                                 return p;
                                 });
+                                // compare with existing order book calcualted from the QuickOrdertable alsoUpdateComputedSocketData
+                                if(Array.isArray(exOrdBk) && canceledOrd !==undefined && canceledOrd.id !==undefined){
+
+                                  let newExOrdVk =   [
+                                      ...exOrdBk.filter(
+                                          existing => !dataToSort.some(newItem => newItem.id === canceledOrd.id) 
+                                      ) 
+                                      
+                                      ]  ;
+                                  console.log("ORDER FEED ACTION :: ")    
+                                  console.log("ORDER FEED ACTION :: ")    
+                                  console.log("ORDER FEED ACTION :: ") 
+                                  console.log("ORDER FEED ACTION :: ") 
+                                  console.log(`ORDER FEED ACTION :: new OrderBook ${JSON.stringify(newExOrdVk)}  `)    
+                                  console.log("ORDER FEED ACTION :: ")    
+                                  console.log("ORDER FEED ACTION :: ")    
+                                  console.log("ORDER FEED ACTION :: ")    
+                                  console.log("ORDER FEED ACTION :: ")    
+                                     ordersTickerData = newExOrdVk;
+
+
+                                  /*    
+                                  orderBook.forEach(extOrd => {   
+                                   ordersTickerData =     dataToSort.map(p => {
+                                        let ordId  = p.id;
+                                         //(p.symbol.indexOf('NIFTY')  -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
+                                        if ( ordId === extOrd.id  ) {
+                                            console.log(`Order Feed Action: cancelled ${p.symbol} status  ${p.status}  id:  ${p.id}  time ${p.orderDateTime} `);
+                                           return  [] //{ ...p, lp: p.limitPrice };
+                                         } 
+                                       else { 
+                                         return p;
+                                       }
+                                   });
+
+                                    }); */
+                                }
+
         
                             }
                             else {
                                 console.log(`Order Feed Action: orderBook not array `);
                             }
                         // set parseData with the updated ticker price 
-                        if(ordersTickerData.length >0){  
+                       // if(ordersTickerData.length >0){  
                         sortedSocketData = ordersTickerData;
                          dispatch(updateOrderBook(sortedSocketData)) ;
                          // call the callback and update the 
-                         onFeed(sortedSocketData);
+                         onFeed(dataToSort);
                             console.log(` ORDER FEED ACTION  ORDER's   ${JSON.stringify(sortedSocketData)} `)
-                        }
-                        else {
-                        console.log(" ORDER's  .................no TICKER UPDATES -----------ORDER FEED ACTION")
-                        }
+                     //   }
+                       // else {
+
+                       // console.log(" ORDER's  .................no TICKER UPDATES -----------ORDER FEED ACTION")
+                        //}
                     }
                     else {
                         console.log(`Order Feed Action: please FETCH the Position's manually for TICKER UPATES IN POSITONS `);
@@ -333,7 +373,7 @@ export const startEventSource = (connectionStatus,orderBook, onFeed) => {
             eventSourceRef  = es;
         } 
       await  fetchAuthToken().then(async aces_token   => { 
-       await  fetchSocketOrders(aces_token);
+       await  fetchSocketOrders(aces_token, existingOrderBok);
       });
        /*
             await  fetchAuthToken().then(async aces_token   => { 

@@ -604,7 +604,7 @@ if((  isOrderPolling ) && userLogged ){
             }
             else {console.warn("User not logged in --> no fetch the orders :" ); }
     }
-  }, 9400); // 400 poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
+  }, 43500); // 8500 before Sep1 poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
   // store the interval for refrence and close the poll 
   setOrderGlobalPollInt((prev) => prev = interval);        // GLOBAL POLL AFTER EVERY 11 SECONDS ...    
  }

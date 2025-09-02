@@ -510,10 +510,11 @@ export const placeQuickCancelOrder = (_id) => {
                          const res = await API.get(FYERSAPICANCELORDER , {params: { "auth_code" : auth_code, "id" : order_id, "access_token" : acctoken ,"symbol":'SENSEX-INDEX'}});
                        // Axios auto-parses JSON
                           const responseData = res.data;
-                          let resJSON = responseData;
+                          let resJSON = responseData; let msgr = '';
                            if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
                                console.log("ERROR Canceling  Order message   " );
                                StorageUtils._save(CommonConstants.quickOrderCancelledOrderStatus, resJSON?.error );
+                               msgr = resJSON?.error?.message;
                            // SET the STATUS QUICKORDERSTATUS DIV  this is IN QUICKORDER BOOK
                            //   let quickOrderDIV = document.getElementById(CANCELSTATUS);
                            //   if(cancelDIVSpan !==null && cancelDIVSpan !== undefined){
@@ -522,7 +523,18 @@ export const placeQuickCancelOrder = (_id) => {
                            //   }
                            }
                                 console.log("Unable to CANCEL ORDER  please check  "+order_id  );
-                          }
+                             StorageUtils._save(CommonConstants.generalCancelOrderStatus, `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} `);
+                              // AT PRESENT addressing direcrly the QuickOrderTable QUICKORDERSTATUS div
+                              // we need to MOVE it OUTSIDE the action 
+                              const QUICKORDERSTATUS = document.getElementById(QUICKORDERSTATUS);
+                              if(QUICKORDERSTATUS !==null && QUICKORDERSTATUS !== undefined){
+                                     QUICKORDERSTATUS.textContent = `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} ` ;
+                                     setTimeout(()=> {
+                                         // clear the order status display after 3 seconds
+                                           QUICKORDERSTATUS.textContent ='';
+                                     },30000);
+                              }
+                            }
                           catch(ere){
                               console.log("placeQuickCancelOrder: _id error "+order_id+" CANCEL FAILED  "+JSON.stringify(ere))  
                           }

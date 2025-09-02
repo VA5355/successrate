@@ -10,6 +10,7 @@ import './positionstyles.css'; // ✅ No 'positionstyles.'
 import {useDispatch, useSelector} from 'react-redux';
 import { getPositionData } from "./positionGridBook.actions";
 import { startEventSource } from "./loginFeed.actions";
+import { startEventOrderSource } from "./quickOrderFeed.actions";
 import { orderBookData } from "./orderBook.actions";
 import { savePositionBook } from '@/redux/slices/positionSlice';
 import {API, FYERSAPI, FYERSAPILOGINURL} from "@/libs/client"
@@ -513,19 +514,19 @@ const getSortIndicator = (column) =>
 
 
      useEffect(() => {
-           console.log("PositionTable:   " )
+          // console.log("PositionTable:   " )
          
            // FETH The recentTRades from storage if above call succeeded data will be there
            let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
             const dataFromCache = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
             let positions = undefined;
             if( redentPositionData['data'] !== ''  && redentPositionData['data'] !== null && redentPositionData['data'] !==undefined){
-                     console.log(" recentTrades  position data empty "+JSON.stringify(redentPositionData))
+               //      console.log(" recentTrades  position data empty "+JSON.stringify(redentPositionData))
                      let tr = JSON.parse((JSON.stringify(redentPositionData)));
                      if(tr !==null && tr !== undefined ){
                          if(tr['data'] !==null && tr['data']!== undefined ){
                            positions =tr['data'];
-                            console.log(" positions SET to  tr['data'] ")
+                     //       console.log(" positions SET to  tr['data'] ")
 
                          }
                      }
@@ -535,14 +536,14 @@ const getSortIndicator = (column) =>
                positions = JSON.parse(dataFromCache.data) ;
             }
            let dataLocal   =   (positionDataB !== undefined && positionDataB.length !=0 ) ? positionDataB : positions;
-            console.log("position data  "+JSON.stringify(dataLocal))
-            console.log("position data length  "+ dataLocal.length )
+           // console.log("position data  "+JSON.stringify(dataLocal))
+            //console.log("position data length  "+ dataLocal.length )
 
              const validRow = Object.fromEntries(Object.keys(PositionRow).map(key => [key, undefined]));
                let isValidPositionJSON = false;
                 try{
                       const parsedObject =  typeof dataLocal ==='string'? JSON.parse(dataLocal) : dataLocal;
-                        console.log(parsedObject);
+                 //       console.log(parsedObject);
                         isValidPositionJSON= true;
                   }   
                   catch(err){
@@ -553,7 +554,7 @@ const getSortIndicator = (column) =>
               let pendingRow  =[];
                 dataLocal.map(({ symbol, productType, netQty, avgPrice,calPrf,  totCh, ltp, realized_profit, buyVal, unrealized_profit }) => {
                   if (parseInt(netQty) !==0 && parseInt(unrealized_profit) !==0 ){
-                        console.log(`  Qty ${netQty},  Unrealized ${unrealized_profit}`);
+                      //  console.log(`  Qty ${netQty},  Unrealized ${unrealized_profit}`);
                       validRow.symbol = symbol; validRow.productType=productType;  validRow.netQty=netQty; validRow.avgPrice=avgPrice;
                     validRow.totCh=totCh; validRow.ltp=ltp; validRow.realized_profit=realized_profit; validRow.buyVal=buyVal;
                     validRow.unrealized_profit=unrealized_profit;validRow.calPrf=calPrf;
@@ -584,7 +585,7 @@ const getSortIndicator = (column) =>
               });
                pendingRow = pendingRow.filter(item => item !== null);
                */
-                         console.log(`pendingRow `+JSON.stringify(pendingRow));    
+                   //      console.log(`pendingRow `+JSON.stringify(pendingRow));    
            const isAllUndefined = Object.values(pendingRow).every(val => val === undefined);
            if(!isAllUndefined ) {
             try { 
@@ -592,8 +593,8 @@ const getSortIndicator = (column) =>
             let parsed = dataLocal /// JSON.parse(data);
              setParsedData(parsed);
              setData(dataLocal)
-              console.log("position data typeof  "+ (typeof dataLocal ) )
-               console.log("position data parsedData  "+ (typeof parsed ) )
+             // console.log("position data typeof  "+ (typeof dataLocal ) )
+            //   console.log("position data parsedData  "+ (typeof parsed ) )
             console.log("position data parsedData length  "+ (  parsed.length ) )
             /* parsed.map( rw => { 
                   console.log("   "+ JSON.stringify(rw) )  

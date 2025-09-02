@@ -55,7 +55,8 @@ export const tickerSlice = createSlice({
                     state.tickerMap[data.symbol] = data;   // 👈 same as setTickerMap
                 }
                let ft = JSON.parse(JSON.stringify(state.tickerMap));
-               console.log("update Ticker Map done :  Ticker set "+JSON.stringify(ft));
+               // IMP LOG currently commented
+              // console.log("update Ticker Map done :  Ticker set "+JSON.stringify(ft));
                // return ft;
          },
            updateOrderBook: (state, action: PayloadAction<any>) => {

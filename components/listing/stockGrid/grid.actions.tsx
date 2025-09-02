@@ -138,15 +138,24 @@ export const fetchMoreStocks = (_gainers: any, _losers: any, _activelyTraded: an
                 // FETH The recentTRades from storage if above call succeeded data will be there
                 let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
                 const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
-                if( redentPositionData !== null && redentPositionData !==undefined  &&  Array.isArray(redentPositionData.data )){
+                   let positions = undefined;     
+                if( redentPositionData !== null && redentPositionData !==undefined  &&  
+                   redentPositionData['data'] !== ''  && redentPositionData['data'] !== null && redentPositionData['data'] !==undefined
+                ){
                     console.log(" GRID aCTIONS recenPositions  "+JSON.stringify(redentPositionData.data))
+                    let tr = redentPositionData.data;
+                     if(tr  !==null && tr !== undefined ){
+                      positions =tr ;
+                        console.log(" positions   ")
+
+                    }
 
                 }else {
                     console.log("positions data from cahce ")
                     redentPositionData = dataFromCache2;
                 }
-                dispatch( savePositionBook(([...redentPositionData.data])));
-                dispatch( savePositionStreamBook(([...redentPositionData.data])));
+                dispatch( savePositionBook(([...positions])));
+                dispatch( savePositionStreamBook(([...positions])));
                 StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
            } , 9000);  
              }   

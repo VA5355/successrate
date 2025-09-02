@@ -37,7 +37,20 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
      const [isOrderPolling, setOrderPolling] = useState(isOrderPoll);
        const [orderBookPollInt, setOrderGlobalPollInt] = useState(setOrderGlobalPoll);
          let  quickOrderBookFeed   = useSelector((state ) => state.ticker.orderBook);
-       const[ computedSocketData , setComputedSocketData] = useState();
+       const[ computedSocketData , setComputedSocketData] = useState(
+         () => {
+           // console.log("checking pending orders actual with status 6 : fetched by orderBook.action "+JSON.stringify(pendingCancelableOrders));
+             let pOrders =    StorageUtils._retrieve(CommonConstants.orderBookOrderDataCacheKey)
+            if(pOrders !==null && pOrders !==undefined &&  pOrders['data'] !== ''  && pOrders['data'] !== null && pOrders['data'] !==undefined){      
+                 return pOrders['data'] ;
+       // setComputedSocketData(ordersFeed);
+          }
+          else {
+              console.log(`pending orders ${CommonConstants.orderBookOrderDataCacheKey} is not set `);
+                return [];
+          }
+         }
+       );
       const [tickerData, setTickerData] = useState(null);
    const eventSourceRef = useRef(null);
    const [userAuthCode , setUserAuthCode]= useState('');
@@ -139,6 +152,7 @@ if((  isOrderPoll ) && userLogged ){
                    if(actualOrderBook  !==null && actualOrderBook !== undefined ) { 
                      setParsedData(actualOrderBook);
                       setFilteredData(actualOrderBook);
+                       setComputedSocketData(actualOrderBook);
                      //filteredData = actualOrderBook;
                       if (Array.isArray(actualOrderBook) && actualOrderBook.length > 0){ 
                          console.log("Order Book before  "+actualOrderBook.length  );
@@ -217,7 +231,7 @@ if((  isOrderPoll ) && userLogged ){
             }
             else {console.warn("User not logged in --> no fetch the orders :" ); }
     }
-  }, 8500); // poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
+  }, 23500); // poll every 2 sec (or whatever is suitable)                POLLING ======= 11 SECOND ============ INTERVAL                
   // store the interval for refrence and close the poll 
   setOrderGlobalPollInt((prev) => prev = interval);        // GLOBAL POLL AFTER EVERY 11 SECONDS ...  
   //   
@@ -633,12 +647,20 @@ const callBackOrderFeedAction = (ordersFeed) => {
         // remove the order's that are no more pending from computed socket data 
            setComputedSocketData((oldBook) =>    [
                         ...oldBook.filter(
-                            existing => !ordersFeed.some(newItem => newItem.id === existing.id) 
+                            existing => {  ordersFeed.some(newItem => newItem.id === existing.id) &&
+                                            ordersFeed.some(newItem => newItem.status !== existing.status &&  newItem.status !==6 )     } 
                         )
                         
                         ] );
        }
+       // check if pending orders are fetched by orderbook.actions 
+       // set it as is to the computedSocketData
+         console.log("checking pending orders actual with status 6 : fetched by orderBook.action "+JSON.stringify(pendingCancelableOrders));
+        let pOrders =    StorageUtils._retrieve(CommonConstants.orderBookOrderDataCacheKey)
+          if(pOrders !==null && pOrders !==undefined &&  pOrders['data'] !== ''  && pOrders['data'] !== null && pOrders['data'] !==undefined){      
+                  setComputedSocketData(pOrders['data']);
        // setComputedSocketData(ordersFeed);
+          }
          
           console.log("Quick Order Table : UPDATES FOUND in  ORDER BOOK  ORDER FEED ACTION ");
     }
@@ -800,7 +822,27 @@ const callBackEventSource = (eventOrderData) => {
  const startStreaming = async  () => { 
     // fetch the already placed order's if they are retrieved from the normal order poll ordres button 
      alsoUpdateComputedSocketData(sortedDataP);
-     dispatch(startEventSource(false , [],callBackOrderFeedAction));
+     // FETCH the cancelled order if ANY has been cancelled 
+    let reCancelOr =   StorageUtils._retrieve(CommonConstants.quickOrderCancellOrderPlaced );
+     console.log("recent cancelled order  "+JSON.stringify(reCancelOr));
+          let canceledOrd  = undefined;      
+        if( reCancelOr['data'] !== ''  && reCancelOr['data'] !== null && reCancelOr['data'] !==undefined){       
+               // console.log("canceled "+JSON.stringify(g))
+                let tr = JSON.parse((JSON.stringify(reCancelOr)));
+                if(tr !==null && tr !== undefined ){
+                    if(tr['data'] !==null && tr['data']!== undefined ){
+                      canceledOrd =tr['data'];
+                        console.log(` canceledOrd  ${JSON.stringify(canceledOrd)} `)
+
+                    }
+                }
+              }                       
+
+     dispatch(startEventSource(false , computedSocketData , canceledOrd,callBackOrderFeedAction));
+  
+             
+
+
  
  };
 
@@ -1002,84 +1044,79 @@ const callBackEventSource = (eventOrderData) => {
                 {/* Tab Content */}
                 {activeTab === "normal" &&  renderNormalFetchTable(sortedData)}
                
-               {activeTab === "streaming" && (
-              <>
-                {computedSocketData && computedSocketData.length > 0 ? (
-                  <>
-                    {/* Table Header */}
-                    <div className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
+               {activeTab === "streaming" && (<> 
+                   <div id="quickOrdersHeader" style="display:none;" className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
                       <div
                         className="py-[1px] px-1 cursor-pointer truncate"
-                        onClick={() => handleSort("symbol")}
+                        
                       >
-                        Inst{getSortIndicator("symbol")}
+                        Inst 
                       </div>
                       <div className="py-[1px] px-1">Cancel</div>
                       <div
                         className="py-[1px] px-1 cursor-pointer"
-                        onClick={() => handleSort("qty")}
+                       
                       >
-                        Qty{getSortIndicator("qty")}
+                        Qty 
                       </div>
                       <div
                         className="py-[1px] px-1 cursor-pointer"
-                        onClick={() => handleSort("limitPrice")}
+                        
                       >
-                        Avg{getSortIndicator("limitPrice")}
+                        Avg 
                       </div>
                       <div
                         className="py-[1px] px-1 cursor-pointer"
-                        onClick={() => handleSort("lp")}
+                        
                       >
-                        LTP{getSortIndicator("lp")}
+                        LTP 
                       </div>
                     </div>
 
-                    {/* Table Rows */}
-                    <div className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
-                      {computedSocketData.map((row, index) => (
-                        <div
-                          key={index}
+                     <div  id ="quickOrders1"  style="display:none;" className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
+                      
+                        <div id ="quickOrdersRow1"
+                          
                           className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
                             ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
                             hover:bg-gray-100
                             ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
                         >
-                          <div className="py-[1px] px-1 text-base font-bold truncate">
-                            {row.symbol}
+                          <div id="quickOrdersSymbol" className="py-[1px] px-1 text-base font-bold truncate">
+                            
                           </div>
                           <div className="py-[1px] px-1 text-base font-bold truncate">
                             <button
                               className="w-2 h-2 text-gray-600 hover:bg-gray-200"
                               onClick={(e) => {
                                 if (e.target === e.currentTarget) {
-                                  handleCancel(row.id);
+                                 // have to check this 
                                 }
                               }}
                             >
                               ✕
                             </button>
                           </div>
-                          <div className="py-[1px] px-1 text-base font-bold">
-                            {row.qty}
+                          <div id="quickOrdersQty" className="py-[1px] px-1 text-base font-bold">
+                             
                           </div>
-                          <div className="py-[1px] px-1 text-base font-bold">
-                            {row.limitPrice}
+                          <div  id="quickOrdersLimitPrice" className="py-[1px] px-1 text-base font-bold">
+                            
                           </div>
-                          <div className="py-[1px] px-1 text-base font-bold">
-                            {row.lp}
+                          <div id="quickOrdersLp" className="py-[1px] px-1 text-base font-bold">
+                           
                           </div>
                         </div>
-                      ))}
+                     
                     </div>
-                  </>
-                ) : (
-                  <div className="text-gray-500 text-center py-2 text-[12px]">
-                    No {activeTab === "normal" ? "normal" : "streaming"} orders
-                  </div>
-                )}
-              </>
-            )}
+                     <div id="quickOrdersNoOrders" style="display:block;" className="text-gray-500 text-center py-2 text-[12px]">
+                        No {activeTab === "normal" ? "normal" : "streaming"} orders
+                      </div>
+                   </>
+                  
+                  
+                  
+                  ) }
                
                 {/* can pass diff dataset renderTable(computedSocketData)*/}
                 </div>    
@@ -1333,5 +1370,89 @@ const callBackEventSource = (eventOrderData) => {
       else {
             stopEventSource();
       }
+
+*/
+
+/* 
+ (
+              <>
+                {computedSocketData && computedSocketData.length > 0 ? (
+                  <>
+                   }
+                    <div className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
+                      <div
+                        className="py-[1px] px-1 cursor-pointer truncate"
+                        onClick={() => handleSort("symbol")}
+                      >
+                        Inst{getSortIndicator("symbol")}
+                      </div>
+                      <div className="py-[1px] px-1">Cancel</div>
+                      <div
+                        className="py-[1px] px-1 cursor-pointer"
+                        onClick={() => handleSort("qty")}
+                      >
+                        Qty{getSortIndicator("qty")}
+                      </div>
+                      <div
+                        className="py-[1px] px-1 cursor-pointer"
+                        onClick={() => handleSort("limitPrice")}
+                      >
+                        Avg{getSortIndicator("limitPrice")}
+                      </div>
+                      <div
+                        className="py-[1px] px-1 cursor-pointer"
+                        onClick={() => handleSort("lp")}
+                      >
+                        LTP{getSortIndicator("lp")}
+                      </div>
+                    </div>
+
+                    }
+                    <div className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
+                      {computedSocketData.map((row, index) => (
+                        <div
+                          key={index}
+                          className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
+                            ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                            hover:bg-gray-100
+                            ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
+                        >
+                          <div className="py-[1px] px-1 text-base font-bold truncate">
+                            {row.symbol}
+                          </div>
+                          <div className="py-[1px] px-1 text-base font-bold truncate">
+                            <button
+                              className="w-2 h-2 text-gray-600 hover:bg-gray-200"
+                              onClick={(e) => {
+                                if (e.target === e.currentTarget) {
+                                  handleCancel(row.id);
+                                }
+                              }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <div className="py-[1px] px-1 text-base font-bold">
+                            {row.qty}
+                          </div>
+                          <div className="py-[1px] px-1 text-base font-bold">
+                            {row.limitPrice}
+                          </div>
+                          <div className="py-[1px] px-1 text-base font-bold">
+                            {row.lp}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-gray-500 text-center py-2 text-[12px]">
+                    No {activeTab === "normal" ? "normal" : "streaming"} orders
+                  </div>
+                )}
+              </>
+            )
+
+
 
 */
