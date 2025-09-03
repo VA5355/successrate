@@ -361,6 +361,12 @@ export const parseOrderBook = (orderB ) => {
     let orderFirst = undefined;
     let orderRecent = undefined;
     let mutlipleOrders = false;
+    // first take an in memory snap of the current CommonConstants.orderBookOrderDataCacheKey 
+    let inMemoryOrderCache =  StorageUtils._retrieve(CommonConstants.orderBookOrderDataCacheKey );
+    let inMemoryQuickOrderCache =  StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey );
+     //clear the CommonConstants.orderBookOrderDataCacheKey 
+     StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey, JSON.stringify([]))
+     StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey, JSON.stringify([]))
     if(  orderB !== null && orderB !== undefined ) {
         // check orderBook array 
         let ob =(  orderB.orderBook ?  orderB.orderBook : (orderB["orderBook"] ?   orderB["orderBook"] : null) ) ;
@@ -388,6 +394,7 @@ export const parseOrderBook = (orderB ) => {
                 pendingCancelableOrders =  pendingCancelableOrders.filter(odSingle => parseInt(odSingle.status) == 6);
                 console.log("pending orders actual with status 6 "+JSON.stringify(pendingCancelableOrders));
                  StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey, JSON.stringify(pendingCancelableOrders))
+                 StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey, JSON.stringify(pendingCancelableOrders))
                 console.log("saved the first non -executed order recentOrderPlaced")               
               }
               if(mutlipleOrders ){
@@ -396,6 +403,7 @@ export const parseOrderBook = (orderB ) => {
                 if (pendingCancelableOrders.length > 0){ 
                 // SAVE them in the 
                  StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey, JSON.stringify(pendingCancelableOrders))
+                 StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey, JSON.stringify(pendingCancelableOrders))
                 console.log("ORDER BOOK BUTTON : OrderBook multiple orders saved to orderBookOrderDataCacheKey  ");
                  const  {  id, exchOrdId, exchange, symbol, limitPrice, side }  = pendingCancelableOrders[0];
                     let orderNotExe =  {  id, exchOrdId, exchange, symbol, limitPrice, side } ;
