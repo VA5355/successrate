@@ -17,6 +17,7 @@ export default function PositionsTabs({
   const [activeTab, setActiveTab] = useState("tab1"); // default tab
      //let  quickOrderBookFeed   = useSelector((state ) => state.positions.position);
          const[ computedSocketData , setComputedSocketData] = useState();
+         let statePostionBook  = useSelector(state => state.position.positionBook);
    let dispatch = useDispatch();
  const [filteredData , setFilteredData] =useState(() => {
       try {
@@ -81,7 +82,7 @@ export default function PositionsTabs({
                   if(Array.isArray(indexWebSocketFeeds)){
 
                     const result = indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX"));
-
+                     console.log(` index's to update ::: ${result}  is Array indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX")  ${Array.isArray(result)}`);
                     result.forEach( (webSockIndx) => {
                          // CHECK YOU HAVE the ticker in localstore 
                         let ticker =    StorageUtils._retrieve("INDX::" +webSockIndx );
@@ -91,20 +92,115 @@ export default function PositionsTabs({
 
                        if(  tickerData !==null &&  tickerData !==undefined  ){
                         let symbC =   webSockIndx.split(":")[1]; //.map(item => item.split(":")[1]);
-                         const streamLTPDiv = document.getElementById("streamedLTP_"+symbC);
+                        const updateLTPUnrealised = (symbC , productype, ticker ) => { 
+                           let qty = 0, buyVal  =0 , sellVal =0 , unRelProf =0;
+                         const streamLTPDiv = document.getElementById("streamedLTP_"+symbC+"_"+productype);
+                          const streamUnrealizedDiv = document.getElementById("streamedUnrealized_"+symbC+"_"+productype);
+                           const streamQtyDiv = document.getElementById("streamedQty_"+symbC+"_"+productype);
+                           const streamBuyDiv = document.getElementById("streamedBuyVal_"+symbC+"_"+productype);
+                           if(streamQtyDiv !==null && streamQtyDiv !== undefined && 
+                              streamBuyDiv !==null && streamBuyDiv !== undefined 
+                           ){
+                               let qq  =  parseFloat(streamQtyDiv.textContent);
+                               let bb =  parseFloat(streamBuyDiv.textContent);
+                               qty = typeof qq ==='string'? parseFloat(typeof qq) : qq;
+                                  console.log(`  typeof qq   ::: ${ typeof qq } `);
+                                buyVal = typeof bb  ==='string'? parseFloat(typeof bb ) : bb ;
+                               console.log(` typeof bb   ::: ${ typeof bb } `);
+                           }
+
                           if(streamLTPDiv !==null && streamLTPDiv !== undefined ){
                                let ltp = ticker['data'].ltp;
                               streamLTPDiv.textContent = ltp;
                               console.log(`streamedLTP_${symbC} updated with ${ltp}`);
+
+
                           }
                           else {
                            console.log(` streamedLTP_${symbC} :::: UNDEFINED `);
                          }
+                           if(streamUnrealizedDiv !==null && streamUnrealizedDiv !== undefined ){
+                               let ltp = ticker['data'].ltp; 
+                                 ltp = typeof ltp ==='string'?  parseFloat(ltp) :ltp ;
+                                 console.log(` typeof ltp ==='string'  ::: ${typeof ltp ==='string'} `);
+                               
+                                 sellVal = ltp * qty; 
+                               console.log(` typeof sellVal  ::: ${ typeof sellVal} `);
+                                unRelProf = sellVal - buyVal;
+
+                              streamUnrealizedDiv.textContent = unRelProf ;
+                              console.log(`streamedUnrealized_${symbC} updated with ${unRelProf}`);
+
+
+                          }
+                           else {
+                            console.log(` streamedUnrealized_${symbC} :::: UNDEFINED `);
+                          }
+
+                        }
+                       
+                          updateLTPUnrealised(symbC, "MARGIN", ticker);
+                          
+
+                       
                         }
                         else {
                            console.log(` INDX::${+webSockIndx} :::: UNDEFINED `);
                         }
                     }
+                    // BASED OF state.position.positionBook existance 
+                      let symbC =   webSockIndx.split(":")[1];
+                     const updateLTPUnrealisedPB = (symbC , productype, ps) => {
+                              let qty = 0, buyVal  =0 , sellVal =0 , unRelProf =0;
+                             // let ticker = ps.filter(tick => tick.symbol ==symbC); // filter will always return a array so use find
+                              let ticker = ps.find(tick => tick.symbol ==symbC);
+                         if( ticker !== null && ticker !== undefined && ticker.symbol !== undefined && ticker.ltp !== undefined){
+                         const streamLTPDiv = document.getElementById("streamedLTP_"+symbC+"_"+productype);
+                          const streamUnrealizedDiv = document.getElementById("streamedUnrealized_"+symbC+"_"+productype);
+                           const streamQtyDiv = document.getElementById("streamedQty_"+symbC+"_"+productype);
+                           const streamBuyDiv = document.getElementById("streamedBuyVal_"+symbC+"_"+productype);
+                           if(streamQtyDiv !==null && streamQtyDiv !== undefined && 
+                              streamBuyDiv !==null && streamBuyDiv !== undefined 
+                           ){
+                               let qq  =  parseFloat(streamQtyDiv.textContent);
+                               let bb =  parseFloat(streamBuyDiv.textContent);
+                               qty = typeof qq ==='string'? parseFloat(typeof qq) : qq;
+                                  console.log(`  typeof qq   ::: ${ typeof qq } `);
+                                buyVal = typeof bb  ==='string'? parseFloat(typeof bb ) : bb ;
+                               console.log(` typeof bb   ::: ${ typeof bb } `);
+                           }
+
+                          if(streamLTPDiv !==null && streamLTPDiv !== undefined ){
+                               let ltp = ticker.ltp;
+                              streamLTPDiv.textContent = ltp;
+                              console.log(`streamedLTP_${symbC+"_"+productype} updated with ${ltp}`);
+
+
+                          }
+                          else {
+                           console.log(` streamedLTP_${symbC+"_"+productype} :::: UNDEFINED `);
+                         }
+                           if(streamUnrealizedDiv !==null && streamUnrealizedDiv !== undefined ){
+                               let ltp = ticker.ltp; 
+                                 ltp = typeof ltp ==='string'?  parseFloat(ltp) :ltp ;
+                                 console.log(` typeof ltp ==='string'  ::: ${typeof ltp ==='string'} `);
+                               
+                                 sellVal = ltp * qty; 
+                               console.log(` typeof sellVal  ::: ${ typeof sellVal} `);
+                                unRelProf = sellVal - buyVal;
+
+                              streamUnrealizedDiv.textContent = unRelProf ;
+                              console.log(`streamedUnrealized_${symbC+"_"+productype} updated with ${unRelProf}`);
+
+
+                          }
+                           else {
+                            console.log(` streamedUnrealized_${symbC+"_"+productype} :::: UNDEFINED `);
+                          }
+                        }
+                        }  
+                         updateLTPUnrealisedPB(symbC, "MARGIN", statePostionBook); 
+
                   });
 
                   } 
@@ -328,10 +424,10 @@ const callBackPositionFeedAction = (positionsFeed) => {
                 {row["symbol"]}
               </div>
               <div className="py-1 px-1">{row["productType"]}</div>
-              <div className="py-1 px-1">{row["netQty"]}</div>
+              <div id={ `streamedQty_${row["symbol"]}_${row["productType"]}`} className="py-1 px-1">{row["netQty"]}</div>
               <div className="py-1 px-1">{row["avgPrice"]}</div>
               <div className="py-1 px-1">{row["totCh"]}</div>
-              <div id={ `streamedLTP_${row["symbol"]}`} className="py-1 px-1">{row["ltp"]}</div>
+              <div id={ `streamedLTP_${row["symbol"]}_${row["productType"]}`} className="py-1 px-1">{row["ltp"]}</div>
               <div
                 className={`py-1 px-1 ${
                   row["realized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
@@ -339,7 +435,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
               >
                 {row["calPrf"]}
               </div>
-              <div className="py-1 px-1">{row["buyVal"]}</div>
+              <div id={ `streamedBuyVal_${row["symbol"]}_${row["productType"]}`}  className="py-1 px-1">{row["buyVal"]}</div>
               <div
                 className={`py-1 px-1 ${
                   row["realized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
@@ -347,7 +443,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
               >
                 {row["realized_profit"]}
               </div>
-              <div
+              <div id={ `streamedUnrealized_${row["symbol"]}_${row["productType"]}`}
                 className={`py-1 px-1 ${
                   row["unrealized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
                 }`}
