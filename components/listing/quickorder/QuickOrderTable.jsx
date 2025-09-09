@@ -8,12 +8,14 @@ import { startEventSource } from "../positionGrid/orderFeed.actions";
 import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER, FYERSAPI, FYERSAPIORDERSRENDER,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 import { placeCancelOrder , placeQuickCancelOrder ,updateTickerStatusFromCache ,stopSensexTickerData } from "../positionGrid/cancelOrder.actions";
 import { updateOrderBook } from "@/redux/slices/tickerSlice";
+ import   useIsMobile   from "../tradeGrid/useIsMobile";
 
 export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrderPoll,
     
     parseStoreUtilsOrder,fetchOrdersBookDataCacheKey,setOrderGlobalPoll ,setUserLogged,setParsedDataP,userLogged,
     handleSortP, getSortIndicatorP, handleCancelP }) {
   const [activeTab, setActiveTab] = useState ("normal");
+     const isMobile = useIsMobile();
      const [parsedData, setParsedData] = useState(() =>{ 
           // JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data); 
             let g = JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data);
@@ -1012,9 +1014,8 @@ const callBackEventSource = (eventOrderData) => {
         )}
       </div>
       </>);
- const renderNormalFetchTable = (data) => ( 
-       <>
-          {/* Table Header */}
+ const renderNormalFetchTable = (data) => ( <> {!isMobile &&  (
+               <>
       <div className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
         <div
           className="py-[1px] px-1 cursor-pointer truncate"
@@ -1043,7 +1044,7 @@ const callBackEventSource = (eventOrderData) => {
         </div>
       </div>
 
-      {/* Table Body */}
+      
       <div className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
         {filteredSocketData && filteredSocketData.length > 0 ? (
           filteredSocketData.map((row, index) => (
@@ -1082,6 +1083,39 @@ const callBackEventSource = (eventOrderData) => {
           </div>
         )}
       </div>
+      </>
+ )}
+ {/* Mobile Card View */}
+            {isMobile &&  (
+              <div className="grid gap-3 mt-3">
+                {data && data.map((row, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-xl p-3 shadow-sm bg-white"
+                  >
+                    <div className="flex justify-between">
+                      <span className="font-semibold">{row["symbol"]}</span>
+                     
+                    </div>
+                      <div className="text-sm mt-2 space-y-1">
+                      <button className="rounded-md border bg-brandgreen border-b-2 border-blue-500 text-white"  onClick={(e) => {
+                                if (e.target === e.currentTarget) {
+                                 if (e.target === e.currentTarget) {
+                                   handleCancel(row.id);
+                               }
+                                }
+                              }} >Cancel</button>
+                              </div>
+                    <div className="text-sm mt-2 space-y-1">
+                      <div>Qty: <strong>{row["qty"]}</strong></div>
+                      <div>Avg: <strong>{row["limitPrice"]}</strong></div>
+                      <div>LTP: <strong>{row.ltp}</strong></div>
+                      <div>Status: <strong>{row.status}</strong></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
        </>
  );
 
@@ -1106,11 +1140,15 @@ const callBackEventSource = (eventOrderData) => {
                         <span className="text-sm font-semibold font-medium" > {isOrderPolling ? 'Fetching' : 'Poll Orders'} </span>
                     </button>
         <div className="flex justify-end">  
-            <div className="  bg-zinc-100 border border-gray-300 rounded-md w-[460px]">
+            <div className={`bg-zinc-100 rounded-md ${
+          isMobile
+            ? "border border-gray-200 w-[260px]"
+            : "border border-gray-300 w-[460px]"
+        }`}>
                
 
 
-                <div className="  bg-zinc-100  rounded-md w-[460px]">
+              { /*   <div className="  bg-zinc-100  rounded-md w-[460px]">*/}
 
 
                 {/* Tabs */}
@@ -1140,7 +1178,7 @@ const callBackEventSource = (eventOrderData) => {
                 {/* Tab Content */}
                 {activeTab === "normal" &&  renderNormalFetchTable(sortedData)}
                
-               {activeTab === "streaming" && ( <>
+               {!isMobile && activeTab === "streaming" && ( <>
                 {computedSocketData && computedSocketData.length > 0 ? ( <>
                    <div id="quickOrdersHeader" className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
                       <div
@@ -1187,7 +1225,9 @@ const callBackEventSource = (eventOrderData) => {
                               className="w-2 h-2 text-gray-600 hover:bg-gray-200"
                               onClick={(e) => {
                                 if (e.target === e.currentTarget) {
-                                 // have to check this 
+                                 if (e.target === e.currentTarget) {
+                                   handleCancel(row.id);
+                               }
                                 }
                               }}
                             >
@@ -1216,10 +1256,40 @@ const callBackEventSource = (eventOrderData) => {
                          }
               </>
                 )}   
-               
+                {/* Mobile Card View */}
+            {isMobile && activeTab === "streaming" && (
+              <div className="grid gap-3 mt-3">
+                {computedSocketData.map((row, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-xl p-3 shadow-sm bg-white"
+                  >
+                    <div className="flex justify-between">
+                      <span className="font-semibold">{row["symbol"]}</span>
+                     
+                    </div>
+                      <div className="text-sm mt-2 space-y-1">
+                      <button className="rounded-md border bg-brandgreen border-b-2 border-blue-500 text-white"  onClick={(e) => {
+                                if (e.target === e.currentTarget) {
+                                 if (e.target === e.currentTarget) {
+                                   handleCancel(row.id);
+                               }
+                                }
+                              }} >Cancel</button>
+                              </div>
+                    <div className="text-sm mt-2 space-y-1">
+                      <div>Qty: <strong>{row["qty"]}</strong></div>
+                      <div>Avg: <strong>{row["limitPrice"]}</strong></div>
+                      <div>LTP: <strong>{row.ltp}</strong></div>
+                      <div>Status: <strong>{row.status}</strong></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
                
                 {/* can pass diff dataset renderTable(computedSocketData)*/}
-                </div>    
+               {/* </div> */}    
               <div id="QUICKORDERSTATUS" className="grid grid-cols-1 bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
 
               </div>

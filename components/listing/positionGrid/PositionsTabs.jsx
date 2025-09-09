@@ -5,7 +5,7 @@ import { ToggleLeft, Activity } from 'lucide-react';
 import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';  
-
+ import   useIsMobile   from "../tradeGrid/useIsMobile";
 export default function PositionsTabs({
   sortedData, parsedData,
   sortedSocketData,
@@ -18,6 +18,7 @@ export default function PositionsTabs({
      //let  quickOrderBookFeed   = useSelector((state ) => state.positions.position);
          const[ computedSocketData , setComputedSocketData] = useState();
          let statePostionBook  = useSelector(state => state.position.positionBook);
+        const isMobile = useIsMobile();
    let dispatch = useDispatch();
  const [filteredData , setFilteredData] =useState(() => {
       try {
@@ -140,7 +141,7 @@ export default function PositionsTabs({
                         }
                        
                           updateLTPUnrealised(symbC, "MARGIN", ticker);
-                          
+                           updateLTPUnrealised(symbC, "INTRADAY", ticker);
 
                        
                         }
@@ -199,7 +200,8 @@ export default function PositionsTabs({
                           }
                         }
                         }  
-                         updateLTPUnrealisedPB(symbC, "MARGIN", statePostionBook); 
+                       //  updateLTPUnrealisedPB(symbC, "MARGIN", statePostionBook); 
+                         /// updateLTPUnrealisedPB(symbC, "INTRADAY", statePostionBook); 
 
                   });
 
@@ -367,7 +369,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
 
 
 
-  const renderNormalFetchTable = (data) => (
+  const renderNormalFetchTable = (data) => (<> {!isMobile && ( 
   <div className="overflow-x-auto w-full">
       {/* Header row */}
       <div className="grid grid-cols-11 bg-gray-100 text-gray-700 font-semibold text-sm">
@@ -458,11 +460,41 @@ const callBackPositionFeedAction = (positionsFeed) => {
           </div>
         )}
       </div>
-    </div>
-
+      
+    </div> )
+         
+     }
+           
+      {/* Mobile Card View */}
+      {isMobile &&   (
+        <div className="grid gap-3 mt-3">
+          {data && data.map((row, index) => (
+            <div
+              key={index}
+              className="border rounded-xl p-3 shadow-sm bg-white"
+            >
+              <div className="font-semibold">{row["symbol"]}</div>
+              <div className="text-sm mt-2 space-y-1">
+                <div>Avg Price: <strong>{row["avgPrice"]}</strong></div>
+                <div>Qty: <strong>{row["netQty"]}</strong></div>
+                <div>LTP: <strong>{row["ltp"]}</strong></div>
+                <div>
+                  P&L:{" "}
+                  <strong
+                    className={row["unrealized_profit"]>= 0 ? "text-green-600" : "text-red-600"}
+                  >
+                    {row["unrealized_profit"]}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          ))}
+           </div>
+      )}
+     </>
 
   );
-  const renderTable = (data) => (
+  const renderTable = (data) => (<> {!isMobile && (
     <div className="overflow-x-auto w-full">
       {/* Header row */}
       <div className="grid grid-cols-11 bg-gray-100 text-gray-700 font-semibold text-sm">
@@ -553,7 +585,42 @@ const callBackPositionFeedAction = (positionsFeed) => {
           </div>
         )}
       </div>
-    </div>
+    </div>)
+         
+     }
+           
+   
+      {isMobile &&  
+         (
+        <div className="grid gap-3 mt-3">
+          {data.map((row, index) => (
+            <div
+              key={index}
+              className="border rounded-xl p-3 shadow-sm bg-white"
+            >
+              <div className="font-semibold">{row["symbol"]}</div>
+              <div className="text-sm mt-2 space-y-1">
+                <div>Avg Price: <strong>{row["avgPrice"]}</strong></div>
+                <div>Qty: <strong>{row["netQty"]}</strong></div>
+                <div>LTP: <strong>{row["ltp"]}</strong></div>
+                <div>
+                  P&L:{" "}
+                  <strong
+                    className={row["unrealized_profit"]>= 0 ? "text-green-600" : "text-red-600"}
+                  >
+                    {row["unrealized_profit"]}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          ))}
+           </div>
+      )}
+     </>
+
+
+
+
   );
 
   return (
@@ -583,7 +650,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "tab1" && renderNormalFetchTable(sortedData)}
+      {activeTab === "tab1" && renderNormalFetchTable(computedSocketData)}  {/*sortedData */}
       {activeTab === "tab2" && renderTable(computedSocketData)} {/* can pass diff dataset */}
     </div>
   );
