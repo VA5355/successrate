@@ -1,6 +1,7 @@
-// FyersEventSourceFeed.jsx
+// CustomOptionFeed.jsx
 import React, {useEffect, useRef,  useState } from 'react';
 import { ToggleLeft, Activity } from 'lucide-react';
+import StatusIndicator from './StatusIndicator'
 import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import "./marketFeedStyles.css";
@@ -12,9 +13,9 @@ import { saveSensexBook } from '@/redux/slices/tickerSensexSlice';
 import { saveNiftyBook } from '@/redux/slices/tickerNiftySlice';  
 import { saveBankNiftyBook } from '@/redux/slices/tickerBankNiftySlice';  
 import { savePositionTickerBook } from '@/redux/slices/positionSlice';  
-import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER , FYERSAPIORDERSRENDER,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
+import { FYERSAPINSECSV ,FYERSAPIMARKETCUSTOMFEED  , FYERSAPIORDERSRENDER,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 
-const FyersEventSourceFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,colorNifty}) => {
+const CustomOptionFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,colorNifty}) => {
      const [tickerData, setTickerData] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const eventSourceRef = useRef(null);
@@ -167,6 +168,7 @@ let  stringMap  = null;
  const userLoggedIn = () => {
          console.log("Fyers Feed user login check  ");
       const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
+     //let aces_toek =    StorageUtils._retrieve(CommonConstants.recentTickerToken);
         if (res1.isValid && res1.data !== null &&  res1.data !== undefined &&  res1.data !==  undefined) {
           let auth_code = res1.data['auth_code'];
           if (auth_code&& auth_code !== null && auth_code !== undefined) {
@@ -196,7 +198,7 @@ const startEventSource = () => {
              return text;
           }
           catch(erer){
-            console.log("Auth token fetch Error  ---------------FYERS EVENT SOURCE FEED ")
+            console.log("Auth token fetch Error  ---------------FYERS EVENT SOURCE FEED "+JSON.stringify(erer))
             return '';
          }
        }; 
@@ -239,7 +241,7 @@ const startEventSource = () => {
                 console.log("✅ Markeet Feed Indices not read ");
            }
 
-        const es = new EventSource(FYERSAPIMARKETFEEDRENDER+`?${params.toString()}`, { withCredentials: true });
+        const es = new EventSource(FYERSAPIMARKETCUSTOMFEED+`?${params.toString()}`, { withCredentials: true });
 
          console.log(`✅ Markeet Feed Indices-${params.toString()} --------------FYERS EVENT SOURCE FEED`);
 
@@ -256,9 +258,9 @@ const startEventSource = () => {
            if (typeof ltp !== "undefined" && typeof type !== "undefined") {
              console.log("Indices Quote availalbe. -----------FYERS EVENT SOURCE FEED");
              StorageUtils._save(CommonConstants.tickerIndicesCacheKey, data );
-            if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data);dispatch(saveSensexBook(data)) }
-            if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data);  dispatch(saveNiftyBook(data))}
-            if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data);  dispatch(saveBankNiftyBook(data))}
+           // if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data);dispatch(saveSensexBook(data)) }
+           // if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data);  dispatch(saveNiftyBook(data))}
+           // if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data);  dispatch(saveBankNiftyBook(data))}
             //NOTE this is a single Tick Price for either of the Symbols 
             // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
             // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
@@ -284,7 +286,7 @@ const startEventSource = () => {
                       g =     JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
                     }
                     catch(er2){
-                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey}).data) failed `);
+                       console.log(` CustomOption: parsedData : parse(${CommonConstants.recentPositionsKey}).data) failed `);
                     }
                   if(g !==null && g!==undefined && Array.isArray(g)){
                      parsedData = g
@@ -297,7 +299,7 @@ const startEventSource = () => {
                      }
                       catch(er3){
                           g =  StorageUtils._retrieve(CommonConstants.recentPositionsKey) ;
-                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey})) failed `);
+                       console.log(` CustomOption: parsedData : parse(${CommonConstants.recentPositionsKey})) failed `);
                      }
 
                   
@@ -312,18 +314,18 @@ const startEventSource = () => {
                                } 
                          } );
 
-                      console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} ::  ${JSON.stringify(g)} `); 
+                      console.log(` CustomOption: parsedData : CommonConstants.recentPositionsKey ${CommonConstants.recentPositionsKey} ::  ${JSON.stringify(g)} `); 
                       parsedData = g
                     }
                     else {
-                      console.log(` FyersEventSource:  parsedData :  CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: [] `); 
+                      console.log(` CustomOption:  parsedData :  CommonConstants.recentPositionsKey ${CommonConstants.recentPositionsKey} :: [] `); 
                       parsedData = g
                      // return [];
                     }
                   }
                     }
                 catch(ere){
-                  console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: not available set to [] `); 
+                  console.log(` CustomOption: parsedData : CommonConstants.recentPositionsKey ${CommonConstants.recentPositionsKey} :: not available set to [] `); 
                    parsedData =[];
                   //return [];
                 }
@@ -333,20 +335,51 @@ const startEventSource = () => {
 
              if(parsedData !== null && parsedData !== undefined &&  Array.isArray(parsedData)) {
               let dataToSort = [...parsedData]; let positionTickerData = [];
-               console.log(`FyersEventSource: positionBook state ${JSON.stringify(dataToSort)} `);
+               console.log(`CustomOption: positionBook state ${JSON.stringify(dataToSort)} `);
               if( Array.isArray(dataToSort)) { 
                         positionTickerData = dataToSort.map(p => {
-                          let tickSym  = (p.symbol.indexOf('NIFTY')  -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
-                        if ( data.symbol.indexOf(tickSym) > -1) {
-                            console.log(`FyersEventSource: updating ${p.symbol} LTP to ${data.ltp}`);
-                            return { ...p, ltp: data.ltp };
-                        }
+                          let tickSym  = p.symbol;
+                          //(p.symbol.indexOf('NIFTY') > -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
+                         console.log(`CustomOption: tickSym ${JSON.stringify(tickSym)} `);
+
+                          console.log(`CustomOption: data.symbol.indexOf(tickSym) ${JSON.stringify(data.symbol)} `);
+                          if ( data.symbol.indexOf(tickSym) > -1) {
+                            console.log(`CustomOption: updating ${p.symbol} LTP to ${data.ltp}`);
+                            return { ...p, symbol:data.symbol , ltp: data.ltp };
+                        } 
+                         console.log(`CustomOption: data ${JSON.stringify(data)} `);
                         return p;
                         });
+                           if(positionTickerData.length >0){  
+                              console.log(`CustomOption: positionTickerData  ${JSON.stringify(positionTickerData)}  `);
+                               console.log(`CustomOption: send to  savePositionTickerBook  `);
+                               positionTickerData.forEach(row => {
+                                 console.log(` positionTickerData.forEach: row   ${JSON.stringify(row)}  `);
+                                  let sty = row.symbol.split(":");let custSy= undefined;
+                                  if(Array.isArray(sty)){
+                                    custSy = sty[1];
+                                  } 
+                                  if(custSy !==undefined){
+                                     console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
+                                   let posLtpRow  = document.getElementById(`streamedLTP_${custSy}_${row.productType}`);
+                                   let posUnrealisedRow  =  document.getElementById(`streamedUnrealized_${custSy}_${row["productType"]}`);
+                                   if(posLtpRow !==null && posLtpRow !== undefined){ 
+                                      posLtpRow.textContent = row.ltp;
+                                      console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
+                                    }
+                                    if(posUnrealisedRow !==null && posUnrealisedRow !== undefined){ 
+                                      let actUnreal = (( parseInt(row.netQty) *  row.ltp ) -  parseInt(row.buyVal)) ;
+                                      posUnrealisedRow.textContent = actUnreal;
 
+                                      console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
+                                    }
+                                   }
+                               })
+                        dispatch( savePositionTickerBook(positionTickerData));
+                           }    
                     }
                     else {
-                         console.log(`FyersEventSource: positionBook not array `);
+                         console.log(`CustomOption: positionBook not array `);
                     }
                 // set parseData with the updated ticker price 
                 if(positionTickerData.length >0){  
@@ -357,17 +390,18 @@ const startEventSource = () => {
                 }
              }
              else {
-                   console.log(`FyersEventSource: please FETCH the Position's manually for TICKER UPATES IN POSITONS `);
+                   console.log(`CustomOption: please FETCH the Position's manually for TICKER UPATES IN POSITONS `);
                    //  console.log(" PositionGrid after login state.position.positionBook "+JSON.stringify(positionData))
-                   console.log(`FyersEventSource: parsedData  ${parsedData} `);
+                   console.log(`CustomOption: parsedData  ${parsedData} `);
              }
+        
             dispatch( savePositionTickerBook(data));
               onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
                      "colorSENSEX": colorNIFTYClass} ) )
            }
           }               
          } catch (err) {
-          console.error("❌ Failed to parse SSE data:", err);
+             console.error("❌ Failed to parse SSE data:", err);
          }
         };
         es.onerror = (err) => {
@@ -382,6 +416,20 @@ const startEventSource = () => {
         eventSourceRef.current = es;
     } 
      fetchAuthToken().then(async aces_token   => { 
+       if (aces_token !==null && aces_token !==undefined){
+
+       }else {
+          let aces_toek =    StorageUtils._retrieve(CommonConstants.recentTickerToken);
+          console.warn(`CustomOption Feed -- EventSource fetchAuthToken... ${JSON.stringify(aces_toek)}`);
+        if (aces_toek.isValid && aces_toek.data !== null &&  aces_toek.data !== undefined &&  aces_toek.data !==  undefined) {
+          let auth_code =  aces_toek.data
+          if (auth_code&& auth_code !== null && auth_code !== undefined) {
+              console.log("User is Authorized ");
+             setUserAuthCode(prevcode => prevcode = auth_code);
+             aces_token =aces_toek
+          }
+        }
+       }
        await  fetchIndicesQuote(aces_token);
      });
 
@@ -434,6 +482,7 @@ const startEventSource = () => {
           console.warn("⚠ Invalid date received, using current time:", inStr);
           utcDate = new Date();
         }
+     
        }catch(derr){
         utcDate = new Date();
         console.log("ticker time no present, current used ")
@@ -724,22 +773,28 @@ const setSensex = (tickQuote) => {
   return (
     <button        
        onClick={startEventSource} 
-      className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
+      className={`flex items-center gap-2 px-3 py-2 mt-2 rounded-md  shadow-sm  border transition duration-200 ${
         isConnected 
-          ? 'bg-primary green hover:bg-green-800 border-green-700'
+          ? 'bg-brandgreenlight green hover:bg-green-200 border-blue-700'
           : 'bg-gray-100 border-gray-300 text-gray-600'
       }`}
     >   {/* disabled={isConnected} */}
       {isConnected  ? (
-        <Activity size={20} className=" animate-pulse " />
+      
+         <StatusIndicator  isActive={true}/>
       ) : (
-        <ToggleLeft size={20} className="text-gray-500" />
+          <StatusIndicator  isActive={false}/>
+     
       )}
-      <span className="text-sm font-semibold font-medium">
-        {isConnected  ? 'Start Live' : 'Pause Live'}
+      <span className={`text-sm font-semibold font-medium ${
+        isConnected 
+          ? 'dark:text-white'
+          : ''
+      }`}>
+        {isConnected  ? 'Feed Live' : 'Stop'}
       </span>
     </button>
   );
-};
+}; //  {/*  <Activity size={20} className=" animate-pulse " />*/}     {/* <ToggleLeft size={20} className="text-gray-500" /> */}
 
-export default FyersEventSourceFeed;
+export default CustomOptionFeed;

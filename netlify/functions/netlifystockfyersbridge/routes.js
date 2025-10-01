@@ -977,16 +977,26 @@ router.get('/fyersplacebuyorder', async function (req,res) {
 
     let symbol = ''; let apikey = '';
 	let authcode =  global_auth_code;
-	let ltp =  '';
+	let ltp =  '';let price ='';
 	if( req.query !== null && req.query !== undefined ){
 		console.log(" FYERS  fyersplacebuyorder QUERY PARAMS " +JSON.stringify(req.query))
-		var queryJSON  = JSON.parse(JSON.stringify(req.query));
+	/*	var queryJSON  = JSON.parse(JSON.stringify(req.query));
 		symbol = queryJSON['symbol'];
 		  apikey =queryJSON['apikey'];
 		  authcode= queryJSON['auth_code'];
 		  ltp= queryJSON['ltp'];
 		// global_auth_code= auth_code;
-		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode} `);
+		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode} `);*/
+		 	var queryJSON  = JSON.parse(JSON.stringify(req.query));
+		symbol = queryJSON['symbol'];
+		  apikey =queryJSON['apikey'];
+		  authcode= queryJSON['auth_code'];
+		  ltp= queryJSON['ltp'];
+		  qty= queryJSON['qty'];
+		  price= queryJSON['price'];
+		// global_auth_code= auth_code;
+		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode}  price: ${price} qty:${qty} ltp:${ltp}`);
+
 	}
 	
 	
@@ -1000,17 +1010,30 @@ router.get('/fyersplacebuyorder', async function (req,res) {
 			if(response.s=='ok'){
 				fyers.setAccessToken(response.access_token)
 				console.log("FYERS Grants provided  ") 
+					symbol = symbol.indexOf("NIFTY")>-1 ? "NSE:"+symbol : (symbol.indexOf("SENSEX") > -1 ? "BSE:"+symbol: "NSE:"+symbol )  
+				let offlein = false;
+				if (isOutsideTradingHours()) {
+					console.log("❌ Outside trading hours");
+					offlein = true;
+				} else {
+					console.log("✅ Within trading hours");
+					offlein = true;
+					 offlein = (ism !== undefined ? !ism.isOpen(): true);
+				}
+				price = parseFloat(price);
+				qty = parseInt(qty);
 				const reqBody={
-						"symbol":"NSE:NIFTY2580724650PE",
-						"qty":1,
+						"symbol":`${symbol}`,
+						"qty":qty,
 						"type":1,
 						"side":1,
 						"productType":"MARGIN",
-						"limitPrice":ltp,
+						"limitPrice":price,
 						"stopPrice":0,
 						"disclosedQty":0,
 						"validity":"DAY",
-						"offlineOrder":false,
+						"offlineOrder":offlein,
+						 
 						"stopLoss":0,
 						"takeProfit":0,
 						"orderTag":"tag1"
@@ -1097,7 +1120,7 @@ router.get('/fyersplacesellorder', async function (req,res) {
 
     let symbol = ''; let apikey = '';
 	let authcode =  global_auth_code;
-	let ltp =  '';
+	let ltp =  ''; let price ='';
 	if( req.query !== null && req.query !== undefined ){
 		console.log(" FYERS  fyersplacesellorder QUERY PARAMS " +JSON.stringify(req.query))
 		var queryJSON  = JSON.parse(JSON.stringify(req.query));

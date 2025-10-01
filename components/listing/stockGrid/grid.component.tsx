@@ -37,10 +37,28 @@ const StockGrid = () => {
         dispatch(fetchStockList())
         // SET the default INDICES 
         StorageUtils._save(CommonConstants.marketFeedDataCacheKey, CommonConstants.sampleObjTickerTDataVersion1);
+         
+      
+
 
     }, [dispatch])
 
      useEffect(() => {
+       /*   let str = "{\"code\":1101,\"message\":\"Successfully placed order\",\"s\":\"ok\",\"id\":\"25092600347435\"}";
+
+        StorageUtils._save(CommonConstants.recentSellledOrder,str);
+        
+        const recentSellORder  = StorageUtils._retrieve(CommonConstants.recentSellledOrder);
+        if (  
+           (recentSellORder?.isValid && recentSellORder.data !== null)) {
+                 let r = recentSellORder.data !==undefined ?  JSON.parse(recentSellORder.data) : "";
+            if ( ( ( r.message !== undefined ) && !(r.message.indexOf("Successfully") > -1))) {
+
+                console.log(" r : "+JSON.stringify(r))
+
+                 StorageUtils._save(CommonConstants.recentSellledOrder,"");
+            }
+           }*/
          handleCustomGridCols(tab)
     }, [tab])
 
@@ -77,12 +95,29 @@ const StockGrid = () => {
          {  clsUse = cls;
 
          } else if ((seletab === "Top Traders")) {   
+            console.log("TOP Traders clicked ");
             clsUse = trdCls;
          }
          else if((seletab === "Positions")){
+            console.log("Positions clicked ")
               clsUse = trdCls;
             handleFirstFetchPositions();
          }
+        /*   let str = "{\"code\":1101,\"message\":\"Successfully placed order\",\"s\":\"ok\",\"id\":\"25092600347435\"}";
+
+        StorageUtils._save(CommonConstants.recentSellledOrder,str);
+        
+        const recentSellORder  = StorageUtils._retrieve(CommonConstants.recentSellledOrder);
+        if (  
+           (recentSellORder?.isValid && recentSellORder.data !== null)) {
+                 let r = recentSellORder.data !==undefined ?  JSON.parse(recentSellORder.data) : "";
+            if ( ( ( r.code !== undefined ) &&   r.code !== 1101)) {
+
+                console.log(" r : "+JSON.stringify(r))
+
+                 StorageUtils._save(CommonConstants.recentSellledOrder,"");
+            }
+           }*/
         return clsUse
     }
 

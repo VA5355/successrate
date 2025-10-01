@@ -13,13 +13,13 @@ export default function addInterceptor(_API: any) {
             apikey: process.env.NEXT_PUBLIC_API_KEY !== undefined ? process.env.NEXT_PUBLIC_API_KEY : NEXT_PUBLIC_API_KEY
         }
 
-        console.log("API called with params: ", config.params)
+       // console.log("API called with params: ", config.params)
         return config;
     })
 
     _API.interceptors.response.use((response: any) => {
             var customError: any = "abc";
-            console.log(response.data)
+           // console.log(response.data)
             if (response.data) {
                 if (response.data.hasOwnProperty("Error Message")) {
                     customError = new Error('Invalid Key Provided');

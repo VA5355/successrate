@@ -102,14 +102,14 @@ let  stringMap  = null;
  
 export      const userLoggedIn = () => {
        let acode = undefined;
-            console.log("Fyers Order Feed user login check  ");
+          //  console.log("Fyers Order Feed user login check  ");
          const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
            if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
              let auth_code = res1.data['auth_code'];
              if (auth_code&& auth_code !== null && auth_code !== undefined) {
-                 console.log("User is Authorized ");
-                  console.log("User typeof "+ JSON.stringify(typeof auth_code));
-                  console.log("User auth_code "+JSON.stringify(auth_code));
+          //       console.log("User is Authorized ");
+         //         console.log("User typeof "+ JSON.stringify(typeof auth_code));
+          //        console.log("User auth_code "+JSON.stringify(auth_code));
                   acode = auth_code;
                  setUserAuthCode(auth_code);
                // setUserAuthCode(prevcode => prevcode = auth_code);
@@ -135,7 +135,7 @@ export const startEventOrderSource = (connectionStatus,orderBook , canceledOrd, 
           let  sortedSocketData   = tickerData;
           let existingOrderBok = orderBook;
          if (userAuthCode1 && userAuthCode1 !== null && userAuthCode1 !== undefined) {
-          console.log("User is Authorized ");  
+         // console.log("User is Authorized ");  
     
          const fetchAuthToken = async () => {
               try {  //
@@ -164,9 +164,9 @@ export const startEventOrderSource = (connectionStatus,orderBook , canceledOrd, 
                 if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
                    // gethe 
                    let ctoken =  StorageUtils._retrieve(CommonConstants.recentCancelledOrderToken).data ;
-                   console.log("cToken === "+JSON.stringify(ctoken))
+              //     console.log("cToken === "+JSON.stringify(ctoken))
                    acctoken = ctoken;
-                    console.log("QUICK ORDER FEED ACTION source using the acctoken === CommonConstants.recentCancelledOrderToken ")
+              //      console.log("QUICK ORDER FEED ACTION source using the acctoken === CommonConstants.recentCancelledOrderToken ")
                 }
                 // RE-CHECK access _tOken 
                  if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
@@ -183,12 +183,13 @@ export const startEventOrderSource = (connectionStatus,orderBook , canceledOrd, 
                   if(pOrders !==null && pOrders !==undefined &&  pOrders['data'] !== ''  && pOrders['data'] !== null && pOrders['data'] !==undefined){      
                      exOrdBk =    pOrders['data'] ;
                  // setComputedSocketData(ordersFeed);
+                 /*
                                    console.log("PENDING  ORDES  ........... QUICK ORDER FEED    :: ") 
                                   console.log("PENDING  ORDES  ........... QUICK ORDER FEED   ") 
                                   console.log(`PENDING  ORDES  ........... QUICK ORDER FEED    OrderBook ${JSON.stringify(exOrdBk)}  `)    
                                   console.log("PENDING  ORDES  ........... QUICK ORDER FEED    :: ")    
                                   console.log("PENDING  ORDES  ........... QUICK ORDER FEED    :: ")    
-
+                    */
                     }
                     else {
                         console.log(`pending orders ${CommonConstants.orderBookOrderDataCacheKey} is not set `);
@@ -218,7 +219,7 @@ export const startEventOrderSource = (connectionStatus,orderBook , canceledOrd, 
                   { withCredentials: true }
                 );
               setIsConnected(isConnected);*/
-             console.log(`✅ ORBER SOCKET API -${params.toString()} --------------QUICK ORDER FEED ACTION`);
+           //  console.log(`✅ ORBER SOCKET API -${params.toString()} --------------QUICK ORDER FEED ACTION`);
     
             es.onopen = () => {
                 console.log("✅  ORBER SOCKET API EventSource connection opened.");

@@ -371,7 +371,7 @@ export const parseOrderBook = (orderB ) => {
         // check orderBook array 
         let ob =(  orderB.orderBook ?  orderB.orderBook : (orderB["orderBook"] ?   orderB["orderBook"] : null) ) ;
         if( ob !== null && ob !== undefined ) {
-           console.log("ORDER BOOK BUTTON : OrderBook orders exist ");
+         //  console.log("ORDER BOOK BUTTON : OrderBook orders exist ");
             // get FIRST ORDER 
             if( Array.isArray(ob)  ) {
                 orderFirst = ob[0];
@@ -392,10 +392,10 @@ export const parseOrderBook = (orderB ) => {
                 pendingCancelableOrders.push(orderRecent);
                 // even single order check the status it must be pending 
                 pendingCancelableOrders =  pendingCancelableOrders.filter(odSingle => parseInt(odSingle.status) == 6);
-                console.log("pending orders actual with status 6 "+JSON.stringify(pendingCancelableOrders));
+               // console.log("pending orders actual with status 6 "+JSON.stringify(pendingCancelableOrders));
                  StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey, JSON.stringify(pendingCancelableOrders))
                  StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey, JSON.stringify(pendingCancelableOrders))
-                console.log("saved the first non -executed order recentOrderPlaced")               
+               // console.log("saved the first non -executed order recentOrderPlaced")               
               }
               if(mutlipleOrders ){
                 // store only the ORDER that have status = 6 pending meaning they are in the workking tab
@@ -404,12 +404,12 @@ export const parseOrderBook = (orderB ) => {
                 // SAVE them in the 
                  StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey, JSON.stringify(pendingCancelableOrders))
                  StorageUtils._save(CommonConstants.quickOrderBookDataCacheKey, JSON.stringify(pendingCancelableOrders))
-                console.log("ORDER BOOK BUTTON : OrderBook multiple orders saved to orderBookOrderDataCacheKey  ");
+              //  console.log("ORDER BOOK BUTTON : OrderBook multiple orders saved to orderBookOrderDataCacheKey  ");
                  const  {  id, exchOrdId, exchange, symbol, limitPrice, side }  = pendingCancelableOrders[0];
                     let orderNotExe =  {  id, exchOrdId, exchange, symbol, limitPrice, side } ;
                     StorageUtils._save(CommonConstants.recentOrderPlaced, JSON.stringify(orderNotExe));
                     orderRecent = orderNotExe;
-                   console.log("saved the first pending order to be cancelled in  recentOrderPlaced")  
+              //     console.log("saved the first pending order to be cancelled in  recentOrderPlaced")  
 
                 }
 
@@ -433,7 +433,7 @@ export const parseOrderBook = (orderB ) => {
 }
 export const orderBookData = (_id ) => {
       // SAMPLE ORDER BOOK DEFAULT DATA 
-       console.log("orderBookData: _id  "+JSON.stringify( _id))
+      // console.log("orderBookData: _id  "+JSON.stringify( _id))
       // THIS CAUSE OVERRIDE DEFAULT SAMPLE DATA   
       //StorageUtils._save (CommonConstants.threeSecSensexDataCacheKey,CommonConstants.sampleThreeSecSensexDataVersion1);
 
@@ -447,7 +447,7 @@ export const orderBookData = (_id ) => {
              }catch(ee){
               console.log(" parse issue of fetched order ")
              }
-              console.log('parseAll: ', JSON.stringify(parseAll));
+             // console.log('parseAll: ', JSON.stringify(parseAll));
 
            // let dArray = dataFromCache.data["d"];
           let dArray = dataFromCache.data["d"] ? dataFromCache.data["d"] : ( (parseAll !== undefined ? ( parseAll.d ? parseAll.d : '') : '') ) ;
@@ -473,11 +473,11 @@ export const orderBookData = (_id ) => {
             }
           } // dArray CHECK 
           else {
-             console.log("dArray from cache not present or not array  " )
+         //    console.log("dArray from cache not present or not array  " )
           }
         }
         else {
-             console.log("orderBookData: unavailable  " )
+        //     console.log("orderBookData: unavailable  " )
         }
 
        // dispatch(enableLoader())
@@ -492,8 +492,8 @@ export const orderBookData = (_id ) => {
             
             let auth_code = res1.data['auth_code'];
             if (auth_code&& auth_code !== null && auth_code !== undefined) {
-                console.log("User is  Authorized ");
-                console.log("User fetch  profile authoristaion ");
+            //    console.log("User is  Authorized ");
+            //    console.log("User fetch  profile authoristaion ");
                   // fyersaccesstoken
                    const fetchAuthToken = async () => {
 
@@ -544,7 +544,7 @@ export const orderBookData = (_id ) => {
                   const recentOrderPlace = StorageUtils._retrieve(CommonConstants.recentOrderPlaced);
              if(recentOrderPlace !==null && recentOrderPlace !== undefined ){
                  let order_id =    recentOrderPlace.id;
-                     console.log("Order selected for CANCELLATION "+order_id);
+                 //    console.log("Order selected for CANCELLATION "+order_id);
 
               if(order_id !==null && order_id !== undefined) {  
                 const fetchCANCELORDERStatus = async (acctoken) => {
@@ -691,7 +691,7 @@ export const orderBookData = (_id ) => {
                      });
               } // ORDER BOOK ORDER CONDITON 
 
-                     console.log("ORDER BOOK ORDER TRIGGER  ..");
+                    // console.log("ORDER BOOK ORDER TRIGGER  ..");
                     
                     //  fetchAuthToken().then(acToken => {
                     //     console.log("Ticker access token fetched ")

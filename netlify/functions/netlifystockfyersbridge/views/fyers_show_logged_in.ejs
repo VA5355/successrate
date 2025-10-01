@@ -37,7 +37,12 @@
         $('#authenticated').click(function(){
                 localStorage.setItem("fyersToken",JSON.stringify(token));
                 if(triggerredirectpython ==='true'){
-                     if(state === 'python_state'){ 
+                     if(state === 'python_test'){
+                        console.log("Redirecting to:", "https://fyers-positions-socket-git.onrender.com/redirect?auth_code=" + auth_code + "&state=python_test");
+
+                          window.location.assign( "https://fyers-positions-socket-git.onrender.com/redirect?auth_code="+auth_code+"&state=python_test");
+                     }
+                    else if(state === 'python_state'){ 
                       window.location.assign( "https://fyersmarketfeed.onrender.com/redirect-start?auth_code="+auth_code+"&state=python");
                      }
                       else if (state === 'python_order_state'){

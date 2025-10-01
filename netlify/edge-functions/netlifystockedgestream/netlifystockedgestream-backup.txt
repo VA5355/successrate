@@ -18,14 +18,14 @@ const PIN = "7892";                // User pin for Fyers account
 const APP_ID = "7GSQW68AZ4";       //7GSQW68AZ4-100 // App ID from MyAPI dashboard (https://myapi.fyers.in/dashboard)
 const APP_TYPE = "100";
 const APP_SECRET = "MGY8LRIY0M" ;// "4O7FS21OSQ";  //MGY8LRIY0M
-var client_id= "P67RJAS1M6-100"; // "7GSQW68AZ4-100" ; // PROD 
-var secret_key = "4LXEKKMFUL"; 		 // "MGY8LRIY0M"; // PROD 
+var client_id= "V8BNUWJ4WQ-100"; // "7GSQW68AZ4-100" ; // PROD 
+var secret_key = "KOA61TZLP4"; 		 // "MGY8LRIY0M"; // PROD 
 
  // App Secret from myapi dashboard (https://myapi.fyers.in/dashboard)
 const TOTP_SECRET_KEY =  "CO5MMHUS4CY4RABN6XEUGAQ6YZV6DC3Z" ;   //"UN4JGYCRUJ2NFNNHAFU5XENHPMEKCUMB";  // TOTP secret key
 // 
 
-const REDIRECT_URI = "https://fyersbook.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify";
+const REDIRECT_URI = "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify";
 //"https://trade.fyers.in/api-login/redirect-uri/index.html";  // Redirect URL from the app
 
 // API endpoints

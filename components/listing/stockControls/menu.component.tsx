@@ -236,7 +236,7 @@ const Menu = () => {
                     })
                 }
                 <div
-                    className={`hidden md:block toggle-line ${tab === "Top Losers" ? 'move-line' : tab === 'Most Actively Traded' ? 'move-2next' : ''}`}></div>
+                    className={`hidden md:block toggle-line ${tab === "Top Losers" ? 'move-line' : tab === 'Top Traders' ? 'move-line2' :  tab === 'Positions' ? 'move-line3' :  tab === 'Most Actively Traded' ? 'move-2next' : ''}`}></div>
             </div>
             <div className='hidden md:flex flex-wrap items-center justify-between'>
                 {

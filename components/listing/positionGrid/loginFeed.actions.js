@@ -200,12 +200,12 @@ let  stringMap  = null;
 */
 
 export const userLoggedIn = () => {
-         console.log("Fyers Feed user login check  ");
+    //     console.log("Fyers Feed user login check  ");
       const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
         if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
           let auth_code = res1.data['auth_code'];
           if (auth_code&& auth_code !== null && auth_code !== undefined) {
-              console.log("User is Authorized ");
+    //          console.log("User is Authorized ");
              setUserAuthCode(auth_code); // prevcode => prevcode = auth_code
           }
         }
@@ -223,7 +223,7 @@ export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
     try {
       userLoggedIn();
      if (userAuthCode && userAuthCode !== null && userAuthCode !== undefined) {
-       console.log("User is Authorized ");  
+     //  console.log("User is Authorized ");  
        const fetchAuthToken = async () => {
           try {  //
              const res = await API.get(FYERSAPITICKERACCESTOKEN , {params: { "auth_code" : userAuthCode }});
@@ -241,7 +241,7 @@ export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
         let marketFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
 
         let indicesFeed = marketFeed !==undefined ?  StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data : null;
-        console.log(" indices "+JSON.stringify(indicesFeed));
+       // console.log(" indices "+JSON.stringify(indicesFeed));
           let indices =  (indicesFeed !==undefined && indicesFeed !==null ) ? ( (indicesFeed.data !==undefined &&
             indicesFeed.data !==null ) ? indicesFeed.data : null )  : null;
             if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
@@ -270,7 +270,7 @@ export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
              indices.forEach(ticker => params.append("ticker", ticker));
           }
            else{
-                console.log("✅ Markeet Feed Indices not read ");
+        //        console.log("✅ Markeet Feed Indices not read ");
            }
 
         const es = new EventSource(FYERSAPIMARKETFEEDRENDER+`?${params.toString()}`, { withCredentials: true });

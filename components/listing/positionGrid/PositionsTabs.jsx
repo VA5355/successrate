@@ -72,9 +72,9 @@ export default function PositionsTabs({
            if ( indKey.isValid && indKey.data !== null && indKey.data !==undefined ) { 
                let indData = indKey.data;
                let actualData = indData.data;
-               console.log(`  ${JSON.stringify(indKey.data)}  typeof CommonConstants.marketFeedDataCacheKey ${JSON.stringify(typeof indKey.data )} `);
-               console.log(`  ${JSON.stringify(actualData)}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
-               console.log(` Array.isArray(actualData) ::  ${JSON.stringify(Array.isArray(actualData))}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
+              // console.log(`  ${JSON.stringify(indKey.data)}  typeof CommonConstants.marketFeedDataCacheKey ${JSON.stringify(typeof indKey.data )} `);
+              // console.log(`  ${JSON.stringify(actualData)}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
+              // console.log(` Array.isArray(actualData) ::  ${JSON.stringify(Array.isArray(actualData))}  typeof CommonConstants.marketFeedDataCacheKey.data ${JSON.stringify(typeof actualData )} `);
 
            if( indData !== ''  && indData !== null && indData !==undefined){ 
            if( actualData !== ''  && actualData !== null && actualData !==undefined){ 
@@ -227,15 +227,15 @@ export default function PositionsTabs({
     const fetchParsedData = () => {
       try {
         let g =   StorageUtils._retrieve(CommonConstants.recentPositionsKey)  || "null" ;
-        console.log(" g "+JSON.stringify(g));
+       // console.log(" g "+JSON.stringify(g));
           let positions = undefined;      
         if( g['data'] !== ''  && g['data'] !== null && g['data'] !==undefined){       
-                console.log("positions "+JSON.stringify(g))
+         //       console.log("positions "+JSON.stringify(g))
                 let tr = JSON.parse((JSON.stringify(g)));
                 if(tr !==null && tr !== undefined ){
                     if(tr['data'] !==null && tr['data']!== undefined ){
                       positions =tr['data'];
-                        console.log(" positions   ")
+              //          console.log(" positions   ")
 
                     }
                 }
@@ -244,7 +244,7 @@ export default function PositionsTabs({
 
         if (positions && Array.isArray(positions)) {
           setFilteredData(positions);
-          console.log("..........positions grid recentPositions polled parsedData updated: POSITON TAB")
+       //   console.log("..........positions grid recentPositions polled parsedData updated: POSITON TAB")
           return;
         }
 
@@ -286,7 +286,7 @@ export default function PositionsTabs({
       fetchParsedData();
 
       const delay = fibonacci(i);
-      console.log(`Next poll in ${delay / 500}s : POSITON TAB`);
+      //console.log(`Next poll in ${delay / 500}s : POSITON TAB`);
       timeoutId = setTimeout(() => startPolling(i + 1), delay);
     };
 

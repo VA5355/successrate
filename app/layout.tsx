@@ -10,6 +10,7 @@ import {ThemeProvider} from "@/providers/ThemeProvider";
 import { EquityReduxProvider } from '@/providers/EquityReduxProvider';
 import Analytics from './analytics/Analytics';
 import { TradeReduxProvider } from '@/providers/TradeReduxProvider';
+import { ModalRoot } from '@/components/common/service/ModalService';
 
 const inter = Inter({subsets: ['latin']})
 
@@ -34,6 +35,7 @@ export default function RootLayout({
             <ThemeProvider>
                 <>  <Analytics />
                     <Toaster/>
+                    <ModalRoot/>
                     {children}
                 </>
             </ThemeProvider>

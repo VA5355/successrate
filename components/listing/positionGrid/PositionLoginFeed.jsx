@@ -253,7 +253,34 @@ const startEventSource = () => {
             //NOTE this is a single Tick Price for either of the Symbols 
             // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
             // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
+
             dispatch( savePositionTickerBook(data));
+            /* for faster rendering */
+             data.forEach(row => {
+                                 console.log(`PostionLoginFeed data.forEach: row   ${JSON.stringify(row)}  `);
+                                  let sty = row.symbol.split(":");let custSy= undefined;
+                                  if(Array.isArray(sty)){
+                                    custSy = sty[1];
+                                  } 
+                                  if(custSy !==undefined){
+                                     console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
+                                   let posLtpRow  = document.getElementById(`streamedLTP_${custSy}_${row.productType}`);
+                                   let posUnrealisedRow  =  document.getElementById(`streamedUnrealized_${custSy}_${row["productType"]}`);
+                                   if(posLtpRow !==null && posLtpRow !== undefined){ 
+                                      posLtpRow.textContent = row.ltp;
+                                      console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
+                                    }
+                                    if(posUnrealisedRow !==null && posUnrealisedRow !== undefined){ 
+                                      let actUnreal = (( parseInt(row.netQty) *  row.ltp ) -  parseInt(row.buyVal)) ;
+                                      posUnrealisedRow.textContent = actUnreal;
+
+                                      console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
+                                    }
+                                   }
+                               })
+
+
+
               onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
                      "colorSENSEX": colorNIFTYClass} ) )
            }

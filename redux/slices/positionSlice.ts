@@ -183,8 +183,24 @@ const positionSlice = createSlice({
                         if (newSymbols.length > 0) {
                         // Append new symbols with NSE: BSE: 
                         let preFixSymbols = newSymbols
-                                         .map((ss) =>ss.indexOf("NIFTY") > -1 ? "NSE:"+ss: 
-                                           ( ss.indexOf("BANK") >-1 ?  "BSE:"+ss :"NSE:"+ss )  )
+                                         .map((ss) => { 
+                                            
+                                            const regex = /(\d+)(CE|PE)$/;
+                        
+                                            const match = ss.match(regex);
+
+                                            if (match) {
+                                              console.log("Digits:", match[1]);  // 2591881400
+                                               console.log("Suffix:", match[2]);  // CE
+                                            }
+
+
+                                             let symPref =   ss.indexOf("NIFTY") > -1 ? "NSE:"+ss: 
+                                             ss.indexOf("BANK") >-1 ? "NSE:"+ss: 
+                                               (ss.indexOf("SENSEX") >-1 ? ss :   "NSE:"+ss) 
+                                            return symPref;
+                                            
+                                              }  )
 
                         currentIndices.data.push(...preFixSymbols);
 
@@ -233,16 +249,37 @@ const positionSlice = createSlice({
                   //  console.log(`savePositionTickerBook: ${JSON.stringify(state.positionTicker)}  `);
                   //   console.log(`state.positionBook: ${JSON.stringify(state.positionBook)}  `);
                  if (state.positionTicker !==null && state.positionTicker !==undefined) {
-                    const tickPrice = state.positionTicker; // { ltp, symbol, type }
-
+                   let tickPrice =undefined; let newPostionArray = [];
+                   if(Array.isArray(state.positionTicker)){  
+                        newPostionArray =   state.positionTicker; // { ltp, symbol, type }
+                    }
                     // Update positionBook immutably
                     if( Array.isArray(state.positionBook)) { 
                         state.positionBook = state.positionBook.map(p => {
-                        if ( tickPrice.symbol.indexOf(p.symbol) > -1) {
-                        //    console.log(`savePositionTickerBook: updating ${p.symbol} LTP to ${tickPrice.ltp}`);
+                      if(newPostionArray.length > 1 ){
+                            newPostionArray.map(newP => {
+                            if ( newP.symbol.indexOf(p.symbol) > -1) {
+                              //    console.log(`savePositionTickerBook: updating ${p.symbol} LTP to ${tickPrice.ltp}`);
+                                  return { ...p, ltp: newP.ltp };
+                            }
+                              return p;
+
+                            });
+
+                      }
+                      else {
+                          tickPrice = newPostionArray[0];
+                          console.log(`tickProce :newPostionArray[0]  ${JSON.stringify(tickPrice)} `)
+                          if(  tickPrice  !==null &&  tickPrice  !==undefined && tickPrice.symbol !==undefined){ 
+                          if ( tickPrice.symbol.indexOf(p.symbol) > -1) {
+                             //console.log(`savePositionTickerBook: updating ${p.symbol} LTP to ${tickPrice.ltp}`);
                             return { ...p, ltp: tickPrice.ltp };
+                            }
                         }
                         return p;
+
+                      }
+                        
                         });
 
                     }

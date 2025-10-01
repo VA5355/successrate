@@ -1,29 +1,55 @@
-// FyersEventSourceFeed.jsx
+// optionChainFeed.action.js 
 import React, {useEffect, useRef,  useState } from 'react';
 import { ToggleLeft, Activity } from 'lucide-react';
 import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
-import "./marketFeedStyles.css";
+import "./optionChainFeedStyles.css";
 //import { getSensexTickerData  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./streamTicker.actions";
 // ThreeSec HTTP FETCH 
- import { getIndicesTickerData  ,updateIndicesFromCache ,stopSensexTickerData } from "./threeIndicesFeed.actions";
+// import { getIndicesTickerData  ,updateIndicesFromCache ,stopSensexTickerData } from "./threeIndicesFeed.actions";
 import {useDispatch, useSelector} from 'react-redux';
 import { saveSensexBook } from '@/redux/slices/tickerSensexSlice';  
 import { saveNiftyBook } from '@/redux/slices/tickerNiftySlice';  
 import { saveBankNiftyBook } from '@/redux/slices/tickerBankNiftySlice';  
 import { savePositionTickerBook } from '@/redux/slices/positionSlice';  
-import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER , FYERSAPIORDERSRENDER,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
+import { updateTickerMap } from "@/redux/slices/tickerSlice";
+import { store } from "@/redux/store";
+import isEqual from 'lodash.isequal';
+import { API,FYERSAPITHREESECQUOTE, FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER ,  FYERSAPITICKERACCESTOKEN,   FYERSAPITICKERURL , FYERSAPITICKERURLCLOSE} from '@/libs/client';
 
-const FyersEventSourceFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,colorNifty}) => {
-     const [tickerData, setTickerData] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const eventSourceRef = useRef(null);
-    const [userAuthCode , setUserAuthCode]= useState(null);
+//const PositionLoginFeed = ({ onFeed , colorSensex , colorBank ,colorNifty}) => {
+let  tickerData = undefined;
 
+const  setTickerData  = (tg) =>{
+    tickerData = tg;
 
-  const [isMarketFeed, setIsMarketFeed] = useState(false);
-  const [threeSec , setThreeSec] = useState(0);
- const dispatch = useDispatch();
+  };
+let  isConnected = undefined;
+  const  setIsConnected  = (tg) =>{
+    isConnected = tg;
+
+  };
+let   eventSourceRef = undefined;
+
+//  const eventSourceRef = useRef(null);
+let userAuthCode  = undefined;
+
+  const  setUserAuthCode =(tg) =>{
+    userAuthCode = tg;
+
+  };
+let isMarketFeed  = undefined;
+  const   setIsMarketFeed  =  (tg) =>{
+    isMarketFeed = tg;
+
+  };
+  let threeSec  = undefined;
+
+  const  setThreeSec  =    (tg) =>{
+    threeSec = tg;
+
+  };
+// const dispatch = useDispatch();
 
  let SENSEXTICKERDOMID = 'sensex-status';
  let SENSEXTICKERTIME = 'sensex-time';
@@ -36,33 +62,42 @@ const FyersEventSourceFeed = ({ onFeed , parsedData  , colorSensex , colorBank ,
  let BANKNIFTYTICKERPRICE = 'banknifty-price';
  let SYMBOL = 'SENSEX';
 // let previousSENSEXPrice = null;  // PREVIOUS PRICE SENSEX 
-  const [newSENSEXPrice, setNewSENSEXPrice] = useState(0);
-  const [previousSENSEXPrice, setPreviousSENSEXPrice] = useState(0);
+let newSENSEXPrice  = 0;
+  //tickerMap2  = useSelector(state => state.ticker.tickerMap);
+  const  setNewSENSEXPrice  =  (tg) =>{ newSENSEXPrice=tg; };
+let previousSENSEXPrice  = 0;
+ const setPreviousSENSEXPrice  = (tg) =>{ previousSENSEXPrice=tg; };
 
   // store previous value without triggering re-render
-  const previousSensexPriceRef = useRef(null);
-
-  const [colorSENSEXClass, setColorSENSEXClass] = useState("bg-gray-100 text-black");
+  const previousSensexPriceRef =  (tg) =>{  }; //  useRef(null);
+let colorSENSEXClass  = "bg-gray-100 text-black";
+  const   setColorSENSEXClass  =   (tg) =>{   colorSENSEXClass= tg;    };  //useState("bg-gray-100 text-black");
 // let previousNIFTYPrice = null;  // PREVIOUS PRICE NIFTY 
-  const [newNIFTYPrice, setNewNIFTYPrice] = useState(0);
-   const [previousNIFTYPrice, setPreviousNIFTYPrice] = useState(0);
-  const [colorNIFTYClass, setColorNIFTYClass] =    useState( colorNifty);  useState("bg-gray-100 text-black");
+let newNIFTYPrice  = 0;
+  const   setNewNIFTYPrice  = (tg) =>{ newNIFTYPrice=tg; };
+let previousNIFTYPrice  = 0;  
+   const   setPreviousNIFTYPrice  = (tg) =>{ previousNIFTYPrice=tg; };
+let colorNIFTYClass  =  "bg-gray-100 text-black";     
+  const   setColorNIFTYClass  =    (tg) =>{   colorNIFTYClass=  tg;    };   //useState( colorNifty);  useState("bg-gray-100 text-black");
   // store previous value without triggering re-render
-  const previousNiftyPriceRef = useRef(null);
+  const previousNiftyPriceRef =   (tg) =>{   };  // useRef(null);
 // let previousBankNIFTYPrice = null;  // PREVIOUS PRICE NIFTY 
- const [newBankNIFTYPrice, setNewBankNIFTYPrice] = useState(0);
- const [previousBankNIFTYPrice, setPreviousBankNIFTYPrice] = useState(0);
-  const [colorBankNIFTYClass, setColorBankNIFTYClass] = useState("bg-gray-100 text-black");
+let newBankNIFTYPrice  = 0; 
+ const  setNewBankNIFTYPrice  = (tg) =>{  newBankNIFTYPrice =tg; };
+ let previousBankNIFTYPrice  = 0; 
+ const  setPreviousBankNIFTYPrice  = (tg) =>{  };
+ let colorBankNIFTYClass  = "bg-gray-100 text-black";  
+  const  setColorBankNIFTYClass  =  (tg) =>{  colorBankNIFTYClass  =  tg;    }; // useState("bg-gray-100 text-black");
   // store previous value without triggering re-render
-  const previousBankPriceRef = useRef(null);
+  const previousBankPriceRef =  (tg) =>{  }; // useRef(null);
 
-
+//const [tickerMap, setTickerMap] = React.useState({});
 
  let previousPrice = null;  // PREVIOUS PRICE  
 let  stringMap  = null;
  let mt = [];
  let sensexQue = []; let niftyQue= []; let bankNiftyQue = [];
-
+/*
    useEffect(() => {
     if (newSENSEXPrice === null) return;
 
@@ -162,32 +197,33 @@ let  stringMap  = null;
       stopEventSource();
     };
   }, []);
+*/
 
-
- const userLoggedIn = () => {
+export const userLoggedIn = () => {
          console.log("Fyers Feed user login check  ");
       const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
-        if (res1.isValid && res1.data !== null &&  res1.data !== undefined &&  res1.data !==  undefined) {
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
           let auth_code = res1.data['auth_code'];
           if (auth_code&& auth_code !== null && auth_code !== undefined) {
               console.log("User is Authorized ");
-             setUserAuthCode(prevcode => prevcode = auth_code);
+             setUserAuthCode(auth_code); // prevcode => prevcode = auth_code
           }
         }
  }
-const startEventSource = () => {
-
-  if (!isConnected) {
+export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
+ return async (dispatch) => {
+     
+  if (!connectionStatus) {
     // Prevent duplicate connections
-    if (eventSourceRef.current) {
-      console.warn("EventSource already running. ---------------FYERS EVENT SOURCE FEED");
+   /* if (eventSourceRef === undefined) {
+      console.warn("EventSource already running.");
       return;
-    }
+    }*/
 
     try {
       userLoggedIn();
      if (userAuthCode && userAuthCode !== null && userAuthCode !== undefined) {
-       console.log("User is Authorized ---------------------FYERS EVENT SOURCE FEED ");  
+       console.log("User is Authorized ");  
        const fetchAuthToken = async () => {
           try {  //
              const res = await API.get(FYERSAPITICKERACCESTOKEN , {params: { "auth_code" : userAuthCode }});
@@ -196,20 +232,18 @@ const startEventSource = () => {
              return text;
           }
           catch(erer){
-            console.log("Auth token fetch Error  ---------------FYERS EVENT SOURCE FEED ")
+            console.log("Auth token fetch Error ")
             return '';
          }
        }; 
-       const fetchIndicesQuote = async (acctoken) => {   
+       const fetchIndicesQuote = async (acctoken) => {  
+        
+        let optionFeedCache = StorageUtils._retrieve(CommonConstants.optionFeedDataCacheKey);
 
-        let marketFeed = StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey);
-
-        let indicesFeed = marketFeed !==undefined ?  StorageUtils._retrieve(CommonConstants.marketFeedDataCacheKey).data : null;
-        console.log(" indices "+JSON.stringify(indicesFeed));
-       
-           let indices =  (indicesFeed !==undefined && indicesFeed !==null ) ? ( (indicesFeed.data !==undefined &&
+        let indicesFeed = optionFeedCache !==undefined ?  StorageUtils._retrieve(CommonConstants.optionFeedDataCacheKey).data : null;
+        console.log(" option index quote "+JSON.stringify(indicesFeed));
+          let indices =  (indicesFeed !==undefined && indicesFeed !==null ) ? ( (indicesFeed.data !==undefined &&
             indicesFeed.data !==null ) ? indicesFeed.data : null )  : null;
-
             if(acctoken  ===null || acctoken ===undefined || acctoken ==='' ){
                // gethe 
                let ctoken =  StorageUtils._retrieve(CommonConstants.recentCancelledOrderToken).data ;
@@ -233,141 +267,81 @@ const startEventSource = () => {
                 });
                 // Append each ticker
           if(indices !==undefined && indices !== null && Array.isArray(indices)){
-             indices.forEach(ticker => params.append("tickers", ticker));
+             indices.forEach(ticker => params.append("ticker", ticker));
           }
            else{
                 console.log("✅ Markeet Feed Indices not read ");
            }
 
         const es = new EventSource(FYERSAPIMARKETFEEDRENDER+`?${params.toString()}`, { withCredentials: true });
-
-         console.log(`✅ Markeet Feed Indices-${params.toString()} --------------FYERS EVENT SOURCE FEED`);
-
         es.onopen = () => {
             console.log("✅ EventSource connection opened.");
             setIsConnected(true);
         };
-        es.onmessage = (event) => {
+        es.onmessage = async (event) => {
          try {
           const data = JSON.parse(event.data);
           if (data !== undefined) { // last price
            const {ltp, symbol, type  } = data;   
            setTickerData(data); 
            if (typeof ltp !== "undefined" && typeof type !== "undefined") {
-             console.log("Indices Quote availalbe. -----------FYERS EVENT SOURCE FEED");
-             StorageUtils._save(CommonConstants.tickerIndicesCacheKey, data );
-            if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data);dispatch(saveSensexBook(data)) }
-            if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data);  dispatch(saveNiftyBook(data))}
-            if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data);  dispatch(saveBankNiftyBook(data))}
-            //NOTE this is a single Tick Price for either of the Symbols 
-            // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
-            // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
-
-            /* parsedData = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data
-            '[{"netQty":1,"qty":1,"avgPrice":72256,"netAvg":71856,"side":1,"productType":"MARGIN","realized_profit":400,"unrealized_profit":461,"pl":861,"ltp":72717,"buyQty":2,"buyAvg":72256,"buyVal":144512,"sellQty":1,"sellAvg":72656,"sellVal":72656,"slNo":0,"fyToken":"1120200831217406","crossCurrency":"N","rbiRefRate":1,"qtyMulti_com":1,"segment":20,"symbol":"MCX:SILVERMIC20AUGFUT","id":"MCX:SILVERMIC20AUGFUT-MARGIN","cfBuyQty":0,"cfSellQty":0,"dayBuyQty":0,"daySellQty":1,"exchange":10}]'
-            
-            
-            [{"netQty":1,"qty":1,"avgPrice":72256,"netAvg":71856,"side":1,"productType":"MARGIN","realized_profit":400,"
-             unrealized_profit":461,"pl":861,"ltp":72717,"buyQty":2,"buyAvg":72256,"buyVal":144512,"sellQty":1,
-             "sellAvg":72656,"sellVal":72656,"slNo":0,"fyToken":"1120200831217406","crossCurrency":"N","rbiRefRate":1,
-             "qtyMulti_com":1,"segment":20,"symbol":"MCX:SILVERMIC20AUGFUT","id":"MCX:SILVERMIC20AUGFUT-MARGIN",
-             "cfBuyQty":0,"cfSellQty":0,"dayBuyQty":0,"daySellQty":1,"exchange":10}]
-
-            */ 
-          // debugger;
-             // CHECK parsedData already contains the FETCHED position of not 
-             if(parsedData  == null || parsedData  == undefined){
-                 try { 
-               // let g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey).data);
-                let g = undefined;
-                    try { 
-                      g =     JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
-                    }
-                    catch(er2){
-                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey}).data) failed `);
-                    }
-                  if(g !==null && g!==undefined && Array.isArray(g)){
-                     parsedData = g
-                  }
-                  else {
-                   // g = JSON.parse(StorageUtils._retrieve(CommonConstants.positionDataCacheKey));
-                   // g = JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey)); // no need to parse 
-                      try { 
-                        g =     JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey));
-                     }
-                      catch(er3){
-                          g =  StorageUtils._retrieve(CommonConstants.recentPositionsKey) ;
-                       console.log(` FyersEventSource: parsedData : parse(${CommonConstants.recentPositionsKey})) failed `);
-                     }
-
-                  
-                    if(g !==null && g!==undefined ){
-                       let kt   = Object.fromEntries(
-                                  Object.entries(g).map(([key, value]) => [key, String(value)])
-                                      );
-                         Object.entries(g).forEach(([key, value]) =>{
-                               if (value !==null && value !==undefined &&  Array.isArray(value) ){
-                                  g = value;
-                                  
-                               } 
-                         } );
-
-                      console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} ::  ${JSON.stringify(g)} `); 
-                      parsedData = g
-                    }
-                    else {
-                      console.log(` FyersEventSource:  parsedData :  CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: [] `); 
-                      parsedData = g
-                     // return [];
-                    }
-                  }
-                    }
-                catch(ere){
-                  console.log(` FyersEventSource: parsedData : CommonConstants.positionDataCacheKey ${CommonConstants.recentPositionsKey} :: not available set to [] `); 
-                   parsedData =[];
-                  //return [];
-                }
-               
-             }
-
-
-             if(parsedData !== null && parsedData !== undefined &&  Array.isArray(parsedData)) {
-              let dataToSort = [...parsedData]; let positionTickerData = [];
-               console.log(`FyersEventSource: positionBook state ${JSON.stringify(dataToSort)} `);
-              if( Array.isArray(dataToSort)) { 
-                        positionTickerData = dataToSort.map(p => {
-                          let tickSym  = (p.symbol.indexOf('NIFTY')  -1 ? 'NSE:'+p.symbol:( p.symbol.indexOf("SENSEX")>-1? "BSE:"+p.symbol : "NSE:"+p.symbol));
-                        if ( data.symbol.indexOf(tickSym) > -1) {
-                            console.log(`FyersEventSource: updating ${p.symbol} LTP to ${data.ltp}`);
-                            return { ...p, ltp: data.ltp };
+         //    console.log("Indices Quote availalbe.");
+                      // ✅ generic updates (positions, cache)
+            StorageUtils._save(
+              `${CommonConstants.tickerIndicesCacheKey}:${symbol}`,
+              data
+            );
+             // ✅ update the tickerMap safely (isolate per symbol)
+          /*  setTickerMap((prev) => ({
+              ...prev,
+              [symbol]: { ...data }, // clone to avoid mutation
+            })); */
+             let   tickerMap2 =undefined;
+              try {
+                 // const result = await  dispatch(updateTickerMap(data));  //dispatch(orderBookData("")); 
+                    dispatch(updateTickerMap(data));
+                    const result = store.getState().ticker.tickerMap;
+                  if(result !==undefined && result !== null && Array.isArray(result)){
+                      tickerMap2 =     result ;
+                                //= useSelector(state => state.ticker.tickerMap);
+                    if (!isEqual(tickerMap, tickerMap2)) {
+                        if(Array.isArray(tickerMap2) && tickerMap2.length >0 ){ 
+                          console.log(`optionChainFeed.actions.js ticker map from PositionGrid ${tickerMap} `)
+                          tickerMap = tickerMap2;
+                          console.log(`optionChainFeed.actions.js ticker map in optionChainFeed ${tickerMap2} `)
                         }
-                        return p;
-                        });
 
                     }
-                    else {
-                         console.log(`FyersEventSource: positionBook not array `);
-                    }
-                // set parseData with the updated ticker price 
-                if(positionTickerData.length >0){  
-                  parsedData = positionTickerData;
+                  if(symbol === 'BSE:SENSEX-INDEX'){  setSensex(data,tickerMap); dispatch(saveSensexBook(data)) }
+                  if(symbol === 'NSE:NIFTY50-INDEX'){ setNifty(data , tickerMap);  dispatch(saveNiftyBook(data))}
+                  if(symbol ==='NSE:NIFTYBANK-INDEX'){  setBankNifty(data,tickerMap);  dispatch(saveBankNiftyBook(data))}
+                  if(symbol.indexOf('4450CE')>-1){   console.log( `1 CE ${ JSON.stringify(data)}  `)}
+                  //NOTE this is a single Tick Price for either of the Symbols 
+                  // the 3 above are default , rest would be the onES WHERE THE POSITION'S ARE TAKEN 
+                  // WE HAVE TO UPDATE THE POSITION BOOK SYMBOLS WITH THESE PRICES.
+                  dispatch( savePositionTickerBook(data));
                 }
-                else {
-                  console.log(" POSITION  INDICES .................no TICKER UPDATES -----------FYERS EVENT SOURCE FEED")
-                }
-             }
-             else {
-                   console.log(`FyersEventSource: please FETCH the Position's manually for TICKER UPATES IN POSITONS `);
-                   //  console.log(" PositionGrid after login state.position.positionBook "+JSON.stringify(positionData))
-                   console.log(`FyersEventSource: parsedData  ${parsedData} `);
-             }
-            dispatch( savePositionTickerBook(data));
-              onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
+           
+             /* onFeed(JSON.stringify( { "colorSENSEX": colorSENSEXClass , "colorSENSEX" : colorBankNIFTYClass ,
                      "colorSENSEX": colorNIFTYClass} ) )
+                     */
+              
+                    //fetchOrdersBookDataCacheKey();
+                     // setOrdersShowModal(true);  
+                  } catch (err) {
+
+                     console.error("❌ optionChainFeed.action: Ticker prices tickerMap Update failed :", err);
+                  //  console.error(err);
+                  // setResource(null);
+                   // setOrdersShowModal(true);
+                 }
+
+
+          
            }
           }               
          } catch (err) {
-          console.error("❌ Failed to parse SSE data:", err);
+             console.error("❌ Failed to parse SSE data:", err);
          }
         };
         es.onerror = (err) => {
@@ -379,9 +353,10 @@ const startEventSource = () => {
             stopEventSource();
             }
         };
-        eventSourceRef.current = es;
+       // eventSourceRef.current = es;
+        eventSourceRef  = es;
     } 
-     fetchAuthToken().then(async aces_token   => { 
+   await  fetchAuthToken().then(async aces_token   => { 
        await  fetchIndicesQuote(aces_token);
      });
 
@@ -401,16 +376,18 @@ const startEventSource = () => {
   else {
         stopEventSource();
   }
+    }
   };
 
-  const stopEventSource = () => {
-    if (eventSourceRef.current) {
-      console.log("🛑 Closing EventSource...-----------FYERS EVENT SOURCE FEED");
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
+export   const stopEventSource = () => {
+    if (eventSourceRef !==undefined) {
+      console.log("🛑 Closing EventSource...");
+      //eventSourceRef.current.close();
+      eventSourceRef = null;
+      //eventSourceRef.current = null;
       setIsConnected(false);
     } else {
-      console.warn("⚠ No EventSource to close.-----------FYERS EVENT SOURCE FEED");
+      console.warn("⚠ No EventSource to close.");
     }
   };
  const localISTDateTimeSec = (inStr) => {
@@ -434,6 +411,7 @@ const startEventSource = () => {
           console.warn("⚠ Invalid date received, using current time:", inStr);
           utcDate = new Date();
         }
+     
        }catch(derr){
         utcDate = new Date();
         console.log("ticker time no present, current used ")
@@ -443,48 +421,13 @@ const startEventSource = () => {
 
    }
 
-function updatePriceFromStream(newPriceStr,sym) {
-  const newPrice = parseFloat(newPriceStr);
-  let priceElement = document.getElementById(SENSEXTICKERPRICE);
-  switch(sym){
-    case 'BSE:SENSEX-INDEX':previousPrice = previousSENSEXPrice;
-                priceElement = document.getElementById(SENSEXTICKERPRICE);  
-                break;
-    case 'NSE:NIFTYBANK-INDEX': previousPrice = previousNIFTYPrice;  // NIFTYTICKERPRICE
-              priceElement = document.getElementById(NIFTYTICKERPRICE);  
-                    break;
-    case 'NSE:NIFTYBANK-INDEX': previousPrice = previousBankNIFTYPrice;
-               priceElement = document.getElementById(BANKNIFTYTICKERPRICE);  
-                   break;
-    default : previousPrice = previousNIFTYPrice;
-  }
-  if(priceElement){ 
-   console.log("price element present");
-  } 
-  if (!isNaN(newPrice)) {
-    if (previousPrice !== null) {
-      if (newPrice > previousPrice) {
-        priceElement.style.color = "green"; // price increased
-        priceElement.style.backgroundColor = "#e6ffed"; // light green background
-        
-       
-      } else if (newPrice < previousPrice) {
-        priceElement.style.color = "red"; // price decreased
-        priceElement.style.backgroundColor = "#ffe6e6"; // light red background
-      } else {
-        priceElement.style.color = "black"; // unchanged
-        priceElement.style.backgroundColor = "transparent";
-      }
-    }
 
-    priceElement.textContent = newPrice.toFixed(2); // display with 2 decimal places
-    previousPrice = newPrice;
-  }
-}
-const setSensex = (tickQuote) => { 
+const setSensex = (tickQuote,tickerMap) => { 
         let el = document.getElementById(SENSEXTICKERDOMID);  // GLOBAL DOM ID sensex-status
         let tickerData = tickQuote;
-         let {ltp , type } = tickQuote;
+            const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["BSE:SENSEX-INDEX"] !== undefined)  ? tickerMap["BSE:SENSEX-INDEX"] : tickQuote;
+         let {ltp1 , type1 } = tickQuote;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'SENSEX-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         
@@ -513,7 +456,7 @@ const setSensex = (tickQuote) => {
                  let  s = "BSE:SENSEX-INDEX";
                   let priceElement = document.getElementById(SENSEXTICKERPRICE);
                   let  newPrice = parseFloat(price);
-                   setNewSENSEXPrice( (prev )=> prev = newPrice ); // = newPrice;
+                   setNewSENSEXPrice(  newPrice ); // = newPrice;
                   previousPrice = previousSENSEXPrice;
                     if (!isNaN(newSENSEXPrice)) {
                       if (previousSENSEXPrice !== null) {
@@ -537,9 +480,9 @@ const setSensex = (tickQuote) => {
                           setColorSENSEXClass("bg-gray-100 text-black"); // no change
                         }
                       }
-
-                      priceElement.textContent = newPrice.toFixed(2); // display with 2 decimal places
-                      setPreviousSENSEXPrice( (prev )=> prev = newPrice); // = newPrice;
+                        // {tickerMap['BSE:SENSEX-INDEX'].ltp}  used in Position Grid - to show the data.
+                    //  priceElement.textContent = newPrice.toFixed(2); // display with 2 decimal places
+                      setPreviousSENSEXPrice(  newPrice); // = newPrice;
                     }
                 // the bellow causes race and some nifty printed for sensex , jumblling 
                  //   updatePriceFromStream(price, s);
@@ -551,11 +494,13 @@ const setSensex = (tickQuote) => {
             }
         }
   }
-    const setNifty = (tickQuote) => { 
+    const setNifty = (tickQuote,tickerMap) => { 
         let el = document.getElementById(NIFTYTICKERDOMID);  // GLOBAL DOM ID sensex-status
         let tickerData = tickQuote;
-         let {ltp , type } = tickQuote;
-        let sym = 'SENSEX-INDEX';  // tickerData["symbol"];
+        const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["NSE:NIFTY50-INDEX"] !== undefined)  ? tickerMap["NSE:NIFTY50-INDEX"] : tickQuote;
+         let {ltp1 , type1 } = tickQuote;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
+        let sym = 'NIFTY-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         
             let time =  localISTDateTimeSec(type) ;// localISTDateTimeSec(tt)//tickerData["tt"]
@@ -577,39 +522,31 @@ const setSensex = (tickQuote) => {
             // update price and color based on previus price 
         let priceSpan = document.getElementById(NIFTYTICKERPRICE);
             if(priceSpan !==null && priceSpan !== undefined){
-            
+                 
                    // priceElement.textContent = price;
                        let  s = "NSE:NIFTY50-INDEX";
-                  let priceElement = document.getElementById(NIFTYTICKERPRICE);
+                  let priceElement2 = document.getElementById(NIFTYTICKERPRICE);
                   let  newPrice = parseFloat(price);
-                  setNewNIFTYPrice( (prev )=> prev = newPrice ); 
+                    setNewNIFTYPrice(  newPrice ); // = newPrice;
                   previousPrice = previousNIFTYPrice;
-                    if (!isNaN(newPrice)) {
+                    if (!isNaN(newNIFTYPrice)) {
                       if (previousNIFTYPrice !== null) {
-                        if (newPrice > previousNIFTYPrice) {
+                        if (newNIFTYPrice > previousNIFTYPrice) {
                             setColorNIFTYClass("bg-green-100 text-green-800"); // price up
-                           priceElement.style.backgroundColor= 'green'; //   nifty-price
-                           priceElement.style.color ='white';
-                            console.log('NIFTY50  gree price  '+ newPrice.toFixed(2));  
-                             console.log('NIFTY50  gree price  '+  newPrice.toFixed(2));  
-                              console.log('NIFTY50 gree price  '+  newPrice.toFixed(2)); 
-
-
-                        } else if (newPrice < previousNIFTYPrice) {
+                                priceElement2.style.backgroundColor= 'green'; //  banknifty-price
+                           priceElement2.style.color ='white';
+                        } else if (newNIFTYPrice < previousNIFTYPrice) {
                            setColorNIFTYClass("bg-red-100 text-red-800"); // price down
-                            priceElement.style.backgroundColor= 'red';
-                            priceElement.style.color ='white';
-                             console.log('NIFTY50  red  price  '+  newPrice.toFixed(2));  
-                              console.log('NIFTY50   red  price  '+  newPrice.toFixed(2));  
-                               console.log('NIFTY50   red  price  '+  newPrice.toFixed(2)); 
+                            priceElement2.style.backgroundColor= 'red';
+                            priceElement2.style.color ='white';
                         } else {
                             setColorNIFTYClass("bg-gray-100 text-black"); // no change
                         }
                       }
-
-                      priceElement.textContent = newPrice.toFixed(2); // display with 2 decimal places
+                      //  {tickerMap['NSE:NIFTY50-INDEX'].ltp}
+                     // priceElement2.textContent = newNIFTYPrice.toFixed(2); // display with 2 decimal places
                      // previousNIFTYPrice = newPrice;
-                       setPreviousNIFTYPrice( (prev )=> prev = newPrice);
+                       setPreviousNIFTYPrice( newPrice);
                     }
 
 
@@ -620,10 +557,12 @@ const setSensex = (tickQuote) => {
             }
         }
   }
-    const setBankNifty = (tickQuote) => { 
+    const setBankNifty = (tickQuote,tickerMap) => { 
         let el = document.getElementById(BANKNIFTYTICKERDOMID);  // GLOBAL DOM ID BANKNIFTY-status
         let tickerData = tickQuote;
-        let {ltp , type } = tickQuote;
+         const nifty =  (  tickerMap !==null && tickerMap !==undefined &&  tickerMap["NSE:BANKNIFTY-INDEX"] !== undefined)  ? tickerMap["NSE:BANKNIFTY-INDEX"] : tickQuote;
+         let {ltp1 , type1 } = tickQuote;
+         let {ltp , type } = nifty !== undefined  ? nifty : tickQuote;
         let sym = 'BANKNIFTY-INDEX';  // tickerData["symbol"];
         let price = ltp //  tickerData["lp"];
         
@@ -649,34 +588,28 @@ const setSensex = (tickQuote) => {
                 let  s = "NSE:NIFTYBANK-INDEX";
                 //     updatePriceFromStream(price, s);
                   //  priceElement.textContent = price;
-                 let priceElement = document.getElementById(BANKNIFTYTICKERPRICE);
+                 let priceElement3 = document.getElementById(BANKNIFTYTICKERPRICE);
                   let  newPrice = parseFloat(price);
-                    setNewBankNIFTYPrice( (prev )=> prev = newPrice ); 
+                  setNewBankNIFTYPrice(  newPrice ); // = newPrice;
                   previousPrice = previousBankNIFTYPrice;
-                    if (!isNaN(newPrice)) {
+                    if (!isNaN(newBankNIFTYPrice)) {
                       if (previousBankNIFTYPrice !== null) {
-                        if (newPrice > previousBankNIFTYPrice) {
+                        if (newBankNIFTYPrice > previousBankNIFTYPrice) {
                            setColorBankNIFTYClass("bg-green-100 text-green-800"); // price up
-                             priceElement.style.backgroundColor= 'green'; //   nifty-price
-                           priceElement.style.color ='white';
-                            console.log('NIFTYBANK  gree price  '+ newPrice.toFixed(2));  
-                             console.log('NIFTYBANK  gree price  '+  newPrice.toFixed(2));  
-                              console.log('NIFTYBANK gree price  '+  newPrice.toFixed(2)); 
-
-                          } else if (newPrice < previousBankNIFTYPrice) {
+                                  priceElement3.style.backgroundColor= 'green'; //  banknifty-price
+                           priceElement3.style.color ='white';
+                       } else if (newBankNIFTYPrice < previousBankNIFTYPrice) {
                            setColorBankNIFTYClass("bg-red-100 text-red-800"); // price down
-                             priceElement.style.backgroundColor= 'red';
-                            priceElement.style.color ='white';
-                             console.log('NIFTYBANK  red  price  '+  newPrice.toFixed(2));  
-                              console.log('NIFTYBANK   red  price  '+  newPrice.toFixed(2));  
-                               console.log('NIFTYBANK  red  price  '+  newPrice.toFixed(2)); 
+                              priceElement3.style.backgroundColor= 'red';
+                            priceElement3.style.color ='white';
                         } else {
                           setColorBankNIFTYClass("bg-gray-100 text-black"); // no change
                         }
                       }
-                      priceElement.textContent = newPrice.toFixed(2); // display with 2 decimal places
+                     //  {tickerMap['NSE:NIFTYBANK-INDEX'].ltp}  used in Position Grid - to show the data.
+                     // priceElement3.textContent = newBankNIFTYPrice.toFixed(2); // display with 2 decimal places
                      // previousBankNIFTYPrice = newPrice;
-                       setPreviousBankNIFTYPrice( (prev )=> prev = newPrice);
+                       setPreviousBankNIFTYPrice( newPrice);
                     }
      
                      StorageUtils._save(CommonConstants.currentBankNiftyDataCacheKey,JSON.stringify({ s , price, time  }));
@@ -720,26 +653,4 @@ const setSensex = (tickQuote) => {
         clearInterval(threeSecInterval)
     }
   };
-
-  return (
-    <button        
-       onClick={startEventSource} 
-      className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
-        isConnected 
-          ? 'bg-primary green hover:bg-green-800 border-green-700'
-          : 'bg-gray-100 border-gray-300 text-gray-600'
-      }`}
-    >   {/* disabled={isConnected} */}
-      {isConnected  ? (
-        <Activity size={20} className=" animate-pulse " />
-      ) : (
-        <ToggleLeft size={20} className="text-gray-500" />
-      )}
-      <span className="text-sm font-semibold font-medium">
-        {isConnected  ? 'Start Live' : 'Pause Live'}
-      </span>
-    </button>
-  );
-};
-
-export default FyersEventSourceFeed;
+ 

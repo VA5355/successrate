@@ -173,7 +173,7 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
 
             }
           else {
-                console.log(`unable to read :::  state.ticker.orderBook `);
+               // console.log(`unable to read :::  state.ticker.orderBook `);
           }
 
          

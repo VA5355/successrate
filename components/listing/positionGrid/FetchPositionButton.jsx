@@ -17,6 +17,7 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
   const [isStreaming, setIsStreaming] = useState(false);
   const [threeSec , setThreeSec] = useState(0);
    const [showModal, setShowModal] = useState(false);
+    let  positionData   = useSelector((state ) => state.position.positionBook)
  const dispatch = useDispatch();
 
  const setSoldQtyForEachPosition = (positions , callbackUpdateQty) => {
@@ -68,6 +69,31 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
                 StorageUtils._save(CommonConstants.marketFeedDataCacheKey, CommonConstants.sampleObjTickerTDataVersion1);
 
                 dispatch( savePositionBook(([...redentPositionData.data])));
+                /* for faster rendering */
+              
+                 positionData.forEach(row => {
+                                 console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
+                                  let sty = row.symbol.split(":");let custSy= undefined;
+                                  if(Array.isArray(sty)){
+                                    custSy = sty[1];
+                                  } 
+                                  if(custSy !==undefined){
+                                     console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
+                                   let posLtpRow  = document.getElementById(`streamedLTP_${custSy}_${row.productType}`);
+                                   let posUnrealisedRow  =  document.getElementById(`streamedUnrealized_${custSy}_${row["productType"]}`);
+                                   if(posLtpRow !==null && posLtpRow !== undefined){ 
+                                      posLtpRow.textContent = row.ltp;
+                                      console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
+                                    }
+                                    if(posUnrealisedRow !==null && posUnrealisedRow !== undefined){ 
+                                      let actUnreal = (( parseInt(row.netQty) *  row.ltp ) -  parseInt(row.buyVal)) ;
+                                      posUnrealisedRow.textContent = actUnreal;
+
+                                      console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
+                                    }
+                                   }
+                               })
+
                 dispatch( savePositionStreamBook(([...redentPositionData.data])));
 
                // hope fully the above save Positionbook will include inte new symbols into

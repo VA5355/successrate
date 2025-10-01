@@ -298,7 +298,7 @@ useEffect( () => {
       let isValidCancelOrdersJSON = false;
      try {
           const parsedObject = JSON.parse(orderBook);
-            console.log("QuickOrder Book -> fetchOrdersBookDataCacheKey parsedObject " +parsedObject);
+         //   console.log("QuickOrder Book -> fetchOrdersBookDataCacheKey parsedObject " +parsedObject);
             isValidCancelOrdersJSON= true;
          if(Array.isArray(parsedObject) && parsedObject.length >0){
 
@@ -336,10 +336,10 @@ useEffect( () => {
       }   
       catch(err){
             isValidCancelOrdersJSON = false;
-            console.log(" QuickOrder Book -> no valid positions data re-login or refresh ");
+        //    console.log(" QuickOrder Book -> no valid positions data re-login or refresh ");
       }
 
-      console.log("QuickOrder Book ->: OrderBook multiple orders saved to cancelOrderDataCacheKey  ");
+     // console.log("QuickOrder Book ->: OrderBook multiple orders saved to cancelOrderDataCacheKey  ");
     }
    }
    else {
@@ -624,7 +624,7 @@ const parseStoreUtilsOrder = (stored) => {
             if (data !==null && data !== undefined ){  
               if(typeof data === "string"){ 
                 let data1 = JSON.parse(data);
-                 console.log("parseStoreUtilsOrder -> orderBook is string ");
+               //  console.log("parseStoreUtilsOrder -> orderBook is string ");
                 actualOrderBook = data1;
                  parsedObj = data1;    
               }else if( typeof data === "object"){
@@ -663,7 +663,7 @@ const parseStoreUtilsOrder = (stored) => {
                   parsedObj = actualOrderBook;
                 }
                 // setParsedData(actualOrderBook);
-                  console.log("Order Book parseStoreUtilsOrder -> orderBook : "+JSON.stringify(parsedObj ));
+                //  console.log("Order Book parseStoreUtilsOrder -> orderBook : "+JSON.stringify(parsedObj ));
               }
             }
               else { console.log("Order Book parseStoreUtilsOrder -> could not interpret : ");

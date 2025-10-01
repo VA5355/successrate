@@ -18,6 +18,7 @@ import {API, FYERSAPI, FYERSAPILOGINURL} from "@/libs/client"
 import StreamToggleButton from '../tradeGrid/StreamToggleButton';
 //import Fyersmarketfeed from '../tradeGrid/Fyersmarketfeed';
 import FyersEventSourceFeed from '../tradeGrid/FyersEventSourceFeed';
+import CustomOptionFeed from '../tradeGrid/CustomOptionFeed';
 import QuickOrderBook from '../quickorder/QuickOrderBook';
 import CancelOrderButtonWithSuspense from './CancelButton';
 import PlaceOrderButton from './PlaceOrderButton';
@@ -28,6 +29,12 @@ import isEqual from 'lodash.isequal';
 //CUSTOME HOOK to DETECT MOBILE 
 //import { useIsMobile } from "./useIsMobile";
  import   useIsMobile   from "../tradeGrid/useIsMobile";
+ import OptionChainSwipeUI from "./optionchain/OptionChainSwipeUI"; // ✅ import the big component
+ import OptionChainTable from "./optionchain/OptionChainTable"; // ✅ import the big component
+ //import OptionChainTable from "./optionchain/OptionChainTable"; // ✅ import the big component
+ import OptionChainTableSideway from "./optionchain/OptionChainTable-Sideway"; // ✅ import the big component
+ import OptionChainTableSingleUI from "./optionchain/OptionChainTableSingleUI"; // ✅ import the big component
+
 
 import  {  PositionBookMobileView as  MobileView }   from "./PositionBookMobileView";
 const PositionRow = {
@@ -187,12 +194,12 @@ const PositionGrid = ({   positionDataB   }) => {
         let positions = undefined;
           const dataFromCache = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
          if( g['data'] !== ''  && g['data'] !== null && g['data'] !==undefined){
-                     console.log(" recentTrades  position data empty "+JSON.stringify(g))
+         //            console.log(" recentTrades  position data empty "+JSON.stringify(g))
                      let tr = JSON.parse((JSON.stringify(g)));
                      if(tr !==null && tr !== undefined ){
                          if(tr['data'] !==null && tr['data']!== undefined ){
                            positions =tr['data'];
-                            console.log(" positions useEffect   ")
+                     //       console.log(" positions useEffect   ")
 
                          }
                      }
@@ -206,7 +213,7 @@ const PositionGrid = ({   positionDataB   }) => {
 
         if (positions && Array.isArray(positions)) {
           setParsedData(positions);
-          console.log("..........positions grid recentPositions polled parsedData updated")
+         //  console.log("..........positions grid recentPositions polled parsedData updated")
           return;
         }
 
@@ -248,7 +255,7 @@ const PositionGrid = ({   positionDataB   }) => {
       fetchParsedData();
 
       const delay = fibonacci(i);
-      console.log(`Next poll in ${delay / 1000}s`);
+     // console.log(`Next poll in ${delay / 1000}s`);
       timeoutId = setTimeout(() => startPolling(i + 1), delay);
     };
 
@@ -387,6 +394,26 @@ const handleFeedData = (feedColors) => {
        setColorSENSEXClass((pre) => pre = colorSENSEX)
         }catch(er){
            console.log(" color feed object issue from FyersEventSourceFeed Button")
+        }
+  }
+  else {
+      
+  }
+};
+const handleCustomFeedData = (feedColors) => {
+  if (feedColors !==null && feedColors !== undefined) {
+      // setParsedData([...newData]);
+      try {
+      feedColors =JSON.parse(feedColors) //feedColors
+     let colorSENSEX = feedColors.colorSENSEX;
+      let colorBank = feedColors.colorBank;
+     let  colorNifty = feedColors.colorNifty;
+
+      //setColorBankNIFTYClass((pre) => pre = colorBank)
+      /// setColorNIFTYClass((pre) => pre = colorNifty)
+      // setColorSENSEXClass((pre) => pre = colorSENSEX)
+        }catch(er){
+           console.log(" color feed object issue from CustomOptionFeed Button")
         }
   }
   else {
@@ -592,9 +619,31 @@ const getSortIndicator = (column) =>
                         isValidPositionJSON = false;
                         console.log("no valid positions data re-login or refresh ");
                   }
-            if (dataLocal !== null && Array.isArray(dataLocal) && isValidPositionJSON ){
+            if (dataLocal !== null && Array.isArray(dataLocal) && dataLocal.length >0 && isValidPositionJSON ){
               let pendingRow  =[];
-                dataLocal.map(({ symbol, productType, netQty, avgPrice,calPrf,  totCh, ltp, realized_profit, buyVal, unrealized_profit }) => {
+                 console.log(` dataLocal : ${JSON.stringify(dataLocal)}  `);
+                 let  symbol = dataLocal[0]?.symbol,
+                   productType = dataLocal[0]?.productType,
+                    netQty= dataLocal[0]?.netQty,
+                    avgPrice= dataLocal[0]?.avgPrice,
+                    calPrf= dataLocal[0]?.calPrf,
+                      totCh= dataLocal[0]?.totCh,
+                       ltp= dataLocal[0]?.ltp,
+                        realized_profit= dataLocal[0]?. realized_profit,
+                         buyVal = dataLocal[0]?. buyVal,
+                         unrealized_profit = dataLocal[0]?. unrealized_profit;  
+                if ( symbol !==undefined && 
+                     productType !==undefined && 
+                     netQty !==undefined && 
+                     avgPrice !==undefined && 
+                     totCh !==undefined && 
+                     ltp !==undefined && 
+                     realized_profit !==undefined && 
+                     buyVal !==undefined && 
+                      unrealized_profit !==undefined  
+                ){
+
+                       dataLocal.map(({ symbol, productType, netQty, avgPrice,calPrf,  totCh, ltp, realized_profit, buyVal, unrealized_profit }) => {
                   if (parseInt(netQty) !==0 && parseInt(unrealized_profit) !==0 ){
                       //  console.log(`  Qty ${netQty},  Unrealized ${unrealized_profit}`);
                       validRow.symbol = symbol; validRow.productType=productType;  validRow.netQty=netQty; validRow.avgPrice=avgPrice;
@@ -606,6 +655,22 @@ const getSortIndicator = (column) =>
                   }
               
               });
+                }
+                else {
+                  console.log("either of the following attributes not present in the the Postino Row ")
+                  console.log(`symbol  ,
+                            productType ,
+                     netQty ,
+                     totCh ,
+                     ltp ,
+                     realized_profit ,
+                     buyVal,
+                      unrealized_profit,
+                    `)
+                  console.log(JSON.stringify(dataLocal[0]));
+
+                }
+           
              /*   pendingRow = pendingRow.filter(item => item !== null);
               console.log("pendingRow data  "+JSON.stringify(pendingRow))
             // MAP  the dataLocal , check if the all fields are undefined 
@@ -701,7 +766,7 @@ const getSortIndicator = (column) =>
                      // run a interval to check the fyersToken 
                     globalUserCheck  =  setInterval( async() => {
                         let result =   await FYERSAPI.get('/fyersgloballogin' )
-                        console.log("fyers login called ");
+                  //      console.log("fyers login called ");
                         let data =    result.data.value;
                         StorageUtils._save(CommonConstants.fyersToken,data)
                         const res = StorageUtils._retrieve(CommonConstants.fyersToken);
@@ -709,7 +774,7 @@ const getSortIndicator = (column) =>
                            
                             let auth_code = res.data['auth_code'];
                             if (auth_code&& auth_code !== null && auth_code !== undefined) {
-                                console.log("User is Authorized ");
+                    //            console.log("User is Authorized ");
                                 setUserLogged (true);
                                clearInterval(globalUserCheck);
                                dispatch(startEventSource(false , tickerMap,callBackFeedData));
@@ -771,7 +836,7 @@ const getSortIndicator = (column) =>
             );
             newWindow?.window.addEventListener('load', () => {
                 newWindow?.window.addEventListener('unload', () => {
-                    console.log("unload the popup ")
+                  //  console.log("unload the popup ")
                   // // clear the StorageUtils. fetchPositions
                   if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
                         //  localStorage.removeItem("yourKey");
@@ -782,13 +847,13 @@ const getSortIndicator = (column) =>
                    // ftech the globallogin boject 
                    let globaProm =    ( async () => { 
                      let login = await FYERSAPI.get('/fyersgloballogin'); 
-                     console.log("fyers login called ");
+                 //    console.log("fyers login called ");
                      return login;
                     }) 
                     const res = Promise.all([ globaProm()]);
                     res.then((values) => {
                         StorageUtils._save(CommonConstants.fyersToken,values)
-                         console.log("fyers login token saved ")
+                  //       console.log("fyers login token saved ")
                      //DON'T call immediately as Fyers Login make take time 
                      // so Using setTimeout or setInterval 
                        globalUserTrades  =  setInterval( async () => { 
@@ -1033,7 +1098,7 @@ const getSortIndicator = (column) =>
 
             <div className="ml-auto"> <StreamToggleButton /></div>
             {/*colorSENSEXClass={colorSensex} colorBankNIFTYClass={colorBank} colorNIFTYClass={colorNifty} */}
-             <div className="ml-auto"> <FyersEventSourceFeed  onFeed={handleFeedData}   /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
+             <div className="ml-auto"> <FyersEventSourceFeed parsedData={parsedData} onFeed={handleFeedData}   /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
            </div>
           </div>
            
@@ -1162,6 +1227,20 @@ const getSortIndicator = (column) =>
     </tbody>
   </table>
 </div> */}
+     <div className="p-1 justify-start mx-auto">   {/* p-4 max-w-3xl  */}
+      <h4 className="text-2xl font-bold "> {/* text-center mb-6 */}
+        Option Chain 
+      </h4>
+      
+      {/* ✅ drop in the main option chain component OptionChainTableSideway OptionChainTable <OptionChainSwipeUI /><OptionChainTableSingleUI/>
+     */}
+      <OptionChainTable/>
+    </div>
+
+     
+
+
+
       <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
   userLogged={userLogged}
   handleSort={handleSort}
@@ -1172,7 +1251,7 @@ const getSortIndicator = (column) =>
            {/*<BuyButton />*/}
            <div className="flex justify-between items-center">
             <CancelOrderButtonWithSuspense/>
-
+               <div className="ml-auto"> <CustomOptionFeed parsedData={parsedData} onFeed={handleCustomFeedData}   /></div>
             <div className="ml-auto"><PlaceOrderButton /></div>
            </div>
       </div>

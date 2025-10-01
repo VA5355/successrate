@@ -4,7 +4,8 @@ import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
 import {saveCompanyData} from "@/redux/slices/stockSlice"
 import { saveBuyOrderBook } from '@/redux/slices/buyOrderBookSlice';  
 import { saveSellOrderBook } from '@/redux/slices/sellOrderBookSlice';  
-
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { showModal, showError } from '../../common/service/ModalService';
 import {CommonConstants} from "@/utils/constants"
 import toast from "react-hot-toast"
 import { FYERSAPINSECSV ,FYERSAPITHREESECQUOTE , FYERSAPIORDERBOOKSURL ,  FYERSAPITICKERACCESTOKEN, 
@@ -541,7 +542,7 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
 
                    };
                // READ ORDER FROM THE RECENT positions response 
-                  const recentOrderPlace = StorageUtils._retrieve(CommonConstants.recentBuyOrderPlaced);
+                  const recentOrderPlace = StorageUtils._retrieve(CommonConstants.recentBuyOrderPlacedExclusive);
              if(recentOrderPlace !==null && recentOrderPlace !== undefined ){
                 console.log("Order recentBuyOrderPlaced "+JSON.stringify(recentOrderPlace));
                 /*recentOrderPlace {"isValid":true,"data":"{\"id\":\"25080200003993\",\"exchOrdId\":\"\",\"exchange\":10,\"symbol\":\"NSE:NIFTY2580724650PE\",\"limitPrice\":234.4,\"side\":-1}"}
@@ -550,12 +551,12 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                  let order_id =   orde.id ;
 
                    console.log("Order selected for BUY "+order_id);
-              if(order_id !==null && order_id !== undefined) {  
+             // if(order_id !==null && order_id !== undefined) {  
                 const fetchBUYORDERStatus = async (acctoken) => {
                       for (let endP = 0 ; endP < BUY_URL.length ; endP ++) { 
                        try {
-                          const sym = symbol; //'NIFTY2581424400CE';
-                         const params = new URLSearchParams({
+                         // const sym = symbol; //'NIFTY2581424400CE';
+                       /*  const params = new URLSearchParams({
                            // authcode: auth_code ,  //  localStorage.getItem(tokenKey),
                             interval: '1m',
                             limit: '100',
@@ -565,14 +566,209 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                             price: price,
                             qty:qty
                             });
-                        
+                            */
+                          StorageUtils._save(CommonConstants.remoteServerGeneralBuyErrorBasic,"");
+                          // let  buyOrderTTL =  StorageUtils._retrieve(CommonConstants.recentBuyledOrder)
+                           let  buyOrderTTL =  StorageUtils._retrieve(CommonConstants.recentBuyOrderPlacedExclusive)
+                           let tt = 0;
+                            try { 
+                             buyOrderTTL.ttl !==undefined ? buyOrderTTL.ttl :0;
+
+                            } catch(tterr){
+                              console.log('order time not captured ');
+                             }
+                          let comprisedBuyOrder=      JSON.parse( StorageUtils._retrieve(CommonConstants.recentBuyOrderPlacedExclusive).data);
+                               console.log("Order recentBuyOrderPlaced  var :comprisedBuyOrder : "+JSON.stringify(comprisedBuyOrder));
+                         //   let comprisedSellOrder=      JSON.parse( StorageUtils._retrieve(CommonConstants.recentSellledOrder).data);
+                          const sym = symbol; //'NIFTY2581424400CE';
+                         const params = new URLSearchParams({
+                           // authcode: auth_code ,  //  localStorage.getItem(tokenKey),
+                            interval: '1m',
+                            limit: '100',
+                            ticker: comprisedBuyOrder.symbol,
+                            id : comprisedBuyOrder._id,
+                            access_token: acctoken,
+                            price: comprisedBuyOrder.price,
+                            qty: comprisedBuyOrder.qty
+                            });
+
+                            let { _id, price , qty   } = comprisedBuyOrder;
+                              let sym1 = comprisedBuyOrder.symbol;
+                            if ( _id !==undefined && price !==undefined && qty !==undefined && sym1 !== undefined){ 
+                             console.log("Order BUY: -> "+JSON.stringify({  "id" : _id,
+                            "symbol":sym1 ,    ltp:price,  price: price,
+                            qty:qty }));
+                            }
+
+
+                    const fetchData = createAsyncThunk('data/fetch', async (_, { rejectWithValue }) => {
+                          try {
+                               const res = await API.get(FYERSAPIBUYORDER , {params: { "auth_code" : auth_code, "id" : _id,
+                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty }});  //   "access_token" : acctoken ,
+                              // Axios auto-parses JSON
+                              const responseData = res.data;
+                              let buyOrderJSON = responseData;
+                               let resJSON = responseData;
+                            // Safe parsing SUCCESS CASE 
+                                console.log("buyOrderJSON "+JSON.stringify(buyOrderJSON));
+                   
+                                if (buyOrderJSON !==undefined) {
+                                      const orderBuyData =buyOrderJSON ;         // Full object with n, v, s
+                                      // Optional: destructure needed fields
+                                      const {
+                                        code, // last price
+                                        message, // change percentage
+                                      id ,  // change in value
+                                      s  
+                                      } = orderBuyData;
+                                    if (typeof id !== "undefined" && typeof s !== "undefined" && s === 'ok') {
+                                        console.log("BUYORDER SUCCESS ");
+                                        // SET the CACHE  recentSellledOrder
+                                        StorageUtils._save(CommonConstants.recentBuyledOrder,JSON.stringify(responseData));
+                                        //remoteServerGeneralSellErrorBasic
+                                        StorageUtils._save(CommonConstants.remoteServerGeneralBuyErrorBasic,"");
+                                        // SET SELLLED BUTTON IN GREE 
+                                              let el = document.getElementById(PLACEORDERBUTTONID);  // GLOBAL DOM ID sensex-status
+                                              let quoteValue = price;
+                                              let tickerData = quoteValue;
+                                              let sym = sym1;  // tickerData["symbol"];'SENSEX-INDEX'
+                                              let orderid =id //  tickerData["lp"];
+                                            
+                                              let time =  localISTDateTimeSec(tt) ;// localISTDateTimeSec(tt)//tickerData["tt"]
+                                              sensexQue.push({time:time, orderid :orderid});
+                                                console.log('time '+JSON.stringify(time) + "order_id  "+ orderid);  
+                                            //  updateBestMatches1(sensexQue);
+                                              console.log("order buy "+JSON.stringify( { sym , orderid, time  }))
+                                              if(el !==null && el !== undefined){
+                                              // el.textContent = time + " :: "+ sym +" :: "+ price;
+                                                  let buyButtonSpan = document.getElementById(PLACEORDERBUTTONSPAN);
+                                                  if(buyButtonSpan !==null && buyButtonSpan !== undefined){
+                                                    buyButtonSpan.textContent = 'can '+orderid ;
+                                                  }
+                                                  // SKIPPED AS the HEADING DIV CLARIFY the SYMBOL
+                                                  /*let symbolEl = document.getElementById(SENSEXBUYSYMBOL);
+                                                  if(symbolEl !==null && symbolEl !== undefined){
+                                                      symbolEl.textContent =   sym ;
+                                                  }*/
+                                                  // update price and color based on previus price 
+                                            // let priceSpan = document.getElementById(SENSEXBUYPRICE);
+                                              //   if(priceSpan !==null && priceSpan !== undefined){
+                                                
+                                                  //      priceElement.textContent = price;
+
+                                                // SKIPPED FOR NOW 
+                                                // updatePriceFromStream( price, SYMBOL);
+                                                // }
+                                              }
+                                     // 1. Return the success message/data here!
+                                     //   return {
+                                     //       message: "Sell order executed successfully!",
+                                      //      orderData: { sym , orderid, time  } // Pass the actual response object
+                                     //   };    
+                                       const options = {
+                                                timeZone: 'Asia/Kolkata',
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                hour12: false
+                                              };
+                                              let  utcDate = new Date();
+                                      let istTime =   new Intl.DateTimeFormat('en-GB', options).format(utcDate);
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} ${istTime} sent `, }  ));
+                                     // return rejectWithValue({ message: `Order ${sym} ${orderid} ${istTime} sent ` })       
+ 
+                                  }     else {
+                                      console.warn("ORDER to BUY NOT  availalbe  (e.g., polling or WebSocket).");
+                                      // from above we may get the orderid in these variables 
+                                      // id , code , 
+                                      /*
+                                      code :-99
+                                      message: RED:Margin Shortfall: INR 2,78,806.74 Available:INR 1,774.51 for C-XV31360 [FYERS_RISK_CUG]
+                                      s: error
+                                      id :25093000494869
+                                      */
+                                     if (typeof id !== "undefined" && typeof s !== "undefined" ) {
+                                        order_id = id;
+                                     }
+                                        if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
+                                        console.log("ERROR Buying  Order message   " );
+                                        StorageUtils._save(CommonConstants.recentBuyOrderStatus,JSON.stringify(resJSON?.error));
+                                         return rejectWithValue({ message: resJSON?.error?.message });  
+                                        
+                                        // SET the STATUS BUYSTATUS DIV 
+                                            //   let buyDIVSpan = document.getElementById(BUYSTATUS);
+                                            //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
+                                            //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
+                                            //       buyDIVSpan.textContent =  resJSON?.error?.message;
+                                            //   }
+                                        }
+
+                                    }
+            
+                              /* if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
+                                    {  
+                                      console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
+                                      console.log("bestMacthes 5 record " + JSON.stringify(bestMacthes1["bestMatches"].slice(0, 5)));
+                                        const lastFive = JSON.stringify(bestMacthes1["bestMatches"].slice(-5));
+                                        console.log("bestMacthes last 5 record "  + lastFive);
+                                          const bestMacthes = { bestMatches: [...bestMacthes1.bestMatches] };
+                                        StorageUtils._save(CommonConstants.recentSensexTickersKey, bestMacthes.bestMatches) //StorageUtils._save(CommonConstants.recentEquitiesKey);
+                                        // EMPTY the SAMPLE ticker Data 
+                                        StorageUtils._save(CommonConstants.threeSecSensexDataCacheKey,CommonConstants.sampleThreeSecSensexDataVersion1);
+                                        dispatch(saveQuoteBook(bestMacthes.bestMatches)); 
+                                      
+                                      } 
+                                */     
+                            } // dArray is not a ARRAY 
+                            else { 
+                                if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
+                                        console.log("ERROR Buying  Order message   " );
+                                  StorageUtils._save(CommonConstants.recentBuyOrderStatus,JSON.stringify(resJSON?.error));
+                                   
+                                  // SET the STATUS BUYSTATUS DIV 
+                                    //   let buyDIVSpan = document.getElementById(BUYSTATUS);
+                                    //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
+                                    //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
+                                    //       buyDIVSpan.textContent =  resJSON?.error?.message;
+                                    //   }
+                                }
+                                console.log("Unable to BUYORDER  please check  "+order_id  );
+                                
+
+                            }
+                          } catch (err) {
+
+                            return rejectWithValue({ message: err.message });
+                          }
+                    }); // createAsyncThunk         
+                      // As written, it's called with no explicit payload:
+                      dispatch(fetchData());   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                       //   const res = await API.get(FYERSAPIBUYACCESTOKEN , {params: { "auth_code" : auth_code }});
                      //    const res = await API.get(FYERSAPITHREESECQUOTE , {params: { "auth_code" : auth_code ,"symbol":'SENSEX-INDEX'}});
-                         const res = await API.get(FYERSAPIBUYORDER , {params: { "auth_code" : auth_code, "id" : order_id, "access_token" : acctoken ,"symbol":sym ,   price: price,
+                    /*     const res = await API.get(FYERSAPIBUYORDER , {params: { "auth_code" : auth_code, "id" : order_id, "access_token" : acctoken ,"symbol":sym ,   price: price,
                             qty:qty }});
                        // Axios auto-parses JSON
                       const responseData = res.data;
                       let resJSON = responseData;
+                      */
                      // Safe parsing SUCCESS CASE 
                   /* {    
                     code: 1103,
@@ -585,118 +781,37 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                      /* {"FYERS":"FYERS Buy Order  CALL NO REACH","error":{"code":-51,"message":"invalid order id: 25080200003993","s":"error"}}
                     */
 
-
-                        console.log("resJSON "+JSON.stringify(resJSON));
+                      try { 
+                           console.log("resJSON "+JSON.stringify(resJSON));
                         console.log("resJSON?code "+JSON.stringify(resJSON?.code));
                         console.log("message "+ resJSON?.message );
                         console.log("id  "+resJSON.id);
                       
-                      if (resJSON?.code && resJSON?.message  && resJSON.id ) {
+                        if (resJSON?.code && resJSON?.message  && resJSON.id ) {
                             const buyData = resJSON ;         // Full object with n, v, s
-                                                                     // Only the "v" part with pricing info
-
-                            // Optional: destructure needed fields
+                                                               // Only the "v" part with pricing info
+                         // Optional: destructure needed fields
                             const {
                               code, // last price
                                message, // change percentage
                              id ,  // change in value
                              s  
                             } = buyData;
-                  
-                         /*     const text = await res.data ;   
-                            let parseAll = JSON.parse(text);
-                         console.log('text: ', JSON.stringify(text));
-                          console.log('parseAll: ', JSON.stringify(parseAll));
-                       let dArray = dataFromCache.data["d"] ? dataFromCache.data["d"] : (  parseAll.d ? parseAll.d : '') ;
-                           // let dArray = text.data["d"];
-                   if(dArray !==undefined && dArray !==null && Array.isArray(dArray)){
-                     console.log("dArray from server available  " +JSON.stringify(dArray))
-                            let firstObj = dArray[0];
-                            let vObj =  firstObj["v"];
-                            let parsedData =  vObj;
-                            let parsedMetaData =vObj;*/
+                   
+                          } // dArray is not a ARRAY 
+                          else { 
+                              if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
+                                      console.log("ERROR Buying  Order message   " );
+                                StorageUtils._save(CommonConstants.recentBuyledOrderStatus,JSON.stringify(resJSON?.error));
+                                }
+                              console.log("Unable to BUY ORDER  please check  "+order_id  );
+                              }
+                      
+                      }catch(eert1){
 
-
-                        if (typeof id !== "undefined" && typeof s !== "undefined" && s === 'ok') {
-                              console.log("BUY ORDER SUCCESS ");
-                             let eventSource = undefined;
-    //https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker?authcode=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfaWQiOiJUUkxWMkE2R1BMIiwidXVpZCI6IjZlYzNkZmNkZDJkNzQ5ZGJiNjg5YzU0ZmVlNDkwODU5IiwiaXBBZGRyIjoiIiwibm9uY2UiOiIiLCJzY29wZSI6IiIsImRpc3BsYXlfbmFtZSI6IlhWMzEzNjAiLCJvbXMiOiJLMSIsImhzbV9rZXkiOiIzMDMwZjNjMDM2ZTUxYmE2YWNmZDg1YjQyMWM0MGY1NmRiOTQwODFlZTBlYjJjMzY3ZGE5OTExYiIsImlzRGRwaUVuYWJsZWQiOiJOIiwiaXNNdGZFbmFibGVkIjoiTiIsImF1ZCI6IltcImQ6MVwiLFwiZDoyXCIsXCJ4OjBcIixcIng6MVwiLFwieDoyXCJdIiwiZXhwIjoxNzUzNTYxODAwLCJpYXQiOjE3NTM1MzE4MDAsImlzcyI6ImFwaS5sb2dpbi5meWVycy5pbiIsIm5iZiI6MTc1MzUzMTgwMCwic3ViIjoiYXV0aF9jb2RlIn0.qvCe0YOusUY2mXpcZ-a4ZIhRgRZ69cf3lB1-RFO90bg&interval=1m&limit=100&ticker=BSE%3ASENSEX-INDEX
-    //https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker/tickerpoll?authcode=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfaWQiOiJUUkxWMkE2R1BMIiwidXVpZCI6IjZlYzNkZmNkZDJkNzQ5ZGJiNjg5YzU0ZmVlNDkwODU5IiwiaXBBZGRyIjoiIiwibm9uY2UiOiIiLCJzY29wZSI6IiIsImRpc3BsYXlfbmFtZSI6IlhWMzEzNjAiLCJvbXMiOiJLMSIsImhzbV9rZXkiOiIzMDMwZjNjMDM2ZTUxYmE2YWNmZDg1YjQyMWM0MGY1NmRiOTQwODFlZTBlYjJjMzY3ZGE5OTExYiIsImlzRGRwaUVuYWJsZWQiOiJOIiwiaXNNdGZFbmFibGVkIjoiTiIsImF1ZCI6IltcImQ6MVwiLFwiZDoyXCIsXCJ4OjBcIixcIng6MVwiLFwieDoyXCJdIiwiZXhwIjoxNzUzNTYxODAwLCJpYXQiOjE3NTM1MzE4MDAsImlzcyI6ImFwaS5sb2dpbi5meWVycy5pbiIsIm5iZiI6MTc1MzUzMTgwMCwic3ViIjoiYXV0aF9jb2RlIn0.qvCe0YOusUY2mXpcZ-a4ZIhRgRZ69cf3lB1-RFO90bg&interval=1m&limit=100&ticker=BSE%3ASENSEX-INDEX                        
-                             let urlisPollActual= false; // eventSource.url.indexOf("tickerpolldummy") > -1 ? false: true;
-                              // SET the CACHE  recentBuyledOrder
-                               StorageUtils._save(CommonConstants.recentBuyledOrder,JSON.stringify(responseData));
-                             
-                                   // SET BUYLED BUTTON IN GREE 
-                                    let el = document.getElementById(PLACEORDERBUTTONID);  // GLOBAL DOM ID sensex-status
-                                    let tickerData = quoteValue;
-                                    let sym = 'SENSEX-INDEX';  // tickerData["symbol"];
-                                    let orderid =id //  tickerData["lp"];
-                                   
-                                     let time =  localISTDateTimeSec(tt) ;// localISTDateTimeSec(tt)//tickerData["tt"]
-                                    sensexQue.push({time:time, orderid :orderid});
-                                      console.log('time '+JSON.stringify(time) + "order_id  "+ orderid);  
-                                   //  updateBestMatches1(sensexQue);
-                                    console.log("order buyled  "+JSON.stringify( { sym , orderid, time  }))
-                                    if(el !==null && el !== undefined){
-                                    // el.textContent = time + " :: "+ sym +" :: "+ price;
-                                        let buyButtonSpan = document.getElementById(PLACEORDERBUTTONSPAN);
-                                        if(buyButtonSpan !==null && buyButtonSpan !== undefined){
-                                           buyButtonSpan.textContent = 'can '+orderid ;
-                                        }
-                                        // SKIPPED AS the HEADING DIV CLARIFY the SYMBOL
-                                        /*let symbolEl = document.getElementById(SENSEXBUYSYMBOL);
-                                        if(symbolEl !==null && symbolEl !== undefined){
-                                            symbolEl.textContent =   sym ;
-                                        }*/
-                                        // update price and color based on previus price 
-                                   // let priceSpan = document.getElementById(SENSEXBUYPRICE);
-                                     //   if(priceSpan !==null && priceSpan !== undefined){
-                                      
-                                        //      priceElement.textContent = price;
-
-                                      // SKIPPED FOR NOW 
-                                       // updatePriceFromStream( price, SYMBOL);
-                                      // }
-                                    }
-                        }     else {
-                             console.warn("ORDER to BUY NOT  availalbe  (e.g., polling or WebSocket).");
-
-
-                          }
-  
-                    /* if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
-                           {  
-                             console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
-                             console.log("bestMacthes 5 record " + JSON.stringify(bestMacthes1["bestMatches"].slice(0, 5)));
-                              const lastFive = JSON.stringify(bestMacthes1["bestMatches"].slice(-5));
-                              console.log("bestMacthes last 5 record "  + lastFive);
-                                const bestMacthes = { bestMatches: [...bestMacthes1.bestMatches] };
-                              StorageUtils._save(CommonConstants.recentSensexTickersKey, bestMacthes.bestMatches) //StorageUtils._save(CommonConstants.recentEquitiesKey);
-                              // EMPTY the SAMPLE ticker Data 
-                              StorageUtils._save(CommonConstants.threeSecSensexDataCacheKey,CommonConstants.sampleThreeSecSensexDataVersion1);
-                              dispatch(saveQuoteBook(bestMacthes.bestMatches)); 
-                            
-                            } 
-                       */     
-                   } // dArray is not a ARRAY 
-                   else { 
-                       if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
-                               console.log("ERROR Buying  Order message   " );
-                         StorageUtils._save(CommonConstants.recentBuyledOrderStatus,JSON.stringify(resJSON?.error));
-                           // SET the STATUS BUYSTATUS DIV 
-                           //   let buyDIVSpan = document.getElementById(BUYSTATUS);
-                           //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
-                           //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
-                           //       buyDIVSpan.textContent =  resJSON?.error?.message;
-                           //   }
-                       }
-                       console.log("Unable to BUY ORDER  please check  "+order_id  );
+                      }
                        
-
-                   }
-                         // other option to store int the context 
-                          // updateEquityState({ equities: parsed }); // ✅ Save in context
-                
+ 
                       
                       
                      }catch (err ){
@@ -716,7 +831,7 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
 
 
                      });
-                    } // ORDER ID null or undefined 
+              //      } // ORDER ID null or undefined  ORDER ID is not PRESENT while SENDing FRESH ORDER
               } // BUY ORDER CONDITON 
 
                      console.log("BUY ORDER TRIGGER  ..");
@@ -862,14 +977,22 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                  let orde =    JSON.parse(recentOrderPlace.data);
                  let order_id =   ((orde !==undefined &&  orde?.id !==undefined)  ? orde.id : '')  ;
 
-                   console.log("Order selected for SELL"+(order_id !=='' ? order_id : " it is new ORDER"));
+                 console.log("Order selected for SELL"+(order_id !=='' ? order_id : " it is new ORDER"));
                 //  if(order_id !==null && order_id !== undefined) {  
-                    const fetchSELLORDERStatus = async (acctoken) => {
-                      for (let endP = 0 ; endP < BUY_URL.length ; endP ++) { 
+                const fetchSELLORDERStatus = async (acctoken) => {
+                   for (let endP = 0 ; endP < BUY_URL.length ; endP ++) { 
                        try {
                         if( acctoken !== undefined && acctoken !==null ) {
 
+                           StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorBasic,"");
+                           let  sellOrderTTL =  StorageUtils._retrieve(CommonConstants.recentSellledOrder)
+                           let tt = 0;
+                            try { 
+                             sellOrderTTL.ttl !==undefined ? sellOrderTTL.ttl :0;
 
+                            } catch(tterr){
+                              console.log('order time not captured ');
+                             }
                           let comprisedSellOrder=      JSON.parse( StorageUtils._retrieve(CommonConstants.recentSellledOrder).data);
                           const sym = symbol; //'NIFTY2581424400CE';
                          const params = new URLSearchParams({
@@ -890,96 +1013,141 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                             "symbol":sym1 ,    ltp:price,  price: price,
                             qty:qty }));
                             }
-                        const res = await API.get(FYERSAPISELLORDER , {params: { "auth_code" : auth_code, "id" : _id,
-                         "symbol":sym1 ,  qty:qty, ltp:price,  price: price,
-                            qty:qty }});  //   "access_token" : acctoken ,
-                       // Axios auto-parses JSON
-                      const responseData = res.data;
-                      let sellOrderJSON = responseData;
-                     // Safe parsing SUCCESS CASE 
-                         console.log("sellOrderJSON "+JSON.stringify(sellOrderJSON));
+                    const fetchData = createAsyncThunk('data/fetch', async (_, { rejectWithValue }) => {
+                          try {
+                               const res = await API.get(FYERSAPISELLORDER , {params: { "auth_code" : auth_code, "id" : _id,
+                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty }});  //   "access_token" : acctoken ,
+                              // Axios auto-parses JSON
+                              const responseData = res.data;
+                              let sellOrderJSON = responseData;
+                               let resJSON = responseData;
+                            // Safe parsing SUCCESS CASE 
+                                console.log("sellOrderJSON "+JSON.stringify(sellOrderJSON));
                    
-                      if (sellOrderJSON !==undefined) {
-                            const orderSellData = sellOrderJSON ;         // Full object with n, v, s
-                             // Optional: destructure needed fields
-                            const {
-                              code, // last price
-                               message, // change percentage
-                             id ,  // change in value
-                             s  
-                            } = orderSellData;
-                          if (typeof id !== "undefined" && typeof s !== "undefined" && s === 'ok') {
-                              console.log("SELLORDER SUCCESS ");
-                               // SET the CACHE  recentSellledOrder
-                               StorageUtils._save(CommonConstants.recentSellledOrder,JSON.stringify(responseData));
-                              // SET SELLLED BUTTON IN GREE 
-                                    let el = document.getElementById(PLACEORDERBUTTONID);  // GLOBAL DOM ID sensex-status
-                                    let tickerData = quoteValue;
-                                    let sym = 'SENSEX-INDEX';  // tickerData["symbol"];
-                                    let orderid =id //  tickerData["lp"];
-                                   
-                                     let time =  localISTDateTimeSec(tt) ;// localISTDateTimeSec(tt)//tickerData["tt"]
-                                    sensexQue.push({time:time, orderid :orderid});
-                                      console.log('time '+JSON.stringify(time) + "order_id  "+ orderid);  
-                                   //  updateBestMatches1(sensexQue);
-                                    console.log("order sellled  "+JSON.stringify( { sym , orderid, time  }))
-                                    if(el !==null && el !== undefined){
-                                    // el.textContent = time + " :: "+ sym +" :: "+ price;
-                                        let sellButtonSpan = document.getElementById(PLACEORDERBUTTONSPAN);
-                                        if(sellButtonSpan !==null && sellButtonSpan !== undefined){
-                                           sellButtonSpan.textContent = 'can '+orderid ;
+                                if (sellOrderJSON !==undefined) {
+                                      const orderSellData = sellOrderJSON ;         // Full object with n, v, s
+                                      // Optional: destructure needed fields
+                                      const {
+                                        code, // last price
+                                        message, // change percentage
+                                      id ,  // change in value
+                                      s  
+                                      } = orderSellData;
+                                    if (typeof id !== "undefined" && typeof s !== "undefined" && s === 'ok') {
+                                        console.log("SELLORDER SUCCESS ");
+                                        // SET the CACHE  recentSellledOrder
+                                        StorageUtils._save(CommonConstants.recentSellledOrder,JSON.stringify(responseData));
+                                        StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorBasic,"");
+                                        // SET SELLLED BUTTON IN GREE 
+                                              let el = document.getElementById(PLACEORDERBUTTONID);  // GLOBAL DOM ID sensex-status
+                                              let quoteValue = price;
+                                              let tickerData = quoteValue;
+                                              let sym = sym1;  // tickerData["symbol"];'SENSEX-INDEX'
+                                              let orderid =id //  tickerData["lp"];
+                                            
+                                              let time =  localISTDateTimeSec(tt) ;// localISTDateTimeSec(tt)//tickerData["tt"]
+                                              sensexQue.push({time:time, orderid :orderid});
+                                                console.log('time '+JSON.stringify(time) + "order_id  "+ orderid);  
+                                            //  updateBestMatches1(sensexQue);
+                                              console.log("order sellled  "+JSON.stringify( { sym , orderid, time  }))
+                                              if(el !==null && el !== undefined){
+                                              // el.textContent = time + " :: "+ sym +" :: "+ price;
+                                                  let sellButtonSpan = document.getElementById(PLACEORDERBUTTONSPAN);
+                                                  if(sellButtonSpan !==null && sellButtonSpan !== undefined){
+                                                    sellButtonSpan.textContent = 'can '+orderid ;
+                                                  }
+                                                  // SKIPPED AS the HEADING DIV CLARIFY the SYMBOL
+                                                  /*let symbolEl = document.getElementById(SENSEXBUYSYMBOL);
+                                                  if(symbolEl !==null && symbolEl !== undefined){
+                                                      symbolEl.textContent =   sym ;
+                                                  }*/
+                                                  // update price and color based on previus price 
+                                            // let priceSpan = document.getElementById(SENSEXBUYPRICE);
+                                              //   if(priceSpan !==null && priceSpan !== undefined){
+                                                
+                                                  //      priceElement.textContent = price;
+
+                                                // SKIPPED FOR NOW 
+                                                // updatePriceFromStream( price, SYMBOL);
+                                                // }
+                                              }
+                                     // 1. Return the success message/data here!
+                                     //   return {
+                                     //       message: "Sell order executed successfully!",
+                                      //      orderData: { sym , orderid, time  } // Pass the actual response object
+                                     //   };    
+                                       const options = {
+                                                timeZone: 'Asia/Kolkata',
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                hour12: false
+                                              };
+                                              let  utcDate = new Date();
+                                      let istTime =   new Intl.DateTimeFormat('en-GB', options).format(utcDate);
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} ${istTime} sent `, }  ));
+                                     // return rejectWithValue({ message: `Order ${sym} ${orderid} ${istTime} sent ` })       
+
+
+                                  }     else {
+                                      console.warn("ORDER to SELLNOT  availalbe  (e.g., polling or WebSocket).");
+                                        if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
+                                        console.log("ERROR Selling  Order message   " );
+                                        StorageUtils._save(CommonConstants.recentSellledOrderStatus,JSON.stringify(resJSON?.error));
+                                            // SET the STATUS BUYSTATUS DIV 
+                                            //   let buyDIVSpan = document.getElementById(BUYSTATUS);
+                                            //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
+                                            //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
+                                            //       buyDIVSpan.textContent =  resJSON?.error?.message;
+                                            //   }
                                         }
-                                        // SKIPPED AS the HEADING DIV CLARIFY the SYMBOL
-                                        /*let symbolEl = document.getElementById(SENSEXBUYSYMBOL);
-                                        if(symbolEl !==null && symbolEl !== undefined){
-                                            symbolEl.textContent =   sym ;
-                                        }*/
-                                        // update price and color based on previus price 
-                                   // let priceSpan = document.getElementById(SENSEXBUYPRICE);
-                                     //   if(priceSpan !==null && priceSpan !== undefined){
-                                      
-                                        //      priceElement.textContent = price;
+                                
 
-                                      // SKIPPED FOR NOW 
-                                       // updatePriceFromStream( price, SYMBOL);
-                                      // }
-                                    }
-                        }     else {
-                             console.warn("ORDER to SELLNOT  availalbe  (e.g., polling or WebSocket).");
-
-
-                          }
-  
-                    /* if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
-                           {  
-                             console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
-                             console.log("bestMacthes 5 record " + JSON.stringify(bestMacthes1["bestMatches"].slice(0, 5)));
-                              const lastFive = JSON.stringify(bestMacthes1["bestMatches"].slice(-5));
-                              console.log("bestMacthes last 5 record "  + lastFive);
-                                const bestMacthes = { bestMatches: [...bestMacthes1.bestMatches] };
-                              StorageUtils._save(CommonConstants.recentSensexTickersKey, bestMacthes.bestMatches) //StorageUtils._save(CommonConstants.recentEquitiesKey);
-                              // EMPTY the SAMPLE ticker Data 
-                              StorageUtils._save(CommonConstants.threeSecSensexDataCacheKey,CommonConstants.sampleThreeSecSensexDataVersion1);
-                              dispatch(saveQuoteBook(bestMacthes.bestMatches)); 
                             
-                            } 
-                       */     
-                   } // dArray is not a ARRAY 
-                   else { 
-                       if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
-                               console.log("ERROR Buying  Order message   " );
-                         StorageUtils._save(CommonConstants.recentSellledOrderStatus,JSON.stringify(resJSON?.error));
-                           // SET the STATUS BUYSTATUS DIV 
-                           //   let buyDIVSpan = document.getElementById(BUYSTATUS);
-                           //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
-                           //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
-                           //       buyDIVSpan.textContent =  resJSON?.error?.message;
-                           //   }
-                       }
-                       console.log("Unable to SELLORDER  please check  "+order_id  );
-                       
+                                    }
+            
+                              /* if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
+                                    {  
+                                      console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
+                                      console.log("bestMacthes 5 record " + JSON.stringify(bestMacthes1["bestMatches"].slice(0, 5)));
+                                        const lastFive = JSON.stringify(bestMacthes1["bestMatches"].slice(-5));
+                                        console.log("bestMacthes last 5 record "  + lastFive);
+                                          const bestMacthes = { bestMatches: [...bestMacthes1.bestMatches] };
+                                        StorageUtils._save(CommonConstants.recentSensexTickersKey, bestMacthes.bestMatches) //StorageUtils._save(CommonConstants.recentEquitiesKey);
+                                        // EMPTY the SAMPLE ticker Data 
+                                        StorageUtils._save(CommonConstants.threeSecSensexDataCacheKey,CommonConstants.sampleThreeSecSensexDataVersion1);
+                                        dispatch(saveQuoteBook(bestMacthes.bestMatches)); 
+                                      
+                                      } 
+                                */     
+                            } // dArray is not a ARRAY 
+                            else { 
+                                if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
+                                        console.log("ERROR Buying  Order message   " );
+                                  StorageUtils._save(CommonConstants.recentSellledOrderStatus,JSON.stringify(resJSON?.error));
+                                   
+                                  // SET the STATUS BUYSTATUS DIV 
+                                    //   let buyDIVSpan = document.getElementById(BUYSTATUS);
+                                    //   if(buyDIVSpan !==null && buyDIVSpan !== undefined){
+                                    //     console.log("ERROR Buyinf  Order message   "+resJSON?.error?.message  );
+                                    //       buyDIVSpan.textContent =  resJSON?.error?.message;
+                                    //   }
+                                }
+                                console.log("Unable to SELLORDER  please check  "+order_id  );
+                                
 
-                   }
+                            }
+                          } catch (err) {
+
+                            return rejectWithValue({ message: err.message });
+                          }
+                    }); // createAsyncThunk         
+                      // As written, it's called with no explicit payload:
+                      dispatch(fetchData());
+                     
                          // other option to store int the context 
                           // updateEquityState({ equities: parsed }); // ✅ Save in context
                 } // ACCESS TOKEN 
@@ -987,20 +1155,30 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                     // 
                       console.log("User not Authorised re-login  ")
                 }
-                      
-                      
-                     }catch (err ){
-                       console.log("Exception BUYLING ORDER  please check  "+JSON.stringify(err)  );
-                       //Netlify TIME OUT set the message inthe LocalStorage 
-                       // usually error will contain 
-                       // "message":"Request failed with status code 500","name":"AxiosError","stack":"AxiosError: Request failed with status code 500\n  
-                       let remoteParsedError =   parseNetlifyError(err);
-                       StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorKey , remoteParsedError);
-                       
-                      }
+              }catch (err ){
+                    console.log("Exception SELLING ORDER  please check  "+JSON.stringify(err)  );
+                  let res1 =   StorageUtils._retrieve(CommonConstants.recentSellledOrder)
+                    if (res1.isValid && res1.data !== null &&  res1.data !== undefined ) {
+                        let successId = JSON.parse(res1.data );
+                        if(successId.message !==undefined && successId.message.indexOf("Success")>-1){
+                            StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorBasic ,"");
+
+                        }
+                        else {
+                            StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorBasic , JSON.stringify("Exception SELLING ORDER "+err));
+
+                        }
+                    }
+                                      //Netlify TIME OUT set the message inthe LocalStorage 
+                    // usually error will contain 
+                    // "message":"Request failed with status code 500","name":"AxiosError","stack":"AxiosError: Request failed with status code 500\n  
+                    let remoteParsedError =   parseNetlifyError(err);
+                    StorageUtils._save(CommonConstants.remoteServerGeneralSellErrorKey , remoteParsedError);
                     
-                   } //FOR LOOP 
-                  }
+               }
+                    
+                } //FOR LOOP 
+              }// fetchSELLORDERStatus END 
                     fetchAuthToken().then(async aces_token   => { 
                        await  fetchSELLORDERStatus(aces_token);
 

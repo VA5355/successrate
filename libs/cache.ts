@@ -33,7 +33,8 @@ export const StorageUtils = {
 
             return {
                 isValid: true,
-                data: parsedData.value
+                data: parsedData.value,
+                ttl: parsedData.ttl
             }
         }
 
