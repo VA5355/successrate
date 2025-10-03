@@ -12,6 +12,7 @@ import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
 import { motion, useMotionValue, useTransform , AnimatePresence} from "framer-motion";
 import {Lock, Unlock, ArrowRight, ArrowLeft, Check, X, Heading4 } from "lucide-react";
+import { Loader2  } from "lucide-react";
 import { Settings,  TrendingUp, Wallet, Coins } from 'lucide-react';
 
 import { showModal as modalShow, showError } from '../../../common/service/ModalService';
@@ -880,6 +881,8 @@ function SwipeCallPill({ idx , side, label,ltp, subtitle, onBuy, onSell, classNa
 function SwipePutPill({ idx,  side, label,ltp, subtitle, onBuy, onSell, className = "" }) {
   const x = useMotionValue(0);
   const [locked, setLocked] = useState(false); // 🔒 NEW
+  // inside component
+const [loading, setLoading] = useState(false);
 
  const [quantity, setQuantity] = useState(x  =>  { 
     
@@ -929,7 +932,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
       // keep 2 decimal places
       return parseFloat(rounded.toFixed(2));
     }
-    const handleDragEnd = (_, info) => {
+    /*const handleDragEnd = (_, info) => {
       const threshold = 90; // how far user must drag to trigger action
       if (info.offset.x > threshold) {
         setJustAction("BUY");
@@ -937,6 +940,20 @@ const [limitPrice, setLimitPrice] = useState(ltp);
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
         onSell?.(parseInt(quantity*75), roundToNearest5(limitPrice ));
+      }
+    };*/
+    const handleDragEnd = async (_, info) => {
+      const threshold = 90;
+      if (info.offset.x > threshold) {
+        setLoading(true);
+        setJustAction("BUY");
+        await onBuy?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
+        setLoading(false);
+      } else if (info.offset.x < -threshold) {
+        setLoading(true);
+        setJustAction("SELL");
+        await onSell?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
+        setLoading(false);
       }
     };
      const screwRotation = useMotionValue(0);
@@ -1083,6 +1100,11 @@ const [limitPrice, setLimitPrice] = useState(ltp);
 
 
          </motion.div>
+         {loading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 rounded-2xl">
+            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+          </div>
+        )}
    
          {/* Small Toast on Action */}
          {justAction && (
