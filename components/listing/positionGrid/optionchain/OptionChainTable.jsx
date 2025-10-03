@@ -1262,7 +1262,8 @@ function OptionRow({  idx ,  row, onAction }) {
 
 export default function OptionChainTable() {
     const dispatch = useDispatch();
-        const url =  "wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55"; //'wss://localhost:8443/';
+        const url =  "wss://artilleryfeed.onrender.com/";
+//"wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55"; //'wss://localhost:8443/';
      // 1. Call the external hook logic
     const { ws, connect ,strikeMap ,  resetStrikeMap } = useWebSocketStreamSeq(url, dispatch);
      // do not do this it will cause all parsed spot and stikes and symbols empty
