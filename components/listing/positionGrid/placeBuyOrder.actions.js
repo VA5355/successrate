@@ -611,8 +611,13 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                                let resJSON = responseData;
                             // Safe parsing SUCCESS CASE 
                                 console.log("buyOrderJSON "+JSON.stringify(buyOrderJSON));
-                   
+                               
                                 if (buyOrderJSON !==undefined) {
+                                   if (buyOrderJSON["FYERS"] !==undefined){
+                                      let sym = buyOrderJSON["FYERS"];
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} sent `, }  ));
+                                       return;
+                                   }
                                       const orderBuyData =buyOrderJSON ;         // Full object with n, v, s
                                       // Optional: destructure needed fields
                                       const {
@@ -682,6 +687,18 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
  
                                   }     else {
                                       console.warn("ORDER to BUY NOT  availalbe  (e.g., polling or WebSocket).");
+                                       const options = {
+                                                timeZone: 'Asia/Kolkata',
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                hour12: false
+                                              };
+                                              let  utcDate = new Date();
+                                      let istTime =   new Intl.DateTimeFormat('en-GB', options).format(utcDate);
                                       // from above we may get the orderid in these variables 
                                       // id , code , 
                                       /*
@@ -692,6 +709,8 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                                       */
                                      if (typeof id !== "undefined" && typeof s !== "undefined" ) {
                                         order_id = id;
+                                       dispatch(showModal({ title: 'Order Status', message: `${message} ${istTime} sent `, }  ));
+                                       return;
                                      }
                                         if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
                                         console.log("ERROR Buying  Order message   " );
@@ -1025,6 +1044,11 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                                 console.log("sellOrderJSON "+JSON.stringify(sellOrderJSON));
                    
                                 if (sellOrderJSON !==undefined) {
+                                    if (sellOrderJSON["FYERS"] !==undefined){
+                                      let sym = sellOrderJSON["FYERS"];
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} sent `, }  ));
+                                       return;
+                                   }
                                       const orderSellData = sellOrderJSON ;         // Full object with n, v, s
                                       // Optional: destructure needed fields
                                       const {
@@ -1094,6 +1118,34 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
 
                                   }     else {
                                       console.warn("ORDER to SELLNOT  availalbe  (e.g., polling or WebSocket).");
+                                        const options = {
+                                                timeZone: 'Asia/Kolkata',
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                second: '2-digit',
+                                                hour12: false
+                                              };
+                                              let  utcDate = new Date();
+                                      let istTime =   new Intl.DateTimeFormat('en-GB', options).format(utcDate);
+                                      // from above we may get the orderid in these variables 
+                                      // id , code , 
+                                      /*
+                                      code :-99
+                                      message: RED:Margin Shortfall: INR 2,78,806.74 Available:INR 1,774.51 for C-XV31360 [FYERS_RISK_CUG]
+                                      s: error
+                                      id :25093000494869
+                                      */
+                                     if (typeof id !== "undefined" && typeof s !== "undefined" ) {
+                                        order_id = id;
+                                       dispatch(showModal({ title: 'Order Status', message: `${message} ${istTime} sent `, }  ));
+                                       return;
+                                     }
+
+
+
                                         if(resJSON?.error && resJSON?.error?.message && order_id !==undefined ){
                                         console.log("ERROR Selling  Order message   " );
                                         StorageUtils._save(CommonConstants.recentSellledOrderStatus,JSON.stringify(resJSON?.error));

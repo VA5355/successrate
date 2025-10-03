@@ -1,11 +1,12 @@
 // components/OptionChainTable.jsx
 import { useDispatch, useSelector   } from "react-redux";
-import  {  useReducer, useState,useEffect,useMemo, useContext , createContext} from 'react';
+import  {  useReducer, useState,useEffect, useRef,useMemo, useContext , useCallback, createContext} from 'react';
 import { selectFilteredStrikes } from '@/redux/selectors/webSockSelector';
-import webSocketSlice  from '@/redux/slices/webSocketSlice';
+import webSocketSlice, { setConnected }  from '@/redux/slices/webSocketSlice';
 //import { selectFilteredStrikes } from "../store/selectors";
-import useWebSocketStream from "@/redux//hooks/useWebSocketStream";
-import useWebSocketStreamSeq from "@/redux//hooks/useWebSocketStreamSeq";
+//import useWebSocketStream from "@/redux//hooks/useWebSocketStream";
+//import useWebSocketStreamSeq   from "@/redux//hooks/useWebSocketStreamSeq";
+import { useWebSocketStreamSeq } from "@/redux//hooks/useWebSocketStreamSeqSingle";
  import { placeBuyOrder ,placeSellOrder  ,updateTickerStatusFromCache ,stopSensexTickerData } from "../placeBuyOrder.actions";
 import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
@@ -46,6 +47,180 @@ const CommonConstantsDummy = {
   remoteServerGeneralSellErrorBasic: 'MOCK_SELL_ERROR',
   recentSellledOrder: 'MOCK_RECENT_ORDER',
 };
+// Define the default context value with a no-op function for the request.
+// This ensures that sendSubscriptionRequest is always a function,
+// preventing the "is not a function" error during initial component rendering.
+const defaultContextValue = {
+    isConnected: false,
+    sendSubscriptionRequest: () => {
+        console.warn('Attempted to send subscription request before WebSocket was fully initialized.');
+    },
+    openSubscriptionRequest: () => {
+        console.warn('Attempted to open socket before WebSocketContext and PRovider was fully initialized.');
+    },
+     rawWs: null,
+};
+// 1. Create the Context object
+const WebSocketContext = createContext(defaultContextValue);
+// 2. Custom hook to use the WebSocket features easily
+  const useWebSocket = () => {
+    const context = useContext(WebSocketContext);
+    if (!context) {
+        console.log("use Context ins the same file ")
+        // This check ensures the hook is only used inside the Provider
+        //throw new Error('useWebSocket must be used within a WebSocketProvider');
+    }
+    return context;
+};
+
+ // , []);
+
+
+// 3. The Provider Component which holds the connection logic
+ const WebSocketProvider = ({ children, url , wsInstance, dispatch,  openConnection}) => {
+       const [isConnected, setIsConnected] = useState(false);
+       const [ optionsWebMap, setOptionsWebMap ]  = useState([]);
+       const [ strikeWebMap, setStrikeWebMap ]  = useState([]);
+      // const ws = useRef(null);
+         // Function to set up the handlers on the external WebSocket instance
+ const setupEventHandlers =   useCallback((currentWs , url , dispatch,setIsConnected, setOptMap , setStrikeMap) => {
+        if (!currentWs) return;
+        // --- WebSocket Event Handlers ---
+        // onopen: The initial connection and first subscription request
+    //   const { optionsMap, strikeMap ,getOptionsMapFromResponse ,onOpen ,  onMessage,onError, onClose  } =  useWebSocketStreamSeq(url , dispatch);
+        currentWs.onopen = (event) => {
+            console.log('WebSocket connection opened.');
+            let initialRequest =   onOpen();
+            setIsConnected(true);
+              // Initial subscription request (like your original onOpen logic)
+           /* const initialRequest = {
+                method: 'addsymbol',
+                symbols: ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE'] // Initial list
+            };*/
+            currentWs.send(JSON.stringify(initialRequest));
+        };
+        currentWs.onmessage = (event) => {
+            // Your existing onMessage logic to dispatch trades goes here
+            // console.log('Received message:', event.data); 
+            onMessage(event , setOptMap, setStrikeMap);
+
+        };
+        currentWs.onclose = () => {
+            console.log('WebSocket connection closed.');
+            setIsConnected(false);
+        };
+         currentWs.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+        };
+    }, []); // setupEventHandlers is stable as it has no external dependencies
+     // Initial connection logic (runs once on mount)
+    useEffect(() => {
+        // Only connect if the URL is provided
+        if (!url) return;
+         //  ws.current = new WebSocket(url);
+         let optionsMap = new Map();
+            let strikeMapSymbol = new Map();    
+         let symbolsMap = new Map();
+         let symbolsStrikeWiseMap =[];
+           // if ( ws.current ) {
+            if ( wsInstance ) {
+               setupEventHandlers( wsInstance , url , dispatch , setIsConnected,setOptionsWebMap ,setStrikeWebMap );
+            
+            // Set initial connected state based on the instance state
+           // setIsConnected(ws.current.readyState === WebSocket.OPEN);
+            setIsConnected(wsInstance.readyState === WebSocket.OPEN);
+        } else {
+            // If the instance is null, we are disconnected
+            setIsConnected(false);
+        }
+       // Cleanup function for unmounting the component
+        return () => {
+          /* if (ws !== null && ws !== undefined && ws.current && ws.current.readyState === WebSocket.OPEN) {
+                ws.current.close();
+            } */
+        };
+    }, [wsInstance]);
+        // This is the implementation for the requested function:
+    // It maps the prop (openConnection) to the user-requested context function name (openSubscriptionRequest)
+    const openSubscriptionRequest = useCallback(() => {
+        if (typeof openConnection === 'function') {
+            console.log('[WS] Triggering external connection attempt...');
+            openConnection();
+        } else {
+            console.error('openConnection function was not provided to WebSocketProvider as a prop.');
+        }
+    }, [openConnection]);
+
+ 
+    // Open the socket 
+  /*  const openSubscriptionRequest = () => {
+           // const { optionsMap, strikeMap   } =  useWebSocketStreamSeq("wss://localhost:8443/",dispatch);
+         // On successful connection, send the subscription request
+       
+
+
+             setStrikeWebMap(strikeMap);
+           setOptionsWebMap(optionsMap);
+            
+    }// ); 
+    */
+    // Function exposed via context to send new subscription requests
+    const sendSubscriptionRequest = useCallback((symbols) => {
+        //if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        if (wsInstance && wsInstance.readyState === WebSocket.OPEN) {
+            const request = {
+                method: 'addsymbol',
+                symbols: symbols
+            };
+             wsInstance.send(JSON.stringify(request));
+           // ws.current.send(JSON.stringify(request));
+            console.log(`[WS] Sent new subscription request for ${symbols.length} symbols.`);
+        } else {
+            console.warn('[WS] Cannot send request: WebSocket is not open.');
+        }
+    }, [wsInstance]);
+
+    // The value that will be provided to consumers (components using useWebSocket)
+    const contextValue = {
+        isConnected: wsInstance && wsInstance.readyState === WebSocket.OPEN,
+        sendSubscriptionRequest,openSubscriptionRequest,
+         optionsWebMap, strikeWebMap  ,
+         rawWs: wsInstance 
+        // You can also expose the raw ws instance if needed, but it's often better to wrap it
+        // rawWs: ws.current
+    };
+     return (
+        <WebSocketContext.Provider value={contextValue}>
+            {children}
+        </WebSocketContext.Provider>
+    );
+}
+// Header Component (Updated with Connect Button)
+const Header = () => {
+    const { isConnected ,openSubscriptionRequest } = useWebSocket();
+    
+    return (
+        <div className="bg-gray-800 text-white p-4 shadow-lg flex justify-between items-center">
+            <h1 className="text-xl font-bold">Option Chain Viewer</h1>
+            <div className="flex items-center space-x-3">
+                <button 
+                    onClick={ () =>{  console.log("open clicked"); openSubscriptionRequest();   }}
+                    disabled={isConnected}
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 
+                        ${isConnected 
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                            : 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-md'
+                        }`}
+                >
+                    {isConnected ? 'Connected' : 'Connect WebSocket'}
+                </button>
+                <span className={`px-3 py-1 text-sm rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}>
+                    Status: {isConnected ? 'Live' : 'Offline'}
+                </span>
+            </div>
+        </div>
+    );
+};
 
 
 // 3. Mock WebSocket Hook (Crucial for passing Expiry Date)
@@ -81,8 +256,9 @@ function useWebSocketStreamDummy(expiryDate) {
 
 // --- Mock Data ---
 const mockExpiryDates = [
-    '2025-10-24', 
-    '2025-10-31', // Default selected
+    '2025-10-07', 
+    '2025-10-14', 
+    '2025-10-28', // Default selected
     '2025-11-07', 
     '2025-11-14'
 ];
@@ -99,7 +275,65 @@ const mockStrikes = [
 
 
 // --- NEW Expiry Filter Component ---
-function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions }) {
+function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch , resetStrikeMap}) {
+
+    const { isConnected ,sendSubscriptionRequest } = useWebSocket();
+   const generateSymbolsForExpiry = (exr) =>{
+         let  symbols = ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
+                    'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
+                'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
+                'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE'];
+           
+            const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
+            console.log(formatted);
+
+          if(exr !==undefined && exr !==null){
+               let shrExpr = exr.replace(/-/g,"").slice(2);
+              console.log("generated short date : "+shrExpr)
+              const newSymbls =     symbols.map( newStr => { 
+                      if(newStr.indexOf('CE') >-1 || newStr.indexOf('PE') > -1 ){
+                         // let lastCEandStrk = newStr.slice(11, -2);
+                          const prefix = newStr.substring(0, 5); // 'NIFTY'
+                          const suffix = newStr.substring(11);  // e.g., '24100CE'
+
+                          return prefix+shrExpr+suffix;
+                      }
+                      else {
+                          return newStr;
+                      }
+                  })
+               if( newSymbls !==undefined && Array.isArray(newSymbls)){
+                     console.log("generated new sybols : "+JSON.stringify(newSymbls))
+                  return newSymbls;
+               }
+               else {
+                return [];
+               }
+          }
+          else {
+                return [];
+          }
+
+
+    }
+  const makeWebSocketChange = (newExpiry) => {
+
+     // 2. Generate the new set of symbols based on the newExpiry
+           const newSymbols = generateSymbolsForExpiry(newExpiry); // This function needs to exist
+    
+            // 3. Send the new subscription request to the server!
+            // This calls the sendSubscriptionRequest function exposed by the Context.
+            if (Array.isArray(newSymbols) && newSymbols.length >0 ) {
+               if(isConnected){ 
+                resetStrikeMap();
+                sendSubscriptionRequest(newSymbols); }
+               
+            }
+            else {
+                dispatch(showModal({ title: 'Exipry', message: `Exipry: Current only Available `, } ));
+            }
+  }
+
     return (
         <div className="relative z-50">
             <label htmlFor="expiry-select" className="block text-xs font-medium text-zinc-600 mb-1">
@@ -109,7 +343,7 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions }) {
                 <select
                     id="expiry-select"
                     value={selectedExpiry}
-                    onChange={(e) => onExpiryChange(e.target.value)}
+                    onChange={(e) =>  {makeWebSocketChange(e.target.value); onExpiryChange(e.target.value)} }
                     className="appearance-none w-full max-w-[200px] bg-white border border-zinc-300 text-gray-800 py-2 pl-3 pr-10 rounded-xl shadow-md 
                                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium cursor-pointer transition"
                 >
@@ -574,7 +808,7 @@ function SwipeCallPill({ idx , side, label,ltp, subtitle, onBuy, onSell, classNa
              {/*<div className="text-[13px] font-semibold leading-5 tracking-tight">
                {label}          <div className="font-semibold leading-5 tracking-tight">{ltp}</div>
              </div>*/}
-             <div class="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
+             <div className="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
                <span>  {label}     </span>
                <span>{ltp}</span>
              </div>
@@ -821,7 +1055,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
              {/*<div className="text-[13px] font-semibold leading-5 tracking-tight">
                {label}          <div className="font-semibold leading-5 tracking-tight">{ltp}</div>
              </div>*/}
-             <div class="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
+             <div className="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
                <span>  {label}     </span>
                <span>{ltp}</span>
              </div>
@@ -1028,6 +1262,9 @@ function OptionRow({  idx ,  row, onAction }) {
 
 export default function OptionChainTable() {
     const dispatch = useDispatch();
+        const url =  "wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55"; //'wss://localhost:8443/';
+     // 1. Call the external hook logic
+    const { ws, connect ,strikeMap ,  resetStrikeMap } = useWebSocketStreamSeq(url, dispatch);
      // do not do this it will cause all parsed spot and stikes and symbols empty
      /*const [state, dispatch] = useReducer(webSocketSlice, {
             symbol: null,
@@ -1048,8 +1285,11 @@ export default function OptionChainTable() {
             connected: false,
     }); */
    // activate WebSocket listener
-    const { optionsMap, strikeMap } =  useWebSocketStream("wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55",dispatch);
-  // const { optionsMap, strikeMap } =  useWebSocketStreamSeq("wss://localhost:8443/",dispatch);
+  //  const { optionsMap, strikeMap } =  useWebSocketStream("wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55",dispatch);
+   // THIS IS TO access and send the Expipry CHANGE request 
+   const {  optionsWebMap ,strikeWebMap ,sendSubscriptionRequest } = useWebSocket();
+  // const { openSubscriptionRequest ,sendSubscriptionRequest , optionsWebMap ,strikeWebMap  } = useWebSocket();
+  //  const { optionsMap, strikeMap } =  useWebSocketStreamSeq("wss://localhost:8443/",dispatch);
  /*   // suppose niftyMap already exists (Map<name, valueArray>)
   const sortedEntries = [...strikeMap?.entries()].sort(([, a], [, b]) => {
   // a[0] is name according to our value array structure
@@ -1095,11 +1335,58 @@ export default function OptionChainTable() {
 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
+    const generateSymbolsForExpiry = (exr) =>{
+         let  symbols = ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
+                    'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
+                'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
+                'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE'];
+           
+            const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
+            console.log(formatted);
 
+          if(exr !==undefined && exr !==null){
+               let shrExpr = exr.replace(/-/g,"").slice(2);
+              console.log("generated short date : "+shrExpr)
+              const newSymbls =     symbols.map( newStr => { 
+                      if(newStr.indexOf('CE') >-1 || newStr.indexOf('PE') > -1 ){
+                          let lastCEandStrk = newStr.slice(11, -2);
+                          return 'NIFTY'+shrExpr+lastCEandStrk;
+                      }
+                      else {
+                          return newStr;
+                      }
+                  })
+               if( newSymbls !==undefined && Array.isArray(newSymbls)){
+                     console.log("generated new sybols : "+JSON.stringify(newSymbls))
+                  return newSymbls;
+               }
+               else {
+                return [];
+               }
+          }
+          else {
+                return [];
+          }
+
+
+    }
     const handleExpiryChange = (newExpiry) => {
         setSelectedExpiry(newExpiry);
+
+         // 2. Generate the new set of symbols based on the newExpiry
+        /*   const newSymbols = generateSymbolsForExpiry(newExpiry); // This function needs to exist
+    
+            // 3. Send the new subscription request to the server!
+            // This calls the sendSubscriptionRequest function exposed by the Context.
+            if (Array.isArray(newSymbols) && newSymbols.length >0 ) {
+                 sendSubscriptionRequest(newSymbols);
+            }
+            else {
+                dispatch(showModal({ title: 'Exipry', message: `Exipry: Current only Available `, } ));
+            }
+           */
         // In a real Redux app, you would dispatch an action here
-        dispatch(webSocketSliceDummy.actions.setExpiry(newExpiry));
+         //  dispatch(webSocketSliceDummy.actions.setExpiry(newExpiry));
     };
 
     const displayStrikes = useMemo(() => {
@@ -1120,7 +1407,7 @@ export default function OptionChainTable() {
             );  // //action.payload.map((s:any) => s.expiry)
         */
         setUniqOpt(new Set(symbols.map ( sy =>  sy.id)))
-      
+       setTimeout( () => { console.log("opening websckoer ..");/* openSubscriptionRequest();*/},54001)
   }, []);
 
    useEffect(() => {
@@ -1149,6 +1436,8 @@ export default function OptionChainTable() {
       setOptionStrikes(strikes);
     }
      setUniqOpt(new Set(symbols.map ( sy =>  sy.id)))
+    
+   
   }, [strikes]); // The effect runs whenever the 'strikes' array changes
 
   /*
@@ -1211,11 +1500,14 @@ export default function OptionChainTable() {
        let table = new Map();
         table.set('250930','25SEP')
         table.set('251007','25O07')
+        table.set('251014','25O14')
+        table.set('251021','25O21')
+        table.set('251028','25O28')
         let exp = table.get(evt.row.expiry);
       let sellord = { qty: evt.qty, price : evt.price , symbol : 'NIFTY'+exp+evt.row.strike+evt.row.type  }
       console.log(`place order Selected: ${JSON.stringify(sellord)}`); 
       // validate price and qty 
-      if(parseInt(sellord.price) <= 0 && parseInt(sellord.qty) <= 0){
+      if(parseInt(sellord.price) <= 0 || parseInt(sellord.qty) <= 0){
            dispatch(modalShow({ title: 'Validate', message: `Quantity: ${sellord.qty} or Price: ${sellord.price} invalid `, } ));
            return;
       }
@@ -1281,8 +1573,10 @@ export default function OptionChainTable() {
           </div>
       
       </>}
-      {/* Conditionally render the table if showModal is false */}
+      {/* Conditionally render the table if showModal is false url="wss://localhost:8443/" dispatch={dispatch}*/}
       {!showModal && <>
+                    <WebSocketProvider wsInstance={ws} openConnection={connect} >  
+                     <Header/>
                 <div className=" w-full bg-zinc-50 sm:bg-white p-1 sm:p-2"> {/* min-h-screen (gap between positon removed)  p-3 sm:p-6  */}
                     <div className="mx-auto overflow-hidden">{/*   max-w-4xl  */}
                       
@@ -1290,7 +1584,7 @@ export default function OptionChainTable() {
                       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-6">
                           <div>
                               <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
-                                  <TrendingUp className="w-6 h-6 text-indigo-600" /> NIFTY Option Chain
+                                  <TrendingUp className="w-6 h-6 text-indigo-600" /> NIFTY  
                               </h1>
                               <p className="text-sm text-zinc-500 mt-1">
                                   Current Spot Price: <span className="font-semibold text-indigo-600">₹{spot}</span>
@@ -1306,6 +1600,8 @@ export default function OptionChainTable() {
                                   selectedExpiry={selectedExpiry}
                                   onExpiryChange={handleExpiryChange}
                                   expiryOptions={mockExpiryDates}
+                                  dispatch = {dispatch}
+                                  resetStrikeMap={ resetStrikeMap}
                               />
                           </div>
                       </header>
@@ -1333,8 +1629,9 @@ export default function OptionChainTable() {
                       </div>
               
                       {/* Option Rows */}
+                 
                       <div className="grid gap-6 sm:gap-12">
-                        { strikeMap &&  Array.from(strikeMap.entries())
+                        { strikeMap   &&  Array.from(strikeMap.entries())
                            .sort(([keyA, valueA], [keyB, valueB]) => {
                             const strikeA = Number(valueA[0].slice(11, -2)); // value[0] = name
                             const strikeB = Number(valueB[0].slice(11, -2));
@@ -1347,10 +1644,11 @@ export default function OptionChainTable() {
                             return typeA.localeCompare(typeB); // CE before PE
                         })
                            .map(([key, value] , idx) => { 
-                               
+                                 let rawRow=  value[1]; //tradeRow[1];
+                            //   console.log(`iterating map JSX:  ${idx} + ${key} ${JSON.stringify(rawRow)}`)
                              // destructure only the fields you need
                               // const [name, id, timestamp, ltp,, , , bid, ask, , , volume] = value;
-                               const [name, id, timestamp, ltp, , , , bid, ask, , , volume] = value;
+                               const [name, id, timestamp, ltp, , , , bid, ask, , , volume] = rawRow;
                                   let type = name.slice(-2);
                                    let strike =  name.slice(11,-2);
                                     let expiry = name.slice(5, 11);
@@ -1366,15 +1664,18 @@ export default function OptionChainTable() {
                                               ask,
                                               volume,
                                             } 
-                          return (<>  
+                          return ( 
                             <OptionProvider key={key}>
-                               <OptionRow   idx={idx} key={key} row={ rowvalue} onAction={handleAction} />
+                               
+                                   {/* All components within here, including OptionsTable, can now access the context */}
+                                      <OptionRow   idx={idx} key={key} row={ rowvalue} onAction={handleAction} />
+                                 
                           </OptionProvider>
-                           </> )
+                           )
                             }) 
                         }
                       </div>
-              
+                 
                       {/* Recent Actions */}
                       <div className="mt-6 sm:mt-8">
                         <h2 className="text-sm font-semibold text-zinc-700 mb-2">
@@ -1410,7 +1711,9 @@ export default function OptionChainTable() {
                         </div>
                       </div>
                     </div>
+                    
                   </div>
+               </WebSocketProvider>
                 </> }
      
         {/* --------------------- 3. Floating Gear Icon --------------------- */}

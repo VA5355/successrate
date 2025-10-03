@@ -1,119 +1,108 @@
-import React, {createContext, useContext, useEffect, useRef, useState, useReducer } from 'react';
+import { useRef, useState, useCallback } from 'react';
+import { useEffect } from 'react'; // Added useEffect import
 import { setConnected, setSymbols ,setSpot ,setSubscriptionFailure,setOptions } from '@/redux/slices/webSocketSlice';
 import { useDispatch } from "react-redux";
+// NOTE: This file is conceptual, showing how your external hook should behave.
 
-// 1. Create the Context object
-//const WebSocketContext = createContext(null);
-
-// 2. Custom hook to use the WebSocket features easily
-/*export const useWebSocket = () => {
-    const context = useContext(WebSocketContext);
-    if (!context) {
-        // This check ensures the hook is only used inside the Provider
-        throw new Error('useWebSocket must be used within a WebSocketProvider');
-    }
-    return context;
-};*/
-// 3. The Provider Component which holds the connection logic
-/*export const WebSocketProvider = ({ children, url , dispatch}) => {
-       const [isConnected, setIsConnected] = useState(false);
-     // Initial connection logic (runs once on mount)
-    useEffect(() => {
-        // Only connect if the URL is provided
-        if (!url) return;
-         const { optionsMap, strikeMap , ws } =  useWebSocketStreamSeq("wss://localhost:8443/",dispatch);
-   */     //ws.current = new WebSocket(url);
-
-        // --- WebSocket Event Handlers ---
-        /* already there in the useWebSocketStreamSeq
-        // onopen: The initial connection and first subscription request
-        ws.current.onopen = () => {
-            console.log('WebSocket connection opened.');
-            setIsConnected(true);
-            
-            // Initial subscription request (like your original onOpen logic)
-            const initialRequest = {
-                method: 'addsymbol',
-                symbols: ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE'] // Initial list
-            };
-            ws.current.send(JSON.stringify(initialRequest));
-        };
-
-        ws.current.onmessage = (event) => {
-            // Your existing onMessage logic to dispatch trades goes here
-            // console.log('Received message:', event.data); 
-        };
-
-        ws.current.onclose = () => {
-            console.log('WebSocket connection closed.');
-            setIsConnected(false);
-        };
-        
-        ws.current.onerror = (error) => {
-            console.error('WebSocket Error:', error);
-        };
-        */
-        // Cleanup function for unmounting the component
-    /*    return () => {
-            if (ws !== null && ws !== undefined && ws.current && ws.current.readyState === WebSocket.OPEN) {
-                ws.current.close();
-            }
-        };
-    }, [url]);
-     
-    // Function exposed via context to send new subscription requests
-    const sendSubscriptionRequest = useCallback((symbols) => {
-        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-            const request = {
-                method: 'addsymbol',
-                symbols: symbols
-            };
-            ws.current.send(JSON.stringify(request));
-            console.log(`[WS] Sent new subscription request for ${symbols.length} symbols.`);
-        } else {
-            console.warn('[WS] Cannot send request: WebSocket is not open.');
-        }
-    }, []);
-
-    // The value that will be provided to consumers (components using useWebSocket)
-    const contextValue = {
-        isConnected,
-        sendSubscriptionRequest,
-        // You can also expose the raw ws instance if needed, but it's often better to wrap it
-        // rawWs: ws.current
-    };
-
-     return (
-        <WebSocketContext.Provider value={contextValue}>
-            {children}
-        </WebSocketContext.Provider>
-    );
-
-}*/
-// Custom WebSocket hook for connecting to the server and updating state
-export default function   useWebSocketStreamSeq   (url, dispatch)  {
-    //const ws = useRef(null);
-     // const dispatch = useDispatch();
-
-    // const [stateOptionMap , setStateOptionsMap ] = useState( (state) => state?.websocket?.symbols);
-    // const [optionsMap , setOptionsMap ] = useState(null);
-   // const [strikeMap , setStrikeMap ] = useState(null);
-     const  stateOptionMap = {};
+export function useWebSocketStreamSeq(url, dispatch) {
+    // 1. Store the WebSocket instance in a ref
+    const wsRef = useRef(null);
+    const [isConnected, setIsConnected] = useState(false);
+     const [stateOptionMap , setStateOptionsMap ] = useState( (state) => state?.websocket?.symbols);
+    const [optionsMap , setOptionsMap ] = useState(null);
+     const [strikeMap , setStrikeMap ] = useState(null);
+   /*  const  stateOptionMap = {};
      const setStateOptionsMap = ( () =>  {});
      const  optionsMap ={};
      const  setOptionsMap=( () =>  {});
     const strikeMap = {};
-    const  setStrikeMap = (() =>  {});
+    const  setStrikeMap = (() =>  {});*/
         
             let strikeMapSymbol = new Map();    
          let symbolsMap = new Map();
          let symbolsStrikeWiseMap =[];
-        /**
+
+    /**
+     * Resets the strikeMap state. This is what you need to call when parameters change.
+     */
+    const resetStrikeMap = useCallback(() => {
+        console.log("<<< [useWS] RESETTING STRIKE MAP STATE >>>");
+        setStrikeMap(new Map());
+    }, []);     
+    // 2. Define the connection function (This becomes the 'openConnection' prop)
+    const connect = useCallback(() => {
+        if (!url) {
+            console.error("URL missing for WebSocket connection.");
+            return;
+        }
+        
+        // --- IMPROVED CHECK TO PREVENT DOUBLE CONNECTION ---
+        // Check if a WebSocket instance exists AND if its state is open or connecting.
+        // We also check if it's a valid WebSocket instance type.
+        if (wsRef.current instanceof WebSocket && wsRef.current.readyState < 2) { 
+            console.log("WebSocket already open or connecting. Aborting connection attempt.");
+            return; 
+        }
+
+        // --- ACTUAL CONNECTION LOGIC ---
+        console.log(`[useWS] Creating NEW WebSocket for: ${url}`);
+        wsRef.current = new WebSocket(url);
+        
+        // This state update is crucial for triggering the WebSocketProvider's useEffect
+        wsRef.current.onopen = () => {
+            console.log("[useWS] Connection opened successfully.");
+
+            let initialReq = onOpen();
+            wsRef.current.send(JSON.stringify(initialReq));
+            setIsConnected(true);
+        } 
+        wsRef.current.onmessage = (event) => {
+            onMessage(event);
+
+        }
+        wsRef.current.onclose = () => {
+            console.log("[useWS] Connection closed.");
+            onClose();
+            setIsConnected(false);
+        }
+        wsRef.current.onerror = (e) => {
+            console.error("[useWS] Connection error.", e);
+            onError(e);
+            setIsConnected(false);
+        };
+    }, [url]);
+
+    // Cleanup: close the socket when the hook unmounts
+    useEffect(() => {
+        return () => {
+            // Check if it's a valid WebSocket instance before attempting to close
+            if (wsRef.current instanceof WebSocket && wsRef.current.readyState === WebSocket.OPEN) {
+                console.log("[useWS] Cleaning up WebSocket connection.");
+                wsRef.current.close();
+            }
+        };
+    }, []); // Empty dependency array ensures cleanup runs only on unmount
+
+
+    return {
+        // wsRef.current is the 'wsInstance' prop
+        ws: wsRef.current, 
+        // connect is the 'openConnection' prop
+        connect: connect ,
+        strikeMap ,
+         resetStrikeMap: resetStrikeMap, // NEW: Expose reset function
+    };
+
+
+
+
+    /**
          * Parses the WebSocket response and extracts option contracts into a Map.
          * @param {string} jsonResponse The raw JSON string from the WebSocket.
          * @returns {Map<string, string> | null} A Map of option IDs to their names, or null if parsing fails.
          */
         function getOptionsMapFromResponse(jsonResponse) {
+          let optionsMap = new Map();
         try { 
             const data =  jsonResponse ; //JSON.parse(jsonResponse); already parsed 
                   
@@ -175,7 +164,6 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
          };
      function onMessage(event, callBackOptMap, callBackStrikeMap) { 
 
-        
             try {
                 const response = JSON.parse(event.data);
                 /*
@@ -197,7 +185,7 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                     console.log("true data subscription failure ");
                      dispatch(setSubscriptionFailure( "Subscription or streaming failed ")); 
                 }
-                const options = getOptionsMapFromResponse(response);
+                let options = getOptionsMapFromResponse(response);
             
                               symbolsStrikeWiseMap = [];
 
@@ -219,7 +207,14 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                    }
                  
                 } else {
-                  console.log("optionsMap is not a Map.");
+                    if(optionsMap instanceof Map && optionsMap.size > 0) {
+
+                        options  = optionsMap;
+
+                    }
+                    else  {  
+                        console.log("optionsMap is not a Map.")
+                    }
                 }
 
                /* if(Map.isMa(options) && options.length >0){
@@ -235,7 +230,7 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                 }
                 if (strikeMapSymbol !==null && strikeMapSymbol !== undefined){
                       if (response.trade !==null && response.trade !== undefined){
-                       //  console.log(` response trade `);
+                         console.log(` response trade `);
                             let temp  =stateOptionMap !==undefined && Array.isArray(stateOptionMap) && 
                                         stateOptionMap.length > 0 ? stateOptionMap: [];
                             let s= response.trade;
@@ -251,13 +246,51 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                                             ask: s[6],
                                             volume: s[3],
                                         }
-                           //  console.log(` trade  sym  ${JSON.stringify(sym)}`);  
+                              console.log(` trade  sym  ${JSON.stringify(sym)}`);  
                              
                              
                             // 1. Create a single Map from the existing symbols for efficient lookups. Array.from(options.entries())
                                  if(options instanceof Map ) {                 
                                  symbolsMap.set( options.get(sym.id) , sym);
-                               } /*
+                               } 
+                                 if (strikeMapSymbol instanceof Map  ) {
+                                       Array.from(strikeMapSymbol.entries()).map(([key, value]) => {  
+                                             let sKey = key.split("_");
+                                             let kt= 0;
+                                             let indexActual = '';     
+                                            if(sKey[0] !== null && sKey[1] !== undefined ){
+                                                     // in case key is NIFTY25093025300PE_302418032
+                                                     // check which is numeric
+                                                    try {
+
+                                                    kt  =     parseInt(sKey[1]);
+                                                        indexActual = sKey[0] ;
+                                                        if(isNaN(kt)){
+                                                            indexActual = sKey[1] ;
+                                                            kt = sKey[0];
+                                                        }
+                                                        //console.log(`kt  ${kt}:  indexActual  ${indexActual}`)    
+
+                                                    }catch(erew){
+                                                        
+                                                    }
+                                                    if(sym["id"] !==undefined){
+                                                           if(sym["id"] === kt){
+                                                             console.log(`kt  ${kt}:  indexActual  ${indexActual}`) 
+                                                              symbolsMap.set(indexActual , sym);  
+
+                                                           }
+                                                    }
+                                                      
+                                             }
+                                       });
+
+
+
+
+                                 }
+                               
+                               /*
                                Array.from(options.entries()).map(([key, value]) => {
                                 if (key === sym.id) {
                                 console.log(`trade key ${key}`);
@@ -350,8 +383,9 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                             });
                             const sortedNiftyMap = new Map(sortedEntries);
                             setStrikeMap(Array.from(sortedNiftyMap.entries()));
+                            if(callBackStrikeMap !==undefined){  
                             callBackStrikeMap(Array.from(sortedNiftyMap.entries()));
-                            // setStrikeMap(sortedNiftyMap);
+                            }// setStrikeMap(sortedNiftyMap);
                              stateSymbols =Array.from(sortedNiftyMap.entries())
                             console.log(` strikeMap, ${JSON.stringify(stateSymbols)} `)
                             dispatch(setSymbols([stateSymbols])); 
@@ -513,8 +547,9 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                             const sortedNiftyMap = new Map(sortedEntries);
 
                              setStrikeMap(Array.from(niftyMap.entries()));
+                               if(callBackStrikeMap !==undefined){  
                              callBackStrikeMap(Array.from(niftyMap.entries()));    
-
+                               }
 
 
 
@@ -647,7 +682,9 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                             const sortedNiftyMap = new Map(sortedEntries);
 
                              setStrikeMap(sortedNiftyMap);
+                               if(callBackStrikeMap !==undefined){  
                               callBackStrikeMap(Array.from(sortedNiftyMap.entries()));
+                               }
                           //  console.log(` strikeMap, ${JSON.stringify(sortedNiftyMap.entries())} `)
                             dispatch(setSymbols([stateSymbols])); 
                       }    
@@ -714,33 +751,4 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
 
 
       }
-   // useEffect(() => {
-        // Initialize WebSocket connection
-       //   ws.current = new WebSocket(url);
-                 // On receiving a message from the server
-      /*  ws.current.onmessage = (event) => {
-            
-        };
-
-        // On error
-        ws.current.onerror = (error) => {
-           
-
-        };
-
-        // On connection close
-        ws.current.onclose = () => {
-        
-        };
-        */
-        // Cleanup function
-       /* return () => {
-            if (ws.current) {
-                ws.current.close();
-            }
-        };*/
-  //  }, [url, dispatch]);
-
-
-     return { optionsMap, strikeMap ,getOptionsMapFromResponse ,onOpen ,  onMessage,onError, onClose  };
-};
+}

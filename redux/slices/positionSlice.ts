@@ -180,6 +180,8 @@ const positionSlice = createSlice({
                         .map((p) => p.symbol)
                         .filter((sym) => sym && !existingSymbols.has(sym));
 
+                        
+
                         if (newSymbols.length > 0) {
                         // Append new symbols with NSE: BSE: 
                         let preFixSymbols = newSymbols
