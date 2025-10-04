@@ -1542,7 +1542,7 @@ export default function OptionChainTable() {
       }
     }
   }
-    console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
+   // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
   // Convert back to same structure as strikeMap
   return Array.from(seen.entries());
 }
