@@ -9,6 +9,7 @@ import { FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER, FYERSAPI, FYERSAPIORDERSRENDE
 import { placeCancelOrder , placeQuickCancelOrder ,updateTickerStatusFromCache ,stopSensexTickerData } from "../positionGrid/cancelOrder.actions";
 import { updateOrderBook } from "@/redux/slices/tickerSlice";
  import   useIsMobile   from "../tradeGrid/useIsMobile";
+ import './quickOrderBookstyles.css'; // ✅ No 'quickOrderBookstyles.'
 
 export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrderPoll,
     
@@ -982,8 +983,8 @@ const callBackEventSource = (eventOrderData) => {
               key={index}
               className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
               ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-              hover:bg-gray-100
-              ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
+              hover:bg-blue-400
+              ${(row.side === -1 || row.side === "-1") ? "order-row-sell bg-red-400" : "order-row-buy bg-green-400"}`}
             >
               <div className="py-[1px] px-1 text-base font-bold truncate">
                 {row.symbol}
@@ -1052,15 +1053,15 @@ const callBackEventSource = (eventOrderData) => {
               key={index}
               className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
               ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-              hover:bg-gray-100
-              ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
+              hover:bg-blue-400
+              ${(row.side === -1 || row.side === "-1") ? "order-row-sell bg-red-400" : "order-row-buy bg-green-400"}`}
             >
               <div className="py-[1px] px-1 text-base font-bold truncate">
                 {row.symbol}
               </div>
               <div className="py-[1px] px-1 text-base font-bold truncate">
                 <button
-                  className="w-2 h-2 text-gray-600 hover:bg-gray-200"
+                  className="w-1 h-1 text-black-600 hover:bg-blue-200"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       handleCancel(row.id);
@@ -1214,15 +1215,15 @@ const callBackEventSource = (eventOrderData) => {
                              key={index}
                           className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
                             ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                            hover:bg-gray-100
-                            ${row.side === -1 || row.side === "-1" ? "order-row-sell" : "order-row-buy"}`}
+                            hover:bg-blue-100
+                            ${(row.side === -1 || row.side === "-1") ? "order-row-sell bg-red-400" : "order-row-buy bg-green-400"}`}
                         >
                           <div id="quickOrdersSymbol" className="py-[1px] px-1 text-base font-bold truncate">
                             {row["symbol"]}
                           </div>
                           <div className="py-[1px] px-1 text-base font-bold truncate">
                             <button
-                              className="w-2 h-2 text-gray-600 hover:bg-gray-200"
+                              className="w-1 h-1 text-black-600 hover:bg-blue-200"
                               onClick={(e) => {
                                 if (e.target === e.currentTarget) {
                                  if (e.target === e.currentTarget) {

@@ -14,6 +14,8 @@ import { motion, useMotionValue, useTransform , AnimatePresence} from "framer-mo
 import {Lock, Unlock, ArrowRight, ArrowLeft, Check, X, Heading4 } from "lucide-react";
 import { Loader2  } from "lucide-react";
 import { Settings,  TrendingUp, Wallet, Coins } from 'lucide-react';
+import withSpinner from "./withSpinner";
+import {SwipeCallPill , SwipePutPill} from "./SwipePills";
 
 import { showModal as modalShow, showError } from '../../../common/service/ModalService';
 import "./index.css";
@@ -626,6 +628,123 @@ const [quantity, setQuantity] = useState(x  =>    parseInt(75 * ( parseInt(( x !
   );
 }
 
+function withPutSpinner(WrappedComponent, opts = {}) {
+  const { minDuration = 300, Spinner = Loader2, overlayClassName = "" } = opts;
+
+  return function WithSpinner(props) {
+    const [loading, setLoading] = useState(false);
+    const startRef = useRef(0);
+
+    const ensureMinTime = async () => {
+      const elapsed = Date.now() - startRef.current;
+      if (elapsed < minDuration) {
+        await new Promise((r) => setTimeout(r, minDuration - elapsed));
+      }
+    };
+
+    // Wrap callbacks but do NOT remount the child
+    const wrapHandler = (fn) => async (...args) => {
+      if (!fn) return;
+      setLoading(true);
+      startRef.current = Date.now();
+      try {
+        const res = fn(...args);
+        if (res && typeof res.then === "function") {
+          const result = await res;
+          await ensureMinTime();
+          return result;
+        } else {
+          await ensureMinTime();
+          return res;
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="relative inline-block w-full h-full">
+        {/* Pass down loading + wrapped callbacks */}
+        <WrappedComponent
+          {...props}
+          loading={loading}
+          onBuy={wrapHandler(props.onBuy)}
+          onSell={wrapHandler(props.onSell)}
+        />
+
+        {loading && (
+          <div
+            className={`absolute inset-0 z-50 flex items-center justify-center 
+                        bg-white/40 backdrop-blur-sm rounded-2xl pointer-events-none
+                        ${overlayClassName}`}
+          >
+            <Spinner className="w-5 h-5 animate-spin text-blue-600" />
+          </div>
+        )}
+      </div>
+    );
+  };
+}
+
+function withCallSpinner(WrappedComponent, opts = {}) {
+  const { minDuration = 300, Spinner = Loader2, overlayClassName = "" } = opts;
+
+  return function WithSpinner(props) {
+    const [loading, setLoading] = useState(false);
+    const startRef = useRef(0);
+
+    const ensureMinTime = async () => {
+      const elapsed = Date.now() - startRef.current;
+      if (elapsed < minDuration) {
+        await new Promise((r) => setTimeout(r, minDuration - elapsed));
+      }
+    };
+
+    // Wrap callbacks but do NOT remount the child
+    const wrapHandler = (fn) => async (...args) => {
+      if (!fn) return;
+      setLoading(true);
+      startRef.current = Date.now();
+      try {
+        const res = fn(...args);
+        if (res && typeof res.then === "function") {
+          const result = await res;
+          await ensureMinTime();
+          return result;
+        } else {
+          await ensureMinTime();
+          return res;
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="relative inline-block w-full h-full">
+        {/* Pass down loading + wrapped callbacks */}
+        <WrappedComponent
+          {...props}
+          loading={loading}
+          onBuy={wrapHandler(props.onBuy)}
+          onSell={wrapHandler(props.onSell)}
+        />
+
+        {loading && (
+          <div
+            className={`absolute inset-0 z-50 flex items-center justify-center 
+                        bg-white/40 backdrop-blur-sm rounded-2xl pointer-events-none
+                        ${overlayClassName}`}
+          >
+            <Spinner className="w-5 h-5 animate-spin text-blue-600" />
+          </div>
+        )}
+      </div>
+    );
+  };
+}
+
+
 //}
 
 /* ----------------------------------------------------------------------------
@@ -797,7 +916,7 @@ function SwipeCallPill({ idx , side, label,ltp, subtitle, onBuy, onSell, classNa
    
          {/* Draggable Card */}
          <motion.div
-            drag={locked ? false : "x"}   // 🚀 disable drag if locked
+            drag={locked || loading ? false : "x"}   // 🚀 disable drag if locked
            dragConstraints={{ left: -160, right: 160 }}
            dragElastic={0.15}
            whileTap={{ scale: 0.98 }}
@@ -878,11 +997,11 @@ function SwipeCallPill({ idx , side, label,ltp, subtitle, onBuy, onSell, classNa
    - Dynamic background changes based on drag direction
    - Action confirmed on drag release if threshold is crossed
 ----------------------------------------------------------------------------- */
-function SwipePutPill({ idx,  side, label,ltp, subtitle, onBuy, onSell, className = "" }) {
+function SwipePutPillInternal({ idx,  side, label,ltp, subtitle, onBuy, onSell,loading=false, className = "" }) {
   const x = useMotionValue(0);
   const [locked, setLocked] = useState(false); // 🔒 NEW
   // inside component
-const [loading, setLoading] = useState(false);
+//const [loading, setLoading] = useState(loading);
 
  const [quantity, setQuantity] = useState(x  =>  { 
     
@@ -945,15 +1064,15 @@ const [limitPrice, setLimitPrice] = useState(ltp);
     const handleDragEnd = async (_, info) => {
       const threshold = 90;
       if (info.offset.x > threshold) {
-        setLoading(true);
+       // setLoading(true);
         setJustAction("BUY");
         await onBuy?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
-        setLoading(false);
+      //  setLoading(false);
       } else if (info.offset.x < -threshold) {
-        setLoading(true);
+      //  setLoading(true);
         setJustAction("SELL");
         await onSell?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
-        setLoading(false);
+       // setLoading(false);
       }
     };
      const screwRotation = useMotionValue(0);
@@ -1059,7 +1178,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
    
          {/* Draggable Card */}
          <motion.div
-            drag={locked ? false : "x"}   // 🚀 disable drag if locked
+            drag={locked || loading ? false : "x"}   // 🚀 disable drag if locked
           
            dragConstraints={{ left: -160, right: 160 }}
            dragElastic={0.15}
@@ -1219,6 +1338,8 @@ function PillWithControls({ idx, min=100, max=600 , step=1 ,  onLimit  ,  childr
 ----------------------------------------------------------------------------- */
 function OptionRow({  idx ,  row, onAction }) {
   const [locked, setLocked] = useState(false);
+ // const SwipePutPillWithSpinner = withPutSpinner(SwipePutPill);
+ //const SwipeCallPillWithSpinner = withCallSpinner(SwipeCallPill, { minDuration: 500 });
   const strike = row.strike;
   const type =  row.type;
      const ltp = row.ltp;
@@ -1263,7 +1384,7 @@ function OptionRow({  idx ,  row, onAction }) {
 
       {/* PUT pill */}
         {type ==="PE" && (   
-          <SwipePutPill
+       <SwipePutPill
           idx = {idx}
           side="PUT"
           label={`PUT ${strike}`}
@@ -1354,7 +1475,7 @@ export default function OptionChainTable() {
   }));
 
   // State for the selected expiry date
-    const [selectedExpiry, setSelectedExpiry] = useState(mockExpiryDates[1]); // Default to the second date
+    const [selectedExpiry, setSelectedExpiry] = useState(mockExpiryDates[0]); // Default to the second date
 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
@@ -1393,6 +1514,39 @@ export default function OptionChainTable() {
 
 
     }
+       /**
+     * Generates the full list of symbols for the new expiry code by combining strikes and types.
+     */
+    function dedupeStrikeMap(strikeMap) {
+  const seen = new Map(); // key: "NIFTY24100CE", value: entry
+
+  for (const [symbol, data] of strikeMap) {
+    // Extract expiry, strike, type (CE/PE)
+    const match = symbol.match(/^([A-Z]+)(\d{6})(\d+)(CE|PE)$/);
+    if (!match) continue; // skip invalid format
+
+    const [, underlying, expiry, strike, type] = match;
+    const uniqueKey = `${underlying}${strike}${type}`;
+
+    if (!seen.has(uniqueKey)) {
+      // keep first encountered (default behaviour)
+      seen.set(uniqueKey, [symbol, data]);
+    } else {
+      // 🔄 Optionally: choose latest by timestamp instead of first
+      const existing = seen.get(uniqueKey);
+      const existingTs = new Date(existing[1][2]).getTime(); // index 2 = timestamp
+      const currentTs = new Date(data[2]).getTime();
+
+      if (currentTs > existingTs) {
+        seen.set(uniqueKey, [symbol, data]); // replace with newer
+      }
+    }
+  }
+    console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
+  // Convert back to same structure as strikeMap
+  return Array.from(seen.entries());
+}
+
     const handleExpiryChange = (newExpiry) => {
         setSelectedExpiry(newExpiry);
 
@@ -1654,7 +1808,7 @@ export default function OptionChainTable() {
                       {/* Option Rows */}
                  
                       <div className="grid gap-6 sm:gap-12">
-                        { strikeMap   &&  Array.from(strikeMap.entries())
+                        { strikeMap   && dedupeStrikeMap(strikeMap)
                            .sort(([keyA, valueA], [keyB, valueB]) => {
                             const strikeA = Number(valueA[0].slice(11, -2)); // value[0] = name
                             const strikeB = Number(valueB[0].slice(11, -2));
