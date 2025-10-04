@@ -755,7 +755,7 @@ function withCallSpinner(WrappedComponent, opts = {}) {
    - Dynamic background changes based on drag direction
    - Action confirmed on drag release if threshold is crossed
 ----------------------------------------------------------------------------- */
-function SwipeCallPill({ idx , side, label,ltp, subtitle, onBuy, onSell, className = "" }) {
+function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell, loading=false, className = "" }) {
   const x = useMotionValue(0);
     const [locked, setLocked] = useState(false); // 🔒 NEW
   const [quantity, setQuantity] = useState(x  => { 
