@@ -270,11 +270,12 @@ const spot = "25,250.00"; // Current NIFTY/Index Spot Price
 
 // Example structure for a strike row
 const mockStrikes = [
-    { expiry: '2025-10-31', strike: "25200", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
-    { expiry: '2025-10-31', strike: "25250", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
-    { expiry: '2025-10-31', strike: "25300", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
-    { expiry: '2025-11-07', strike: "25250", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
+    { expiry: '2025-12-16', strike: "25900", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
+    { expiry: '2025-12-23', strike: "26000", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
+    { expiry: '2025-12-30', strike: "26100", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
+    { expiry: '2026-01-06', strike: "26200", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
 ];
+
 
 
 // --- NEW Expiry Filter Component ---
@@ -282,10 +283,10 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
 
     const { isConnected ,sendSubscriptionRequest } = useWebSocket();
    const generateSymbolsForExpiry = (exr) =>{
-         let  symbols = ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
-                    'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
-                'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
-                'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE'];
+         let  symbols = ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
+                    'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
+                'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
+                'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE'];
            
             const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
             console.log(formatted);
@@ -1266,12 +1267,14 @@ const [limitPrice, setLimitPrice] = useState(ltp);
 
   // Mock data for demonstration and initial state setup
 //const spot = "25,250.00";
-const strikes = [
-  { name: "NIFTY25093025200CE", strike: "25200", call: { ltp: "247.65", bid: "247.1", ask: "248.5" }, put: { ltp: "68.65", bid: "68.45", ask: "69.1" } },
-  { name: "NIFTY25093025100CE", strike: "25100", call: { ltp: "326.45", bid: "325.35", ask: "327.1" }, put: { ltp: "46.8", bid: "46.65", ask: "47.2" } },
-  { name: "NIFTY25093025300CE", strike: "25300", call: { ltp: "180.7", bid: "180.3", ask: "181.5" }, put: { ltp: "101.05", bid: "100.8", ask: "101.6" } },
-  { name: "NIFTY25093025000PE", strike: "25000", call: { ltp: "400.10", bid: "399.50", ask: "400.80" }, put: { ltp: "35.20", bid: "35.10", ask: "35.50" } },
+const strikes =  [ 
+
+  { name: "NIFTY25D2326100CE", strike: "26100", call: { ltp: "247.65", bid: "247.1", ask: "248.5" }, put: { ltp: "68.65", bid: "68.45", ask: "69.1" } },
+  { name: "NIFTY25D2326200CE", strike: "26200", call: { ltp: "326.45", bid: "325.35", ask: "327.1" }, put: { ltp: "46.8", bid: "46.65", ask: "47.2" } },
+  { name: "NIFTY25D2326300CE", strike: "26300", call: { ltp: "180.7", bid: "180.3", ask: "181.5" }, put: { ltp: "101.05", bid: "100.8", ask: "101.6" } },
+  { name: "NIFTY25D2326000PE", strike: "26000", call: { ltp: "400.10", bid: "399.50", ask: "400.80" }, put: { ltp: "35.20", bid: "35.10", ask: "35.50" } },
 ];
+
 
 const mockFunds = {
   totalPnl: 102.05,
@@ -1490,10 +1493,11 @@ export default function OptionChainTable({positionData}) {
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
     const generateSymbolsForExpiry = (exr) =>{
-         let  symbols = ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
-                    'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
-                'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
-                'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE'];
+         let  symbols =  ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
+                    'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
+                'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
+                'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE'];
+           
            
             const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
             console.log(formatted);
@@ -1710,11 +1714,12 @@ export default function OptionChainTable({positionData}) {
         Object
       */
        let table = new Map();
-        table.set('250930','25SEP')
-        table.set('251007','25O07')
-        table.set('251014','25O14')
-        table.set('251021','25O21')
-        table.set('251028','25O28')
+       
+        table.set('251216','25D16')
+        table.set('251223','25D23')
+        table.set('251230','25DEC')
+        table.set('260106','26106')
+        table.set('260113','26113')
         let exp = table.get(evt.row.expiry);
       let sellord = { qty: evt.qty, price : evt.price , symbol : 'NIFTY'+exp+evt.row.strike+evt.row.type  }
       console.log(`place order Selected: ${JSON.stringify(sellord)}`); 
