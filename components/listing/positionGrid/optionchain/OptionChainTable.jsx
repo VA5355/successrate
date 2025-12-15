@@ -1565,7 +1565,7 @@ export default function OptionChainTable({positionData}) {
         setSelectedExpiry(newExpiry);
 
          // 2. Generate the new set of symbols based on the newExpiry
-        /*   const newSymbols = generateSymbolsForExpiry(newExpiry); // This function needs to exist
+         const newSymbols = generateSymbolsForExpiry(newExpiry); // This function needs to exist
     
             // 3. Send the new subscription request to the server!
             // This calls the sendSubscriptionRequest function exposed by the Context.
@@ -1575,7 +1575,7 @@ export default function OptionChainTable({positionData}) {
             else {
                 dispatch(showModal({ title: 'Exipry', message: `Exipry: Current only Available `, } ));
             }
-           */
+          /*   */
         // In a real Redux app, you would dispatch an action here
          //  dispatch(webSocketSliceDummy.actions.setExpiry(newExpiry));
     };
