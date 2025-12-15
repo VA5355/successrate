@@ -1,0 +1,1308 @@
+<div class="modal-dialog modal-lg option-chain-model-cnt modal-dialog-centered" id="d-fyers-widgets">
+<div class="modal-content e-position-absolute ui-draggable ui-draggable-handle" id="optio-modal-content" style="position: relative; left: 1px; top: 0px;">
+					<div class="align-items-center d-flex justify-content-between option-chain-heading px-3 py-2 ui-draggable-handle">
+						<h4 class="mb-0">Option Chain</h4>
+						<div class="d-flex align-items-center ml-2 position-relative">
+                        <div id="quickViewParent" class=" position-relative">
+                        <div id="quickView" class="d-flex">
+                        <div id="quickViewVisible" class="d-flex"><div class="quickViewItem quickViewItemVisible quickViewItemActive">SENSEX</div><div class="quickViewItem quickViewItemVisible">NIFTY</div><div class="quickViewItem quickViewItemVisible">BANKNIFTY</div></div>
+                        <div id="quickViewDropDownIcon" class="d-flex quickViewDropDownIconClass"><div class="quickViewDropDownIconImage"></div></div>
+                      </div>
+                      <div id="quickViewDropDown" class="d-none" style="position: absolute;top: 33px;right: 0px;/* width: 100%; */display: flex;align-items: flex-start;justify-content: flex-start;padding: 18px 16px;z-index: 1;box-shadow: 0px 0px 24px rgba(42, 57, 78, 0.12);border-radius: 4px;">
+                      <div class="quickViewDropDownTriangle"></div>
+                      <div class="quickViewItem quickViewItemInvisible">USDINR</div><div class="quickViewItem quickViewItemInvisible">CRUDE</div><div class="quickViewItem quickViewItemInvisible">SILVER</div><div class="quickViewItem quickViewItemInvisible">GOLD</div><div class="quickViewItem quickViewItemInvisible">FINNIFTY</div><div class="quickViewItem quickViewItemInvisible">BANKEX</div><div class="quickViewItem quickViewItemInvisible">NIFTYNXT50</div></div>
+                      </div>
+                      <div class="quickViewSeperator">|</div>
+                      <div class="tryScalperOptionChain" onclick="window.open('https://app.fyers.in/options/scalper-terminal', '_blank');">
+                        <span class="tryScalperOptionChainTextHolder"><span>Scalper</span> <img src="https://assets.fyers.in/global-components/trade-icons/topBar/scalperIcon.svg" height="18" alt="Try Scalper Terminal"></span>
+                      </div>
+                      <div class="quickViewSeperator">|</div>
+                      <div class="ocInstaOptionsContainer" id="openInstaOptions">
+                      <img src="https://assets.fyers.in/images/website/icon-fyers-instaoptions.svg" height="28" width="24" alt="instaOptions" class="ocInstaOptions">
+                       </div>
+                       <div style="margin-right: 4px" class="quickViewSeperator">|</div>
+                            <button type="button" class="oc-minimize" data-bs-dismiss="modal" aria-label="Close">
+                            <svg width="24px" height="20px" viewBox="0 0 24 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <title>Minimize</title>
+                                <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <g id="minimal-view">
+                                        <path d="M21,0 C22.6568542,0 24,1.34314575 24,3 L24,16.43 C24,18.0868542 22.6568542,19.43 21,19.43 L3,19.43 C1.34314575,19.43 0,18.0868542 0,16.43 L0,3 C0,1.34314575 1.34314575,0 3,0 L21,0 Z M21,1.7 L3,1.7 C2.28202983,1.7 1.7,2.28202983 1.7,3 L1.7,16.43 C1.7,17.1479702 2.28202983,17.73 3,17.73 L21,17.73 C21.7179702,17.73 22.3,17.1479702 22.3,16.43 L22.3,3 C22.3,2.28202983 21.7179702,1.7 21,1.7 Z" id="Rectangle-Copy-5" fill-rule="nonzero"></path>
+                                        
+                                    </g>
+                                    <g id="minimal-view-path" transform="translate(6.071353, 4.900000)" stroke="" stroke-width="1.7">
+                                            <path d="M11.505181,3.28798641 L8.2,3.28798641 C8.08954305,3.28798641 8,3.19844336 8,3.08798641 L8,0 L8,0" id="Path-4-Copy-2"></path>
+                                            <path d="M0,7 L3.30518104,7 C3.41563799,7 3.50518104,7.08954305 3.50518104,7.2 L3.50518104,10.2879864 L3.50518104,10.2879864" id="Path-4-Copy-3"></path>
+                                        </g>
+                                </g>
+                            </svg> </button>
+							<!-- <a href="#" class="expanded-view d-flex pr-2"><img src="img/icon-expanded-view.svg" alt="" class="pr-1"> Expanded view</a> -->
+							<button id="option-modal-close" type="button" class="close" data-bs-dismiss="modal" aria-label="Close"> </button>
+						</div>
+					</div>
+                    <div class="search-optn-result">
+						<div class="align-items-center d-flex justify-content-between p-3">
+							<h5 class="mb-0">Search symbol</h5>
+							<button type="button" class="close search-optn-close">
+							</button>
+						</div>
+						<form action="" class="mb-0 px-3 d-flex justify-content-start">
+							<label for=""> <img src="https://assets.fyers.in/option-chain/icon-search.svg" alt=""> </label>
+							<input id="option-search-symbol" type="text" class="form-control" placeholder="Search">
+						</form>
+                        <div class="srch-scroll-holder">
+                            <div class="p-3 option-recent-reslt">
+                                <h3 class="pt-1" id="total-symbols">No Results found</h3>
+                                <ul id="searched-list">
+                                </ul>
+                            </div>                        
+                            <div class="px-3 py-1 option-recent-srh">
+                                <h3>Recent searches</h3>
+                                <ul id="recent-searches"></ul>
+                            </div>
+                            <div class="px-3 pb-1 option-recent-srh">
+                                <h3>Popular searches</h3>
+                                <div id="popular-searches" class="pt-3 popular-search"><a data-value="CRUDE" href="#">CRUDE</a><a data-value="GOLD" href="#">GOLD</a><a data-value="TATA" href="#">TATA</a><a data-value="NIFTY" href="#">NIFTY</a><a data-value="SILVER" href="#">SILVER</a><a data-value="NIFTY50-INDEX" href="#">NIFTY50-INDEX</a><a data-value="CRUDEOIL" href="#">CRUDEOIL</a><a data-value="NATURAL" href="#">NATURAL</a><a data-value="SILV" href="#">SILV</a><a data-value="NATU" href="#">NATU</a></div>
+                            </div>
+                        </div>
+					</div>
+                    <div class="option-chain-option px-1 py-2 d-flex">
+                    <button class="search-option pl-1">
+                                </button>
+						<ul class="d-flex mb-0">
+							<li id="symbol-data" class="px-2 px-md-3 ml-2">
+								
+								<div class="option-detl pr-3 pr-lg-5">
+                                    <div class="oc-symbol-info-container">
+                                        <h6 class="mb-0 text-dark">
+                                            <span class="symbol-span oc-symbol-name-text">SENSEX-INDEX</span>
+                                        </h6>
+                                        <div class="oc-description-span-container">
+                                            <span class="oc-description-span">BSE</span>
+                                        </div>
+                                    </div>
+									<p class="symbol-ltp">82327.05&nbsp;&nbsp;<span class="cl-red">-173.7700 (-0.21%)</span></p>
+								</div>
+							</li>
+							<li id="symbol-data-fut" class="px-2 px-md-3 ml-2 d-flex">
+								<div class="option-detl pr-3 pr-lg-5">
+									<h6 class="mb-0">
+                                        <span class="symbol-span">Future</span></h6>
+									<p class="symbol-ltp">82710&nbsp;&nbsp;<span class="cl-red">-272.2000 (-0.33%)</span></p>
+								</div>
+							</li>
+							<li id="india-vix-sec" class="px-2 px-md-3 ml-2 d-flex">
+								<div class="option-detl pr-3 pr-lg-5">
+									<h6 class="mb-0 d-flex flex-row flex-nowrap">
+                                        <span class="symbol-span">INDIAVIX-INDEX</span>
+                                        <button class="option-info" value="indiavix"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button>
+                                    </h6>
+									<p class="symbol-ltp">11.01&nbsp;&nbsp;<span class="">0.9100 (9.01%)</span></p>
+								</div>
+							</li>
+                            <li id="pcr-sec" class="px-2 px-md-3 ml-2 d-flex">
+								<div class="option-detl pr-3 pr-lg-5">
+									<h6 class="mb-0 d-flex flex-row flex-nowrap">
+                                        <span class="symbol-span">
+                                           PCR
+                                        </span>
+                                        <button class="option-info" value="pcr"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button>
+                                    </h6>
+									<p class="pcr-value">1.02</p>
+								</div>
+							</li>
+                            <li id="max-sec" class="px-2 px-md-3 ml-2 d-flex">
+								<div class="option-detl pr-3 pr-lg-5">
+									<h6 class="mb-0 d-flex flex-row flex-nowrap">
+                                        <span class="symbol-span">
+                                           MAX PAIN
+                                        </span>
+                                        
+                                    </h6>
+									<p class="max-value">82300</p>
+								</div>
+							</li>
+							<!-- <li class="d-flex px-2 px-md-3"><div class="option-detl"><h6 class="mb-0">Maxpain</h6><p>₹3,488.05</p></div></li><li class="d-flex pl-2 pl-md-3"><div class="option-detl"><h6 class="mb-0">PCR</h6><p>₹3,488.05 <span>(+24.04%)</span></p></div></li> -->
+						</ul>
+					</div>
+					<div class="option-trade d-flex py-2 px-3 justify-content-between align-items-center">
+                        <div class="d-flex">
+                            <div class="d-flex align-items-center">
+                                <!-- <input id="checkbox-1" class="checkbox-custom" name="lot" type="checkbox" checked> -->
+                                <label for="lot" class="checkbox-custom-label">Per Lot <span id="lot-size">20X</span></label>
+                                <input type="checkbox" id="lot" class="toggle-item">
+                                <label for="lot"> </label>
+                            </div>
+                            <div class="ml-2 ml-lg-4 d-flex align-items-center ">
+                                <!-- <input id="checkbox-2" class="checkbox-custom" name="bid" type="checkbox"> -->
+                                <label for="bid" class="checkbox-custom-label">Bid/Ask</label>
+                                <input type="checkbox" id="bid" class="toggle-item">
+                                <label for="bid"> </label>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="d-flex  align-items-center">
+                                <label for="" class="expiry pr-2">Expiry</label>
+                                <div class="custom-select">
+                                    <div class="selected"> <span class="text"> 16 Oct 2025 (+2 Days) </span> </div>
+                                    <div class="select-box">
+                                        <ul class="select-list p-0"><li data-row="0" data-value="1760608800" title="(+2 Days)" class="expiry-date"> 16 Oct 2025 (+2 Days) </li> <li data-row="1" data-value="1761213600" title="(+9 Days)" class="expiry-date"> 23 Oct 2025 (+9 Days) </li> <li data-row="2" data-value="1761818400" title="(+16 Days)" class="expiry-date"> 30 Oct 2025 (+16 Days) </li> <li data-row="3" data-value="1762423200" title="(+23 Days)" class="expiry-date"> 06 Nov 2025 (+23 Days) </li> <li data-row="4" data-value="1763028000" title="(+1 Month )" class="expiry-date"> 13 Nov 2025 (+1 Month) </li> <li data-row="5" data-value="1763632800" title="(+1 Month 7 Days )" class="expiry-date"> 20 Nov 2025 (+1 Month) </li> <li data-row="6" data-value="1764237600" title="(+1 Month 14 Days )" class="expiry-date"> 27 Nov 2025 (+1 Month) </li> <li data-row="7" data-value="1766570400" title="(+2 Months 11 Days )" class="expiry-date"> 24 Dec 2025 (+2 Months) </li> <li data-row="8" data-value="1774519200" title="(+5 Months 11 Days )" class="expiry-date"> 26 Mar 2026 (+5 Months) </li> <li data-row="9" data-value="1782381600" title="(+8 Months 11 Days )" class="expiry-date"> 25 Jun 2026 (+8 Months) </li> <li data-row="10" data-value="1790244000" title="(+11 Months 11 Days )" class="expiry-date"> 24 Sep 2026 (+11 Months) </li> <li data-row="11" data-value="1798711200" title="(+1 Year 2 Months 18 Days )" class="expiry-date"> 31 Dec 2026 (+1 Year) </li> <li data-row="12" data-value="1813831200" title="(+1 Year 8 Months 10 Days )" class="expiry-date"> 24 Jun 2027 (+1 Year) </li> <li data-row="13" data-value="1830160800" title="(+2 Years 2 Months 17 Days )" class="expiry-date"> 30 Dec 2027 (+2 Years) </li> <li data-row="14" data-value="1845885600" title="(+2 Years 8 Months 16 Days )" class="expiry-date"> 29 Jun 2028 (+2 Years) </li> <li data-row="15" data-value="1861610400" title="(+3 Years 2 Months 16 Days )" class="expiry-date"> 28 Dec 2028 (+3 Years) </li> <li data-row="16" data-value="1877335200" title="(+3 Years 8 Months 15 Days )" class="expiry-date"> 28 Jun 2029 (+3 Years) </li> <li data-row="17" data-value="1893060000" title="(+4 Years 2 Months 15 Days )" class="expiry-date"> 27 Dec 2029 (+4 Years) </li> <li data-row="18" data-value="1908784800" title="(+4 Years 8 Months 14 Days )" class="expiry-date"> 27 Jun 2030 (+4 Years) </li> </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=""> 
+                                <button class="optn-filter ml-3 active">
+                                    <img src="https://assets.fyers.in/option-chain/filter.svg" alt="">
+                                </button>
+                            </div>
+                            <div class="option-view ml-2">
+                                <label class="switch">
+                                <input type="checkbox" id="table-view" name="table-view"> <span class="slider"></span> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="no-data-option-chain d-none">
+						<div class="align-items-center d-flex justify-content-center no-data-holder p-5">
+							<div class="text-center">
+								<div class="no-data-image">
+
+								</div>
+								<h5>Option Chain Is Unavailable.</h5>
+								<p>Option Chain is not available for this stock, please try another stock.</p>
+							</div>
+						</div>
+
+					</div>
+                    <div class="optn-fltr-holder">
+                        <div class="optn-fltr-dtail">
+                            <div class="d-flex justify-content-between align-items-center p-3">
+                                <button type="button" class="close optn-fltr-close"></button> 
+                                <div class="d-flex">
+                                <a href="#" class="apply-btn mr-2">Apply</a>
+                                <a href="#" class="filter-clear-all">Reset</a>
+                                </div>
+                            </div>
+                            <div class="px-3 filtr-strike">
+                                <div class="option-strike">
+                                    <h5>Strikes above ATM</h5>
+                                    <div class="d-flex strike-above-atm justify-content-between"> 
+                                        <a href="#" data-value="10">10</a> 
+                                        <a href="#" data-value="20" class="active">20</a> 
+                                        <a href="#" data-value="30">30</a>
+                                    </div>
+                                </div>
+                                <div class="option-strike pt-3">
+                                    <h5>Strikes below ATM</h5>
+                                    <div class="d-flex strike-below-atm justify-content-between"> 
+                                        <a href="#" data-value="10">10</a> 
+                                        <a href="#" data-value="20">20</a> 
+                                        <a href="#" data-value="30" class="active">30</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <hr class="m-0">
+                            </div>
+                            <div class="px-3 pb-3"> 
+                                <span class="filtr-nt">Up to five columns are selectable in compact mode.</span>
+                            </div>
+                            <div class="px-3 pb-3">
+                                <div class="filtr-optons">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <h5 class="mb-0">Value</h5>
+                                            <div class="filter-option opt-column">
+                                                <input id="ltp" class="checkbox-custom" name="ltp" type="checkbox" disabled="" checked="">
+                                                <label for="ltp" class="checkbox-custom-label">LTP</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="volume" class="checkbox-custom" name="volume" type="checkbox">
+                                                <label for="volume" class="checkbox-custom-label">Volume</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="oi_change" class="checkbox-custom" name="oi_change" type="checkbox">
+                                                <label for="oi_change" class="checkbox-custom-label">OI change %</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="oi" class="checkbox-custom" name="oi" type="checkbox">
+                                                <label for="oi" class="checkbox-custom-label">OI</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="iv" class="checkbox-custom" name="iv" type="checkbox">
+                                                <label for="iv" class="checkbox-custom-label">IV</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="itm_prob" class="checkbox-custom" name="itm_prob" type="checkbox">
+                                                <label for="itm_prob" class="checkbox-custom-label">ITM prob</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h5 class="mb-0">Greeks</h5>
+                                            <div class="filter-option opt-column">
+                                                <input id="delta" class="checkbox-custom" name="delta" type="checkbox"> 
+                                                <label for="delta" class="checkbox-custom-label">Delta</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="theta" class="checkbox-custom" name="theta" type="checkbox">
+                                                <label for="theta" class="checkbox-custom-label">Theta</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="gamma" class="checkbox-custom" name="gamma" type="checkbox">
+                                                <label for="gamma" class="checkbox-custom-label">Gamma</label>
+                                            </div>
+                                            <div class="filter-option opt-column">
+                                                <input id="vega" class="checkbox-custom" name="vega" type="checkbox">
+                                                <label for="vega" class="checkbox-custom-label">Vega</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-3 pb-3">
+                                <div class="filtr-optons">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h5 class="mb-0">Table</h5>
+                                            <div class="filter-option">
+                                                <input id="zeroVolume" class="checkbox-custom" name="zeroVolume" type="checkbox" checked="">
+                                                <label for="zeroVolume" class="checkbox-custom-label">Show strike with zero volume</label>
+                                            </div>
+                                            <div class="filter-option">
+                                                <input id="zeroOI" class="checkbox-custom" name="zeroOI" type="checkbox">
+                                                <label for="zeroOI" class="checkbox-custom-label">Show strike with zero OI</label>
+                                            </div>
+                                            <div class="filter-option">
+                                                <input id="analysis" class="checkbox-custom" name="analysis" type="checkbox">
+                                                <label for="analysis" class="checkbox-custom-label">Analysis</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between option-table-heading p-2">
+                        <div class="text-center w-100">
+                            <h5>CALLS</h5>
+                        </div>
+                        <div class="text-center w-100">
+                            <h5 class="puts">PUTS</h5>
+                        </div>
+                    </div>
+                    <div class="option-table d-flex position-relative" id="mainTable">
+                        <div class="option-info-box analysis d-none" style="display: none;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Price</th>
+                                        <th>Open Interest</th>
+                                        <th>Signal</th>
+                                        <th>Inference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Up</td>
+                                        <td>Up</td>
+                                        <td>Long build
+                                            <br>Bullish </td>
+                                        <td>Indicates new long postions are being built and is likely to support the current up trend in price</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Up</td>
+                                        <td>Down</td>
+                                        <td>Cautiously
+                                            <br>Short cover
+                                            <br> Bullish </td>
+                                        <td>Indicates at short covering and that the rally could fizzle out once the short covering ends</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Down</td>
+                                        <td>Up</td>
+                                        <td>Short build
+                                            <br>Bearish </td>
+                                        <td>Indicates new short positions are being built and is likely to support the current down trend in price</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Down</td>
+                                        <td>Down</td>
+                                        <td>Cautiously
+                                            <br>Long unwind
+                                            <br> Bearish </td>
+                                        <td>Indicates at long unwinding and that the decline could halt once the long unwinding ends</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="option-info-box iv p-3 d-none" style="display: none;">
+							<h3>Implied Volatility (IV):</h3>
+							<p>Implied volatility is an estimate of the future volatility, or fluctuations, of an option's price. It only forecasts the sizes of potential price swings.</p>
+						</div>
+						<div class="option-info-box oi p-3 d-none" style="display: none;">
+							<h3>Open Interest (OI):</h3>
+							<p>OI indicates the total number of options or futures contracts that are currently open in the market.</p>
+						</div>
+                        <div class="option-info-box delta p-3 d-none" style="display: none;">
+							<h3>Delta:</h3>
+							<p>It measures how much an option price changes for a one-point move in the underlying. Its value ranges between 0 and 1 for calls. 
+                            For put side delta ---  It measures how much an option price changes for a one-point move in the underlying. Its value ranges between –1 and 0 for puts</p>
+						</div>
+						<div class="option-info-box strik-price p-3 d-none" style="display: none;">
+							<h3>Dummy Strike Price:</h3>
+							<p> OI indicates the total number of options or futures contracts that are currently open in the market.</p>
+						</div>
+                        <div class="option-info-box vega p-3 d-none" style="display: none;">
+							<h3>Vega:</h3>
+							<p>Vega measures the risk from changes in implied volatility. Higher volatility makes options more expensive since there is a greater chance that the underlying security price will move above or below. </p>
+						</div>
+                        <div class="option-info-box theta p-3 d-none" style="display: none;">
+							<h3>Theta:</h3>
+							<p>Theta measures the rate of time value decay and it is always a negative number as time moves in only one direction.</p>
+						</div>
+                        <div class="option-info-box gamma p-3 d-none" style="display: none;">
+							<h3>Gamma:</h3>
+							<p>It measures the rate of change in the delta. Values are highest for at-the-money options and smallest for those far in or out of the money.</p>
+						</div>
+                        <div class="option-info-box itm_prob p-3 d-none" style="display: none;">
+							<h3>ITM prob:</h3>
+							<p>It estimates the likelihood that an option will expire In-The-Money. If you want to trade conservatively with a high probability, you should find a strike price(s) that give you a high probability of profit.</p>
+						</div>            
+                        <div class="option-info-box indiavix p-3 top-option d-none" style="display: none;">
+							<h3>India VIX:</h3>
+							<p>The India VIX is a volatility index based on the NIFTY Index Option prices. The VIX is considered by many to be a gauge of fear and greed in the stock market moreover, the VIX may also be used as an indication of what magnitude of daily price movement is expected for the NIFTY 50. </p>
+						</div>                       
+                        <div class="option-info-box pcr p-3 top-option d-none" style="display: none;">
+							<h3>PCR:</h3>
+							<p>The PCR is the ratio of the open interest of the put option and the call option over a particular time. The ratio helps us identify extreme bullishness or bearishness in the market and is usually considered a contrarian indicator. Generally, a PCR value of over 1 is considered bearish and a value of less than 0.5 is considered bullish.</p>
+						</div>
+                        <div class="call-table-holder">
+                        <div class="w-100 overflow-hidden">
+                            <table class="table mb-0 position-relative oc-srl-cl-tbl text-left" id="callTable" style="transform: translate(0px); width: 100%;">
+                                <thead id="callHeaders">
+                                    <tr><th scope="col" data-value="analysis" class="analysis-head"> Analysis<button class="option-info" value="analysis"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button></th> <th class="oi-header" data-value="oi" scope="col"> OI<button class="option-info" value="oi"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button></th> <th scope="col" data-value="ltp"> LTP</th> </tr>
+                                </thead>
+                                <tbody>
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680300CE" data-name="BSE:SENSEX25O1680300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875655&quot;,&quot;ltp&quot;:2290,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:280,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:280,&quot;strike_price&quot;:80300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680300CE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680300CE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680300CE">
+                        <p>280</p><div class="option-graph graph-error" style="width:0.02602327224060374%"></div>
+                    </td> <td data-ltp="2290" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680300CE"><p> 2290 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680400CE" data-name="BSE:SENSEX25O1680400CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873718&quot;,&quot;ltp&quot;:1953.9,&quot;ltpch&quot;:-16.55,&quot;ltpchp&quot;:-16.548145300788008,&quot;oi&quot;:340,&quot;oich&quot;:-20,&quot;oichp&quot;:-5.56,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:360,&quot;strike_price&quot;:80400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680400CE&quot;,&quot;volume&quot;:200}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680400CE"><p> Long Unwind</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680400CE">
+                        <p>340</p><div class="option-graph graph-error" style="width:0.03159968772073311%"></div>
+                    </td> <td data-ltp="1953.9" data-ltpchp="-16.548145300788008" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680400CE"><p> 1953.9 <span class="text-danger">(-16.55%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680500CE" data-name="BSE:SENSEX25O1680500CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876072&quot;,&quot;ltp&quot;:1950,&quot;ltpch&quot;:-13.71,&quot;ltpchp&quot;:-13.711087019049938,&quot;oi&quot;:6760,&quot;oich&quot;:220,&quot;oichp&quot;:3.36,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:6540,&quot;strike_price&quot;:80500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680500CE&quot;,&quot;volume&quot;:940}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680500CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680500CE">
+                        <p>7.00K</p><div class="option-graph graph-error" style="width:0.628276144094576%"></div>
+                    </td> <td data-ltp="1950" data-ltpchp="-13.711087019049938" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680500CE"><p> 1950 <span class="text-danger">(-13.71%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680600CE" data-name="BSE:SENSEX25O1680600CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874188&quot;,&quot;ltp&quot;:2068.8,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:620,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:620,&quot;strike_price&quot;:80600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680600CE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680600CE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680600CE">
+                        <p>1.00K</p><div class="option-graph graph-error" style="width:0.05762295996133685%"></div>
+                    </td> <td data-ltp="2068.8" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680600CE"><p> 2068.8 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680700CE" data-name="BSE:SENSEX25O1680700CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873889&quot;,&quot;ltp&quot;:1590,&quot;ltpch&quot;:-23.6,&quot;ltpchp&quot;:-23.598097160155685,&quot;oi&quot;:880,&quot;oich&quot;:80,&quot;oichp&quot;:10,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:800,&quot;strike_price&quot;:80700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680700CE&quot;,&quot;volume&quot;:1280}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680700CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680700CE">
+                        <p>1.00K</p><div class="option-graph graph-error" style="width:0.08178742704189747%"></div>
+                    </td> <td data-ltp="1590" data-ltpchp="-23.598097160155685" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680700CE"><p> 1590 <span class="text-danger">(-23.60%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680800CE" data-name="BSE:SENSEX25O1680800CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874712&quot;,&quot;ltp&quot;:1600,&quot;ltpch&quot;:-18.73,&quot;ltpchp&quot;:-18.728094681769697,&quot;oi&quot;:3400,&quot;oich&quot;:-340,&quot;oichp&quot;:-9.09,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:3740,&quot;strike_price&quot;:80800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680800CE&quot;,&quot;volume&quot;:1080}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680800CE"><p> Long Unwind</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680800CE">
+                        <p>3.00K</p><div class="option-graph graph-error" style="width:0.3159968772073311%"></div>
+                    </td> <td data-ltp="1600" data-ltpchp="-18.728094681769697" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680800CE"><p> 1600 <span class="text-danger">(-18.73%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1680900CE" data-name="BSE:SENSEX25O1680900CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874364&quot;,&quot;ltp&quot;:1409.25,&quot;ltpch&quot;:-24.82,&quot;ltpchp&quot;:-24.817946597668648,&quot;oi&quot;:2180,&quot;oich&quot;:-120,&quot;oichp&quot;:-5.22,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:2300,&quot;strike_price&quot;:80900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680900CE&quot;,&quot;volume&quot;:960}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1680900CE"><p> Long Unwind</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1680900CE">
+                        <p>2.00K</p><div class="option-graph graph-error" style="width:0.20260976244470055%"></div>
+                    </td> <td data-ltp="1409.25" data-ltpchp="-24.817946597668648" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1680900CE"><p> 1409.25 <span class="text-danger">(-24.82%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681000CE" data-name="BSE:SENSEX25O1681000CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874756&quot;,&quot;ltp&quot;:1482.75,&quot;ltpch&quot;:-14.93,&quot;ltpchp&quot;:-14.93359341384355,&quot;oi&quot;:103280,&quot;oich&quot;:7900,&quot;oichp&quot;:8.28,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:95380,&quot;strike_price&quot;:81000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681000CE&quot;,&quot;volume&quot;:92160}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681000CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681000CE">
+                        <p>1.03L</p><div class="option-graph graph-error" style="width:9.598869846462692%"></div>
+                    </td> <td data-ltp="1482.75" data-ltpchp="-14.93359341384355" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681000CE"><p> 1482.75 <span class="text-danger">(-14.93%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681100CE" data-name="BSE:SENSEX25O1681100CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875787&quot;,&quot;ltp&quot;:1397.35,&quot;ltpch&quot;:-16.58,&quot;ltpchp&quot;:-16.576119402985075,&quot;oi&quot;:2120,&quot;oich&quot;:320,&quot;oichp&quot;:17.78,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:1800,&quot;strike_price&quot;:81100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681100CE&quot;,&quot;volume&quot;:14200}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681100CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681100CE">
+                        <p>2.00K</p><div class="option-graph graph-error" style="width:0.19703334696457114%"></div>
+                    </td> <td data-ltp="1397.35" data-ltpchp="-16.576119402985075" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681100CE"><p> 1397.35 <span class="text-danger">(-16.58%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681200CE" data-name="BSE:SENSEX25O1681200CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873842&quot;,&quot;ltp&quot;:1302.15,&quot;ltpch&quot;:-17.65,&quot;ltpchp&quot;:-17.653196736862075,&quot;oi&quot;:10100,&quot;oich&quot;:-60,&quot;oichp&quot;:-0.59,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:10160,&quot;strike_price&quot;:81200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681200CE&quot;,&quot;volume&quot;:10960}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681200CE"><p> Long Unwind</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681200CE">
+                        <p>10.00K</p><div class="option-graph graph-error" style="width:0.9386966058217778%"></div>
+                    </td> <td data-ltp="1302.15" data-ltpchp="-17.653196736862075" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681200CE"><p> 1302.15 <span class="text-danger">(-17.65%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681300CE" data-name="BSE:SENSEX25O1681300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876233&quot;,&quot;ltp&quot;:1209.3,&quot;ltpch&quot;:-19,&quot;ltpchp&quot;:-18.99929669446398,&quot;oi&quot;:6400,&quot;oich&quot;:1280,&quot;oichp&quot;:25,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:5120,&quot;strike_price&quot;:81300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681300CE&quot;,&quot;volume&quot;:15200}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681300CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681300CE">
+                        <p>6.00K</p><div class="option-graph graph-error" style="width:0.5948176512137997%"></div>
+                    </td> <td data-ltp="1209.3" data-ltpchp="-18.99929669446398" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681300CE"><p> 1209.3 <span class="text-danger">(-19.00%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681400CE" data-name="BSE:SENSEX25O1681400CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874320&quot;,&quot;ltp&quot;:1113.65,&quot;ltpch&quot;:-19.05,&quot;ltpchp&quot;:-19.048484407937778,&quot;oi&quot;:6080,&quot;oich&quot;:1180,&quot;oichp&quot;:24.08,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:4900,&quot;strike_price&quot;:81400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681400CE&quot;,&quot;volume&quot;:35900}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681400CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681400CE">
+                        <p>6.00K</p><div class="option-graph graph-error" style="width:0.5650767686531097%"></div>
+                    </td> <td data-ltp="1113.65" data-ltpchp="-19.048484407937778" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681400CE"><p> 1113.65 <span class="text-danger">(-19.05%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681500CE" data-name="BSE:SENSEX25O1681500CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874045&quot;,&quot;ltp&quot;:1026.35,&quot;ltpch&quot;:-21.28,&quot;ltpchp&quot;:-21.280104310477068,&quot;oi&quot;:44420,&quot;oich&quot;:2340,&quot;oichp&quot;:5.56,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:42080,&quot;strike_price&quot;:81500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681500CE&quot;,&quot;volume&quot;:350400}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681500CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681500CE">
+                        <p>44.00K</p><div class="option-graph graph-error" style="width:4.128406260455779%"></div>
+                    </td> <td data-ltp="1026.35" data-ltpchp="-21.280104310477068" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681500CE"><p> 1026.35 <span class="text-danger">(-21.28%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681600CE" data-name="BSE:SENSEX25O1681600CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875002&quot;,&quot;ltp&quot;:937.85,&quot;ltpch&quot;:-20.55,&quot;ltpchp&quot;:-20.554849639983058,&quot;oi&quot;:11280,&quot;oich&quot;:2440,&quot;oichp&quot;:27.6,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:8840,&quot;strike_price&quot;:81600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681600CE&quot;,&quot;volume&quot;:118100}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681600CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681600CE">
+                        <p>11.00K</p><div class="option-graph graph-error" style="width:1.048366110264322%"></div>
+                    </td> <td data-ltp="937.85" data-ltpchp="-20.554849639983058" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681600CE"><p> 937.85 <span class="text-danger">(-20.55%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681700CE" data-name="BSE:SENSEX25O1681700CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875906&quot;,&quot;ltp&quot;:852.5,&quot;ltpch&quot;:-24.16,&quot;ltpchp&quot;:-24.16492460970511,&quot;oi&quot;:22240,&quot;oich&quot;:2940,&quot;oichp&quot;:15.23,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:19300,&quot;strike_price&quot;:81700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681700CE&quot;,&quot;volume&quot;:263780}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681700CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681700CE">
+                        <p>22.00K</p><div class="option-graph graph-error" style="width:2.0669913379679543%"></div>
+                    </td> <td data-ltp="852.5" data-ltpchp="-24.16492460970511" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681700CE"><p> 852.5 <span class="text-danger">(-24.16%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681800CE" data-name="BSE:SENSEX25O1681800CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875652&quot;,&quot;ltp&quot;:768,&quot;ltpch&quot;:-25.14,&quot;ltpchp&quot;:-25.14255080656952,&quot;oi&quot;:38320,&quot;oich&quot;:17560,&quot;oichp&quot;:84.59,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:20760,&quot;strike_price&quot;:81800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681800CE&quot;,&quot;volume&quot;:958140}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681800CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681800CE">
+                        <p>38.00K</p><div class="option-graph graph-error" style="width:3.5614706866426262%"></div>
+                    </td> <td data-ltp="768" data-ltpchp="-25.14255080656952" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681800CE"><p> 768 <span class="text-danger">(-25.14%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1681900CE" data-name="BSE:SENSEX25O1681900CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873713&quot;,&quot;ltp&quot;:687.4,&quot;ltpch&quot;:-27.11,&quot;ltpchp&quot;:-27.108848947563757,&quot;oi&quot;:39320,&quot;oich&quot;:18680,&quot;oichp&quot;:90.5,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:20640,&quot;strike_price&quot;:81900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681900CE&quot;,&quot;volume&quot;:1371380}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1681900CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1681900CE">
+                        <p>39.00K</p><div class="option-graph graph-error" style="width:3.6544109446447823%"></div>
+                    </td> <td data-ltp="687.4" data-ltpchp="-27.108848947563757" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1681900CE"><p> 687.4 <span class="text-danger">(-27.11%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682000CE" data-name="BSE:SENSEX25O1682000CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873998&quot;,&quot;ltp&quot;:611,&quot;ltpch&quot;:-28.37,&quot;ltpchp&quot;:-28.370457209847597,&quot;oi&quot;:501500,&quot;oich&quot;:144080,&quot;oichp&quot;:40.31,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:357420,&quot;strike_price&quot;:82000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682000CE&quot;,&quot;volume&quot;:9635940}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682000CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682000CE">
+                        <p>5.01L</p><div class="option-graph graph-error" style="width:46.60953938808134%"></div>
+                    </td> <td data-ltp="611" data-ltpchp="-28.370457209847597" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682000CE"><p> 611 <span class="text-danger">(-28.37%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682100CE" data-name="BSE:SENSEX25O1682100CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873729&quot;,&quot;ltp&quot;:538.9,&quot;ltpch&quot;:-30.3,&quot;ltpchp&quot;:-30.30263838592861,&quot;oi&quot;:114540,&quot;oich&quot;:71580,&quot;oichp&quot;:166.62,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:42960,&quot;strike_price&quot;:82100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682100CE&quot;,&quot;volume&quot;:8147500}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682100CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682100CE">
+                        <p>1.15L</p><div class="option-graph graph-error" style="width:10.645377151566974%"></div>
+                    </td> <td data-ltp="538.9" data-ltpchp="-30.30263838592861" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682100CE"><p> 538.9 <span class="text-danger">(-30.30%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682200CE" data-name="BSE:SENSEX25O1682200CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874476&quot;,&quot;ltp&quot;:470.3,&quot;ltpch&quot;:-32.32,&quot;ltpchp&quot;:-32.31632726487731,&quot;oi&quot;:268300,&quot;oich&quot;:176360,&quot;oichp&quot;:191.82,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:91940,&quot;strike_price&quot;:82200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682200CE&quot;,&quot;volume&quot;:19795620}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682200CE"><p> Short Build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682200CE">
+                        <p>2.68L</p><div class="option-graph graph-error" style="width:24.935871221978513%"></div>
+                    </td> <td data-ltp="470.3" data-ltpchp="-32.31632726487731" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682200CE"><p> 470.3 <span class="text-danger">(-32.32%)</span></p></td></tr>
+                
+                    <tr class="call-item active" id="data-BSE:SENSEX25O1682300CE" data-name="BSE:SENSEX25O1682300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874202&quot;,&quot;ltp&quot;:408,&quot;ltpch&quot;:-33.91,&quot;ltpchp&quot;:-33.90571845132027,&quot;oi&quot;:276760,&quot;oich&quot;:205000,&quot;oichp&quot;:285.67,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:71760,&quot;strike_price&quot;:82300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682300CE&quot;,&quot;volume&quot;:20178000}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682300CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682300CE">
+                        <p>2.77L</p><div class="option-graph graph-error" style="width:25.722145804676757%"></div>
+                    </td> <td data-ltp="408" data-ltpchp="-33.90571845132027" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682300CE"><p> 408 <span class="text-danger">(-33.91%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682400CE" data-name="BSE:SENSEX25O1682400CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875267&quot;,&quot;ltp&quot;:351.2,&quot;ltpch&quot;:-35.27,&quot;ltpchp&quot;:-35.2686388351304,&quot;oi&quot;:265900,&quot;oich&quot;:136380,&quot;oichp&quot;:105.3,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:129520,&quot;strike_price&quot;:82400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682400CE&quot;,&quot;volume&quot;:15657800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682400CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682400CE">
+                        <p>2.66L</p><div class="option-graph graph-error" style="width:24.712814602773335%"></div>
+                    </td> <td data-ltp="351.2" data-ltpchp="-35.2686388351304" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682400CE"><p> 351.2 <span class="text-danger">(-35.27%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682500CE" data-name="BSE:SENSEX25O1682500CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876025&quot;,&quot;ltp&quot;:298.9,&quot;ltpch&quot;:-37.15,&quot;ltpchp&quot;:-37.1464619913784,&quot;oi&quot;:553660,&quot;oich&quot;:88900,&quot;oichp&quot;:19.13,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:464760,&quot;strike_price&quot;:82500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682500CE&quot;,&quot;volume&quot;:24480560}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682500CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682500CE">
+                        <p>5.54L</p><div class="option-graph graph-error" style="width:51.45730324547381%"></div>
+                    </td> <td data-ltp="298.9" data-ltpchp="-37.1464619913784" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682500CE"><p> 298.9 <span class="text-danger">(-37.15%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682600CE" data-name="BSE:SENSEX25O1682600CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875781&quot;,&quot;ltp&quot;:251.9,&quot;ltpch&quot;:-39.07,&quot;ltpchp&quot;:-39.073648566936754,&quot;oi&quot;:464680,&quot;oich&quot;:218400,&quot;oichp&quot;:88.68,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:246280,&quot;strike_price&quot;:82600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682600CE&quot;,&quot;volume&quot;:11361280}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682600CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682600CE">
+                        <p>4.65L</p><div class="option-graph graph-error" style="width:43.18747908844195%"></div>
+                    </td> <td data-ltp="251.9" data-ltpchp="-39.073648566936754" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682600CE"><p> 251.9 <span class="text-danger">(-39.07%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682700CE" data-name="BSE:SENSEX25O1682700CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873838&quot;,&quot;ltp&quot;:209.25,&quot;ltpch&quot;:-41.26,&quot;ltpchp&quot;:-41.26315789473684,&quot;oi&quot;:327440,&quot;oich&quot;:129280,&quot;oichp&quot;:65.24,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:198160,&quot;strike_price&quot;:82700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682700CE&quot;,&quot;volume&quot;:9553000}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682700CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682700CE">
+                        <p>3.27L</p><div class="option-graph graph-error" style="width:30.43235808022603%"></div>
+                    </td> <td data-ltp="209.25" data-ltpchp="-41.26315789473684" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682700CE"><p> 209.25 <span class="text-danger">(-41.26%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682800CE" data-name="BSE:SENSEX25O1682800CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876229&quot;,&quot;ltp&quot;:173,&quot;ltpch&quot;:-42.9,&quot;ltpchp&quot;:-42.9042904290429,&quot;oi&quot;:268060,&quot;oich&quot;:22940,&quot;oichp&quot;:9.36,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:245120,&quot;strike_price&quot;:82800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682800CE&quot;,&quot;volume&quot;:9099280}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682800CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682800CE">
+                        <p>2.68L</p><div class="option-graph graph-error" style="width:24.913565560057997%"></div>
+                    </td> <td data-ltp="173" data-ltpchp="-42.9042904290429" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682800CE"><p> 173 <span class="text-danger">(-42.90%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1682900CE" data-name="BSE:SENSEX25O1682900CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874315&quot;,&quot;ltp&quot;:141.35,&quot;ltpch&quot;:-44.74,&quot;ltpchp&quot;:-44.74198592650508,&quot;oi&quot;:219700,&quot;oich&quot;:66980,&quot;oichp&quot;:43.86,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:152720,&quot;strike_price&quot;:82900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682900CE&quot;,&quot;volume&quot;:9939200}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682900CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682900CE">
+                        <p>2.20L</p><div class="option-graph graph-error" style="width:20.41897468307372%"></div>
+                    </td> <td data-ltp="141.35" data-ltpchp="-44.74198592650508" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682900CE"><p> 141.35 <span class="text-danger">(-44.74%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683000CE" data-name="BSE:SENSEX25O1683000CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874640&quot;,&quot;ltp&quot;:115.45,&quot;ltpch&quot;:-45.67,&quot;ltpchp&quot;:-45.67058823529412,&quot;oi&quot;:662520,&quot;oich&quot;:216680,&quot;oichp&quot;:48.6,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:445840,&quot;strike_price&quot;:83000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683000CE&quot;,&quot;volume&quot;:20756160}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683000CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683000CE">
+                        <p>6.63L</p><div class="option-graph graph-error" style="width:61.574779731588535%"></div>
+                    </td> <td data-ltp="115.45" data-ltpchp="-45.67058823529412" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683000CE"><p> 115.45 <span class="text-danger">(-45.67%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683100CE" data-name="BSE:SENSEX25O1683100CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874335&quot;,&quot;ltp&quot;:93,&quot;ltpch&quot;:-47.61,&quot;ltpchp&quot;:-47.605633802816904,&quot;oi&quot;:242640,&quot;oich&quot;:52600,&quot;oichp&quot;:27.68,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:190040,&quot;strike_price&quot;:83100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683100CE&quot;,&quot;volume&quot;:8276340}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683100CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683100CE">
+                        <p>2.43L</p><div class="option-graph graph-error" style="width:22.551024201643184%"></div>
+                    </td> <td data-ltp="93" data-ltpchp="-47.605633802816904" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683100CE"><p> 93 <span class="text-danger">(-47.61%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683200CE" data-name="BSE:SENSEX25O1683200CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875494&quot;,&quot;ltp&quot;:75.25,&quot;ltpch&quot;:-48.93,&quot;ltpchp&quot;:-48.93111638954869,&quot;oi&quot;:178140,&quot;oich&quot;:37580,&quot;oichp&quot;:26.74,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:140560,&quot;strike_price&quot;:83200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683200CE&quot;,&quot;volume&quot;:6268680}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683200CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683200CE">
+                        <p>1.78L</p><div class="option-graph graph-error" style="width:16.556377560504107%"></div>
+                    </td> <td data-ltp="75.25" data-ltpchp="-48.93111638954869" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683200CE"><p> 75.25 <span class="text-danger">(-48.93%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683300CE" data-name="BSE:SENSEX25O1683300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876174&quot;,&quot;ltp&quot;:61.6,&quot;ltpch&quot;:-48.84,&quot;ltpchp&quot;:-48.83720930232558,&quot;oi&quot;:169880,&quot;oich&quot;:35960,&quot;oichp&quot;:26.85,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:133920,&quot;strike_price&quot;:83300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683300CE&quot;,&quot;volume&quot;:5337840}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683300CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683300CE">
+                        <p>1.70L</p><div class="option-graph graph-error" style="width:15.788691029406298%"></div>
+                    </td> <td data-ltp="61.6" data-ltpchp="-48.83720930232558" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683300CE"><p> 61.6 <span class="text-danger">(-48.84%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683400CE" data-name="BSE:SENSEX25O1683400CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875920&quot;,&quot;ltp&quot;:49.15,&quot;ltpch&quot;:-50.35,&quot;ltpchp&quot;:-50.35353535353536,&quot;oi&quot;:147580,&quot;oich&quot;:7180,&quot;oichp&quot;:5.11,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:140400,&quot;strike_price&quot;:83400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683400CE&quot;,&quot;volume&quot;:4977800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683400CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683400CE">
+                        <p>1.48L</p><div class="option-graph graph-error" style="width:13.716123275958214%"></div>
+                    </td> <td data-ltp="49.15" data-ltpchp="-50.35353535353536" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683400CE"><p> 49.15 <span class="text-danger">(-50.35%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683500CE" data-name="BSE:SENSEX25O1683500CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873991&quot;,&quot;ltp&quot;:40.7,&quot;ltpch&quot;:-49.63,&quot;ltpchp&quot;:-49.62871287128713,&quot;oi&quot;:668500,&quot;oich&quot;:300760,&quot;oichp&quot;:81.79,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:367740,&quot;strike_price&quot;:83500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683500CE&quot;,&quot;volume&quot;:10303660}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683500CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683500CE">
+                        <p>6.68L</p><div class="option-graph graph-error" style="width:62.13056247444143%"></div>
+                    </td> <td data-ltp="40.7" data-ltpchp="-49.62871287128713" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683500CE"><p> 40.7 <span class="text-danger">(-49.63%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683600CE" data-name="BSE:SENSEX25O1683600CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873724&quot;,&quot;ltp&quot;:32.55,&quot;ltpch&quot;:-50.46,&quot;ltpchp&quot;:-50.45662100456621,&quot;oi&quot;:181640,&quot;oich&quot;:49820,&quot;oichp&quot;:37.79,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:131820,&quot;strike_price&quot;:83600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683600CE&quot;,&quot;volume&quot;:3923340}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683600CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683600CE">
+                        <p>1.82L</p><div class="option-graph graph-error" style="width:16.881668463511655%"></div>
+                    </td> <td data-ltp="32.55" data-ltpchp="-50.45662100456621" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683600CE"><p> 32.55 <span class="text-danger">(-50.46%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683700CE" data-name="BSE:SENSEX25O1683700CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874471&quot;,&quot;ltp&quot;:26.25,&quot;ltpch&quot;:-50.75,&quot;ltpchp&quot;:-50.75046904315197,&quot;oi&quot;:168100,&quot;oich&quot;:26880,&quot;oichp&quot;:19.03,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:141220,&quot;strike_price&quot;:83700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683700CE&quot;,&quot;volume&quot;:3767800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683700CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683700CE">
+                        <p>1.68L</p><div class="option-graph graph-error" style="width:15.623257370162461%"></div>
+                    </td> <td data-ltp="26.25" data-ltpchp="-50.75046904315197" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683700CE"><p> 26.25 <span class="text-danger">(-50.75%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683800CE" data-name="BSE:SENSEX25O1683800CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874197&quot;,&quot;ltp&quot;:21.3,&quot;ltpch&quot;:-50.87,&quot;ltpchp&quot;:-50.865051903114185,&quot;oi&quot;:297700,&quot;oich&quot;:103400,&quot;oichp&quot;:53.22,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:194300,&quot;strike_price&quot;:83800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683800CE&quot;,&quot;volume&quot;:3540180}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683800CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683800CE">
+                        <p>2.98L</p><div class="option-graph graph-error" style="width:27.668314807241906%"></div>
+                    </td> <td data-ltp="21.3" data-ltpchp="-50.865051903114185" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683800CE"><p> 21.3 <span class="text-danger">(-50.87%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1683900CE" data-name="BSE:SENSEX25O1683900CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875261&quot;,&quot;ltp&quot;:17.7,&quot;ltpch&quot;:-50.35,&quot;ltpchp&quot;:-50.35063113604488,&quot;oi&quot;:181720,&quot;oich&quot;:62280,&quot;oichp&quot;:52.14,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:119440,&quot;strike_price&quot;:83900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683900CE&quot;,&quot;volume&quot;:3486660}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1683900CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1683900CE">
+                        <p>1.82L</p><div class="option-graph graph-error" style="width:16.889103684151827%"></div>
+                    </td> <td data-ltp="17.7" data-ltpchp="-50.35063113604488" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1683900CE"><p> 17.7 <span class="text-danger">(-50.35%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684000CE" data-name="BSE:SENSEX25O1684000CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875626&quot;,&quot;ltp&quot;:14.15,&quot;ltpch&quot;:-52.2,&quot;ltpchp&quot;:-52.195945945945944,&quot;oi&quot;:802520,&quot;oich&quot;:318300,&quot;oichp&quot;:65.73,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:484220,&quot;strike_price&quot;:84000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684000CE&quot;,&quot;volume&quot;:7328880}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684000CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684000CE">
+                        <p>8.03L</p><div class="option-graph graph-error" style="width:74.58641585189041%"></div>
+                    </td> <td data-ltp="14.15" data-ltpchp="-52.195945945945944" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684000CE"><p> 14.15 <span class="text-danger">(-52.20%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684100CE" data-name="BSE:SENSEX25O1684100CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876311&quot;,&quot;ltp&quot;:12.5,&quot;ltpch&quot;:-49.8,&quot;ltpchp&quot;:-49.799196787148595,&quot;oi&quot;:143340,&quot;oich&quot;:77580,&quot;oichp&quot;:117.97,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:65760,&quot;strike_price&quot;:84100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684100CE&quot;,&quot;volume&quot;:2019940}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684100CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684100CE">
+                        <p>1.43L</p><div class="option-graph graph-error" style="width:13.32205658202907%"></div>
+                    </td> <td data-ltp="12.5" data-ltpchp="-49.799196787148595" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684100CE"><p> 12.5 <span class="text-danger">(-49.80%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684200CE" data-name="BSE:SENSEX25O1684200CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876042&quot;,&quot;ltp&quot;:10.75,&quot;ltpch&quot;:-48.32,&quot;ltpchp&quot;:-48.31730769230769,&quot;oi&quot;:138480,&quot;oich&quot;:28380,&quot;oichp&quot;:25.78,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:110100,&quot;strike_price&quot;:84200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684200CE&quot;,&quot;volume&quot;:2084360}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684200CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684200CE">
+                        <p>1.38L</p><div class="option-graph graph-error" style="width:12.870366928138594%"></div>
+                    </td> <td data-ltp="10.75" data-ltpchp="-48.31730769230769" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684200CE"><p> 10.75 <span class="text-danger">(-48.32%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684300CE" data-name="BSE:SENSEX25O1684300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874152&quot;,&quot;ltp&quot;:9.3,&quot;ltpch&quot;:-46.86,&quot;ltpchp&quot;:-46.857142857142854,&quot;oi&quot;:123520,&quot;oich&quot;:9880,&quot;oichp&quot;:8.69,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:113640,&quot;strike_price&quot;:84300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684300CE&quot;,&quot;volume&quot;:1346540}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684300CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684300CE">
+                        <p>1.24L</p><div class="option-graph graph-error" style="width:11.479980668426336%"></div>
+                    </td> <td data-ltp="9.3" data-ltpchp="-46.857142857142854" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684300CE"><p> 9.3 <span class="text-danger">(-46.86%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684400CE" data-name="BSE:SENSEX25O1684400CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873852&quot;,&quot;ltp&quot;:8.3,&quot;ltpch&quot;:-45.57,&quot;ltpchp&quot;:-45.57377049180328,&quot;oi&quot;:99580,&quot;oich&quot;:27660,&quot;oichp&quot;:38.46,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:71920,&quot;strike_price&quot;:84400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684400CE&quot;,&quot;volume&quot;:987680}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684400CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684400CE">
+                        <p>1.00L</p><div class="option-graph graph-error" style="width:9.254990891854716%"></div>
+                    </td> <td data-ltp="8.3" data-ltpchp="-45.57377049180328" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684400CE"><p> 8.3 <span class="text-danger">(-45.57%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684500CE" data-name="BSE:SENSEX25O1684500CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874626&quot;,&quot;ltp&quot;:7.85,&quot;ltpch&quot;:-40.98,&quot;ltpchp&quot;:-40.97744360902256,&quot;oi&quot;:627720,&quot;oich&quot;:294020,&quot;oichp&quot;:88.11,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:333700,&quot;strike_price&quot;:84500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684500CE&quot;,&quot;volume&quot;:4263860}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684500CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684500CE">
+                        <p>6.28L</p><div class="option-graph graph-error" style="width:58.3404587531135%"></div>
+                    </td> <td data-ltp="7.85" data-ltpchp="-40.97744360902256" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684500CE"><p> 7.85 <span class="text-danger">(-40.98%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684600CE" data-name="BSE:SENSEX25O1684600CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874330&quot;,&quot;ltp&quot;:7.15,&quot;ltpch&quot;:-38.89,&quot;ltpchp&quot;:-38.888888888888886,&quot;oi&quot;:82820,&quot;oich&quot;:31220,&quot;oichp&quot;:60.5,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:51600,&quot;strike_price&quot;:84600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684600CE&quot;,&quot;volume&quot;:935840}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684600CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684600CE">
+                        <p>83.00K</p><div class="option-graph graph-error" style="width:7.697312167738578%"></div>
+                    </td> <td data-ltp="7.15" data-ltpchp="-38.888888888888886" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684600CE"><p> 7.15 <span class="text-danger">(-38.89%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684700CE" data-name="BSE:SENSEX25O1684700CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875489&quot;,&quot;ltp&quot;:6.5,&quot;ltpch&quot;:-36.27,&quot;ltpchp&quot;:-36.27450980392157,&quot;oi&quot;:93360,&quot;oich&quot;:8980,&quot;oichp&quot;:10.64,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:84380,&quot;strike_price&quot;:84700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684700CE&quot;,&quot;volume&quot;:699020}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684700CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684700CE">
+                        <p>93.00K</p><div class="option-graph graph-error" style="width:8.676902487081305%"></div>
+                    </td> <td data-ltp="6.5" data-ltpchp="-36.27450980392157" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684700CE"><p> 6.5 <span class="text-danger">(-36.27%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684800CE" data-name="BSE:SENSEX25O1684800CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876171&quot;,&quot;ltp&quot;:5.75,&quot;ltpch&quot;:-37.5,&quot;ltpchp&quot;:-37.5,&quot;oi&quot;:84560,&quot;oich&quot;:1020,&quot;oichp&quot;:1.22,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:83540,&quot;strike_price&quot;:84800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684800CE&quot;,&quot;volume&quot;:596560}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684800CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684800CE">
+                        <p>85.00K</p><div class="option-graph graph-error" style="width:7.859028216662329%"></div>
+                    </td> <td data-ltp="5.75" data-ltpchp="-37.5" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684800CE"><p> 5.75 <span class="text-danger">(-37.50%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1684900CE" data-name="BSE:SENSEX25O1684900CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875914&quot;,&quot;ltp&quot;:5.25,&quot;ltpch&quot;:-37.87,&quot;ltpchp&quot;:-37.8698224852071,&quot;oi&quot;:78940,&quot;oich&quot;:-35560,&quot;oichp&quot;:-31.06,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:114500,&quot;strike_price&quot;:84900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684900CE&quot;,&quot;volume&quot;:615020}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1684900CE"><p> Long Unwind</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1684900CE">
+                        <p>79.00K</p><div class="option-graph graph-error" style="width:7.336703966690211%"></div>
+                    </td> <td data-ltp="5.25" data-ltpchp="-37.8698224852071" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1684900CE"><p> 5.25 <span class="text-danger">(-37.87%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1685000CE" data-name="BSE:SENSEX25O1685000CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876189&quot;,&quot;ltp&quot;:5,&quot;ltpch&quot;:-32.89,&quot;ltpchp&quot;:-32.88590604026846,&quot;oi&quot;:1075960,&quot;oich&quot;:446220,&quot;oichp&quot;:70.86,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:629740,&quot;strike_price&quot;:85000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685000CE&quot;,&quot;volume&quot;:4639020}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1685000CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1685000CE">
+                        <p>10.76L</p><div class="option-graph graph-error" style="width:100%"></div>
+                    </td> <td data-ltp="5" data-ltpchp="-32.88590604026846" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1685000CE"><p> 5 <span class="text-danger">(-32.89%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1685100CE" data-name="BSE:SENSEX25O1685100CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874294&quot;,&quot;ltp&quot;:4.8,&quot;ltpch&quot;:-28.36,&quot;ltpchp&quot;:-28.35820895522388,&quot;oi&quot;:27520,&quot;oich&quot;:2220,&quot;oichp&quot;:8.77,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:25300,&quot;strike_price&quot;:85100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685100CE&quot;,&quot;volume&quot;:432680}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1685100CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1685100CE">
+                        <p>28.00K</p><div class="option-graph graph-error" style="width:2.557715900219339%"></div>
+                    </td> <td data-ltp="4.8" data-ltpchp="-28.35820895522388" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1685100CE"><p> 4.8 <span class="text-danger">(-28.36%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1685200CE" data-name="BSE:SENSEX25O1685200CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874006&quot;,&quot;ltp&quot;:4.75,&quot;ltpch&quot;:-22.76,&quot;ltpchp&quot;:-22.764227642276424,&quot;oi&quot;:78260,&quot;oich&quot;:49480,&quot;oichp&quot;:171.92,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:28780,&quot;strike_price&quot;:85200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685200CE&quot;,&quot;volume&quot;:498440}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1685200CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1685200CE">
+                        <p>78.00K</p><div class="option-graph graph-error" style="width:7.273504591248746%"></div>
+                    </td> <td data-ltp="4.75" data-ltpchp="-22.764227642276424" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1685200CE"><p> 4.75 <span class="text-danger">(-22.76%)</span></p></td></tr>
+                
+                    <tr class="call-item" id="data-BSE:SENSEX25O1685300CE" data-name="BSE:SENSEX25O1685300CE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874943&quot;,&quot;ltp&quot;:4.4,&quot;ltpch&quot;:-24.79,&quot;ltpchp&quot;:-24.786324786324787,&quot;oi&quot;:65340,&quot;oich&quot;:39560,&quot;oichp&quot;:153.45,&quot;option_type&quot;:&quot;CE&quot;,&quot;prev_oi&quot;:25780,&quot;strike_price&quot;:85300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685300CE&quot;,&quot;volume&quot;:588800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1685300CE"><p> Short Build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1685300CE">
+                        <p>65.00K</p><div class="option-graph graph-error" style="width:6.072716457860887%"></div>
+                    </td> <td data-ltp="4.4" data-ltpchp="-24.786324786324787" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1685300CE"><p> 4.4 <span class="text-danger">(-24.79%)</span></p></td></tr>
+                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        <table class="table mb-0 position-relative strike-price-table text-centre" id="strikeTable">
+                            <thead id="strikeHeader">
+                                <tr>
+                                    <th scope="col" class="text-center">Strike Price
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80300</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80400</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80500</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80600</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80700</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80800</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 80900</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81000</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81100</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81200</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81300</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81400</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81500</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81600</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81700</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81800</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 81900</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82000</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82100</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82200</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item  active">
+                        <td class="text-center">
+                            <p> 82300</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82400</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82500</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82600</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82700</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82800</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 82900</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83000</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83100</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83200</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83300</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83400</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83500</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83600</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83700</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83800</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 83900</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84000</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84100</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84200</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84300</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84400</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84500</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84600</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84700</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84800</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 84900</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 85000</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 85100</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 85200</p>
+                        </td>
+                    </tr>
+                
+                    <tr class="strike-item ">
+                        <td class="text-center">
+                            <p> 85300</p>
+                        </td>
+                    </tr>
+                </tbody>
+                        </table>
+                        <div class="put-table-holder">
+                        <div class="w-100 overflow-hidden">
+                        <table class="table mb-0 position-relative oc-srl-put-tbl text-right" id="putTable" style="transform: translate(0px); width: 100%;">
+                                <thead id="putHeaders">
+                                    <tr><th scope="col" data-value="analysis" class="analysis-head"> Analysis<button class="option-info" value="analysis"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button></th> <th class="oi-header" data-value="oi" scope="col"> OI<button class="option-info" value="oi"> <img src="https://assets.fyers.in/option-chain/icon-info-optionchain.svg" alt="" class="w-100"> </button></th> <th scope="col" data-value="ltp"> LTP</th> </tr>
+                                </thead>
+                                <tbody>
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680300PE" data-name="BSE:SENSEX25O1680300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874139&quot;,&quot;ltp&quot;:20.95,&quot;ltpch&quot;:5.54,&quot;ltpchp&quot;:5.541561712846348,&quot;oi&quot;:105240,&quot;oich&quot;:20140,&quot;oichp&quot;:23.67,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:85100,&quot;strike_price&quot;:80300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680300PE&quot;,&quot;volume&quot;:1727800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680300PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680300PE">
+                        <p>1.05L</p><div class="option-graph" style="width:10.562871366629196%"></div>
+                    </td> <td data-ltp="20.95" data-ltpchp="5.541561712846348" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680300PE"><p> 20.95 <span class="">(5.54%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680400PE" data-name="BSE:SENSEX25O1680400PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875174&quot;,&quot;ltp&quot;:21.9,&quot;ltpch&quot;:4.29,&quot;ltpchp&quot;:4.285714285714286,&quot;oi&quot;:94360,&quot;oich&quot;:39280,&quot;oichp&quot;:71.31,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:55080,&quot;strike_price&quot;:80400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680400PE&quot;,&quot;volume&quot;:1461700}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680400PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680400PE">
+                        <p>94.00K</p><div class="option-graph" style="width:9.47085273807612%"></div>
+                    </td> <td data-ltp="21.9" data-ltpchp="4.285714285714286" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680400PE"><p> 21.9 <span class="">(4.29%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680500PE" data-name="BSE:SENSEX25O1680500PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874620&quot;,&quot;ltp&quot;:23.95,&quot;ltpch&quot;:6.44,&quot;ltpchp&quot;:6.444444444444445,&quot;oi&quot;:502360,&quot;oich&quot;:181700,&quot;oichp&quot;:56.66,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:320660,&quot;strike_price&quot;:80500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680500PE&quot;,&quot;volume&quot;:4169160}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680500PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680500PE">
+                        <p>5.02L</p><div class="option-graph" style="width:50.42155130881645%"></div>
+                    </td> <td data-ltp="23.95" data-ltpchp="6.444444444444445" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680500PE"><p> 23.95 <span class="">(6.44%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680600PE" data-name="BSE:SENSEX25O1680600PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875727&quot;,&quot;ltp&quot;:26.4,&quot;ltpch&quot;:7.98,&quot;ltpchp&quot;:7.975460122699387,&quot;oi&quot;:62800,&quot;oich&quot;:-75980,&quot;oichp&quot;:-54.75,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:138780,&quot;strike_price&quot;:80600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680600PE&quot;,&quot;volume&quot;:1851160}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680600PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680600PE">
+                        <p>63.00K</p><div class="option-graph" style="width:6.303195760398266%"></div>
+                    </td> <td data-ltp="26.4" data-ltpchp="7.975460122699387" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680600PE"><p> 26.4 <span class="">(7.98%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680700PE" data-name="BSE:SENSEX25O1680700PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873782&quot;,&quot;ltp&quot;:29.05,&quot;ltpch&quot;:11.09,&quot;ltpchp&quot;:11.089866156787762,&quot;oi&quot;:100520,&quot;oich&quot;:28960,&quot;oichp&quot;:40.47,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:71560,&quot;strike_price&quot;:80700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680700PE&quot;,&quot;volume&quot;:2336800}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680700PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680700PE">
+                        <p>1.01L</p><div class="option-graph" style="width:10.089127991006904%"></div>
+                    </td> <td data-ltp="29.05" data-ltpchp="11.089866156787762" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680700PE"><p> 29.05 <span class="">(11.09%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680800PE" data-name="BSE:SENSEX25O1680800PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876161&quot;,&quot;ltp&quot;:32.2,&quot;ltpch&quot;:12.98,&quot;ltpchp&quot;:12.982456140350877,&quot;oi&quot;:177680,&quot;oich&quot;:58300,&quot;oichp&quot;:48.84,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:119380,&quot;strike_price&quot;:80800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680800PE&quot;,&quot;volume&quot;:3313300}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680800PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680800PE">
+                        <p>1.78L</p><div class="option-graph" style="width:17.833627750120442%"></div>
+                    </td> <td data-ltp="32.2" data-ltpchp="12.982456140350877" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680800PE"><p> 32.2 <span class="">(12.98%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1680900PE" data-name="BSE:SENSEX25O1680900PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874253&quot;,&quot;ltp&quot;:35.5,&quot;ltpch&quot;:15.26,&quot;ltpchp&quot;:15.25974025974026,&quot;oi&quot;:128960,&quot;oich&quot;:-22780,&quot;oichp&quot;:-15.01,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:151740,&quot;strike_price&quot;:80900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1680900PE&quot;,&quot;volume&quot;:3781880}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1680900PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1680900PE">
+                        <p>1.29L</p><div class="option-graph" style="width:12.943632567849686%"></div>
+                    </td> <td data-ltp="35.5" data-ltpchp="15.25974025974026" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1680900PE"><p> 35.5 <span class="">(15.26%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681000PE" data-name="BSE:SENSEX25O1681000PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874570&quot;,&quot;ltp&quot;:40,&quot;ltpch&quot;:16.96,&quot;ltpchp&quot;:16.95906432748538,&quot;oi&quot;:478040,&quot;oich&quot;:59020,&quot;oichp&quot;:14.09,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:419020,&quot;strike_price&quot;:81000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681000PE&quot;,&quot;volume&quot;:9182580}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681000PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681000PE">
+                        <p>4.78L</p><div class="option-graph" style="width:47.98056849205074%"></div>
+                    </td> <td data-ltp="40" data-ltpchp="16.95906432748538" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681000PE"><p> 40 <span class="">(16.96%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681100PE" data-name="BSE:SENSEX25O1681100PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874278&quot;,&quot;ltp&quot;:44.75,&quot;ltpch&quot;:18.23,&quot;ltpchp&quot;:18.229854689564068,&quot;oi&quot;:150480,&quot;oich&quot;:-25580,&quot;oichp&quot;:-14.53,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:176060,&quot;strike_price&quot;:81100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681100PE&quot;,&quot;volume&quot;:3619920}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681100PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681100PE">
+                        <p>1.50L</p><div class="option-graph" style="width:15.103581178737754%"></div>
+                    </td> <td data-ltp="44.75" data-ltpchp="18.229854689564068" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681100PE"><p> 44.75 <span class="">(18.23%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681200PE" data-name="BSE:SENSEX25O1681200PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875447&quot;,&quot;ltp&quot;:50.3,&quot;ltpch&quot;:19.34,&quot;ltpchp&quot;:19.33570581257414,&quot;oi&quot;:197080,&quot;oich&quot;:42080,&quot;oichp&quot;:27.15,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:155000,&quot;strike_price&quot;:81200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681200PE&quot;,&quot;volume&quot;:5331880}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681200PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681200PE">
+                        <p>1.97L</p><div class="option-graph" style="width:19.780793319415448%"></div>
+                    </td> <td data-ltp="50.3" data-ltpchp="19.33570581257414" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681200PE"><p> 50.3 <span class="">(19.34%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681300PE" data-name="BSE:SENSEX25O1681300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874917&quot;,&quot;ltp&quot;:57.55,&quot;ltpch&quot;:21.29,&quot;ltpchp&quot;:21.285563751317177,&quot;oi&quot;:212320,&quot;oich&quot;:48560,&quot;oichp&quot;:29.65,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:163760,&quot;strike_price&quot;:81300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681300PE&quot;,&quot;volume&quot;:6819260}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681300PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681300PE">
+                        <p>2.12L</p><div class="option-graph" style="width:21.310422354263693%"></div>
+                    </td> <td data-ltp="57.55" data-ltpchp="21.285563751317177" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681300PE"><p> 57.55 <span class="">(21.29%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681400PE" data-name="BSE:SENSEX25O1681400PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875861&quot;,&quot;ltp&quot;:65.7,&quot;ltpch&quot;:22.12,&quot;ltpchp&quot;:22.118959107806692,&quot;oi&quot;:174360,&quot;oich&quot;:46620,&quot;oichp&quot;:36.5,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:127740,&quot;strike_price&quot;:81400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681400PE&quot;,&quot;volume&quot;:6777560}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681400PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681400PE">
+                        <p>1.74L</p><div class="option-graph" style="width:17.50040147743697%"></div>
+                    </td> <td data-ltp="65.7" data-ltpchp="22.118959107806692" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681400PE"><p> 65.7 <span class="">(22.12%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681500PE" data-name="BSE:SENSEX25O1681500PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873931&quot;,&quot;ltp&quot;:75.85,&quot;ltpch&quot;:23.43,&quot;ltpchp&quot;:23.433685923515053,&quot;oi&quot;:517760,&quot;oich&quot;:94620,&quot;oichp&quot;:22.36,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:423140,&quot;strike_price&quot;:81500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681500PE&quot;,&quot;volume&quot;:15181140}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681500PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681500PE">
+                        <p>5.18L</p><div class="option-graph" style="width:51.967239441143406%"></div>
+                    </td> <td data-ltp="75.85" data-ltpchp="23.433685923515053" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681500PE"><p> 75.85 <span class="">(23.43%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681600PE" data-name="BSE:SENSEX25O1681600PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876297&quot;,&quot;ltp&quot;:87.05,&quot;ltpch&quot;:23.48,&quot;ltpchp&quot;:23.47517730496454,&quot;oi&quot;:143160,&quot;oich&quot;:-11100,&quot;oichp&quot;:-7.2,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:154260,&quot;strike_price&quot;:81600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681600PE&quot;,&quot;volume&quot;:7876440}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681600PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681600PE">
+                        <p>1.43L</p><div class="option-graph" style="width:14.36887746908624%"></div>
+                    </td> <td data-ltp="87.05" data-ltpchp="23.47517730496454" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681600PE"><p> 87.05 <span class="">(23.48%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681700PE" data-name="BSE:SENSEX25O1681700PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874415&quot;,&quot;ltp&quot;:101.3,&quot;ltpch&quot;:25.29,&quot;ltpchp&quot;:25.29375386518244,&quot;oi&quot;:170820,&quot;oich&quot;:-28240,&quot;oichp&quot;:-14.19,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:199060,&quot;strike_price&quot;:81700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681700PE&quot;,&quot;volume&quot;:8290500}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681700PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681700PE">
+                        <p>1.71L</p><div class="option-graph" style="width:17.145093945720248%"></div>
+                    </td> <td data-ltp="101.3" data-ltpchp="25.29375386518244" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681700PE"><p> 101.3 <span class="">(25.29%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681800PE" data-name="BSE:SENSEX25O1681800PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874134&quot;,&quot;ltp&quot;:118.6,&quot;ltpch&quot;:27.8,&quot;ltpchp&quot;:27.801724137931036,&quot;oi&quot;:268060,&quot;oich&quot;:89240,&quot;oichp&quot;:49.9,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:178820,&quot;strike_price&quot;:81800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681800PE&quot;,&quot;volume&quot;:11194980}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681800PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681800PE">
+                        <p>2.68L</p><div class="option-graph" style="width:26.905010438413363%"></div>
+                    </td> <td data-ltp="118.6" data-ltpchp="27.801724137931036" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681800PE"><p> 118.6 <span class="">(27.80%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1681900PE" data-name="BSE:SENSEX25O1681900PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875157&quot;,&quot;ltp&quot;:139.5,&quot;ltpch&quot;:29.65,&quot;ltpchp&quot;:29.646840148698885,&quot;oi&quot;:240020,&quot;oich&quot;:59820,&quot;oichp&quot;:33.2,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:180200,&quot;strike_price&quot;:81900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1681900PE&quot;,&quot;volume&quot;:10703200}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1681900PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1681900PE">
+                        <p>2.40L</p><div class="option-graph" style="width:24.090653605267384%"></div>
+                    </td> <td data-ltp="139.5" data-ltpchp="29.646840148698885" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1681900PE"><p> 139.5 <span class="">(29.65%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682000PE" data-name="BSE:SENSEX25O1682000PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875578&quot;,&quot;ltp&quot;:162.65,&quot;ltpch&quot;:32.24,&quot;ltpchp&quot;:32.235772357723576,&quot;oi&quot;:996320,&quot;oich&quot;:94080,&quot;oichp&quot;:10.43,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:902240,&quot;strike_price&quot;:82000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682000PE&quot;,&quot;volume&quot;:28975740}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682000PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682000PE">
+                        <p>9.96L</p><div class="option-graph" style="width:100%"></div>
+                    </td> <td data-ltp="162.65" data-ltpchp="32.235772357723576" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682000PE"><p> 162.65 <span class="">(32.24%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682100PE" data-name="BSE:SENSEX25O1682100PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875192&quot;,&quot;ltp&quot;:190.5,&quot;ltpch&quot;:33.92,&quot;ltpchp&quot;:33.91915641476274,&quot;oi&quot;:367240,&quot;oich&quot;:110700,&quot;oichp&quot;:43.15,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:256540,&quot;strike_price&quot;:82100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682100PE&quot;,&quot;volume&quot;:20339300}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682100PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682100PE">
+                        <p>3.67L</p><div class="option-graph" style="width:36.85964348803597%"></div>
+                    </td> <td data-ltp="190.5" data-ltpchp="33.91915641476274" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682100PE"><p> 190.5 <span class="">(33.92%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682200PE" data-name="BSE:SENSEX25O1682200PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875992&quot;,&quot;ltp&quot;:222.7,&quot;ltpch&quot;:36.12,&quot;ltpchp&quot;:36.12469437652812,&quot;oi&quot;:520240,&quot;oich&quot;:185240,&quot;oichp&quot;:55.3,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:335000,&quot;strike_price&quot;:82200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682200PE&quot;,&quot;volume&quot;:30358500}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682200PE"><p> Long build</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682200PE">
+                        <p>5.20L</p><div class="option-graph" style="width:52.216155452063596%"></div>
+                    </td> <td data-ltp="222.7" data-ltpchp="36.12469437652812" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682200PE"><p> 222.7 <span class="">(36.12%)</span></p></td></tr>
+                
+                    <tr class="put-item active" id="data-BSE:SENSEX25O1682300PE" data-name="BSE:SENSEX25O1682300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874098&quot;,&quot;ltp&quot;:259,&quot;ltpch&quot;:37.95,&quot;ltpchp&quot;:37.949400798934754,&quot;oi&quot;:307220,&quot;oich&quot;:-35820,&quot;oichp&quot;:-10.44,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:343040,&quot;strike_price&quot;:82300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682300PE&quot;,&quot;volume&quot;:19797360}">
+                        <td class="call-option analysis-field-itm " id="strike-analysis-BSE:SENSEX25O1682300PE"><p> Short Cover</p></td><td class="call-option oi-field " id="oi-BSE:SENSEX25O1682300PE">
+                        <p>3.07L</p><div class="option-graph" style="width:30.835474546330495%"></div>
+                    </td> <td data-ltp="259" data-ltpchp="37.949400798934754" class="call-option ltp-field " id="ltp-BSE:SENSEX25O1682300PE"><p> 259 <span class="">(37.95%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682400PE" data-name="BSE:SENSEX25O1682400PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873802&quot;,&quot;ltp&quot;:299.6,&quot;ltpch&quot;:38.42,&quot;ltpchp&quot;:38.41533841533842,&quot;oi&quot;:243120,&quot;oich&quot;:-85260,&quot;oichp&quot;:-25.96,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:328380,&quot;strike_price&quot;:82400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682400PE&quot;,&quot;volume&quot;:11489040}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682400PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682400PE">
+                        <p>2.43L</p><div class="option-graph" style="width:24.401798618917617%"></div>
+                    </td> <td data-ltp="299.6" data-ltpchp="38.41533841533842" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682400PE"><p> 299.6 <span class="">(38.42%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682500PE" data-name="BSE:SENSEX25O1682500PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874567&quot;,&quot;ltp&quot;:347.2,&quot;ltpch&quot;:39.97,&quot;ltpchp&quot;:39.97177988308809,&quot;oi&quot;:294900,&quot;oich&quot;:-357620,&quot;oichp&quot;:-54.81,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:652520,&quot;strike_price&quot;:82500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682500PE&quot;,&quot;volume&quot;:10786520}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682500PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682500PE">
+                        <p>2.95L</p><div class="option-graph" style="width:29.598924040468926%"></div>
+                    </td> <td data-ltp="347.2" data-ltpchp="39.97177988308809" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682500PE"><p> 347.2 <span class="">(39.97%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682600PE" data-name="BSE:SENSEX25O1682600PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874271&quot;,&quot;ltp&quot;:400,&quot;ltpch&quot;:40.57,&quot;ltpchp&quot;:40.57283429977157,&quot;oi&quot;:103000,&quot;oich&quot;:-196140,&quot;oichp&quot;:-65.57,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:299140,&quot;strike_price&quot;:82600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682600PE&quot;,&quot;volume&quot;:3152120}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682600PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682600PE">
+                        <p>1.03L</p><div class="option-graph" style="width:10.338044001927091%"></div>
+                    </td> <td data-ltp="400" data-ltpchp="40.57283429977157" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682600PE"><p> 400 <span class="">(40.57%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682700PE" data-name="BSE:SENSEX25O1682700PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875438&quot;,&quot;ltp&quot;:456.85,&quot;ltpch&quot;:40.92,&quot;ltpchp&quot;:40.91610117211598,&quot;oi&quot;:105780,&quot;oich&quot;:-91340,&quot;oichp&quot;:-46.34,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:197120,&quot;strike_price&quot;:82700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682700PE&quot;,&quot;volume&quot;:1840860}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682700PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682700PE">
+                        <p>1.06L</p><div class="option-graph" style="width:10.617070820619881%"></div>
+                    </td> <td data-ltp="456.85" data-ltpchp="40.91610117211598" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682700PE"><p> 456.85 <span class="">(40.92%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682800PE" data-name="BSE:SENSEX25O1682800PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874914&quot;,&quot;ltp&quot;:520.6,&quot;ltpch&quot;:42.03,&quot;ltpchp&quot;:42.02700859364343,&quot;oi&quot;:71400,&quot;oich&quot;:-49260,&quot;oichp&quot;:-40.83,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:120660,&quot;strike_price&quot;:82800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682800PE&quot;,&quot;volume&quot;:1010620}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682800PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682800PE">
+                        <p>71.00K</p><div class="option-graph" style="width:7.166372249879557%"></div>
+                    </td> <td data-ltp="520.6" data-ltpchp="42.02700859364343" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682800PE"><p> 520.6 <span class="">(42.03%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1682900PE" data-name="BSE:SENSEX25O1682900PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875856&quot;,&quot;ltp&quot;:585.6,&quot;ltpch&quot;:38.13,&quot;ltpchp&quot;:38.1294964028777,&quot;oi&quot;:33660,&quot;oich&quot;:-27660,&quot;oichp&quot;:-45.11,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:61320,&quot;strike_price&quot;:82900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1682900PE&quot;,&quot;volume&quot;:685220}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1682900PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1682900PE">
+                        <p>34.00K</p><div class="option-graph" style="width:3.3784326320860765%"></div>
+                    </td> <td data-ltp="585.6" data-ltpchp="38.1294964028777" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1682900PE"><p> 585.6 <span class="">(38.13%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683000PE" data-name="BSE:SENSEX25O1683000PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876129&quot;,&quot;ltp&quot;:661.5,&quot;ltpch&quot;:36.91,&quot;ltpchp&quot;:36.914001862775535,&quot;oi&quot;:210440,&quot;oich&quot;:-60820,&quot;oichp&quot;:-22.42,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:271260,&quot;strike_price&quot;:83000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683000PE&quot;,&quot;volume&quot;:1115320}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683000PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683000PE">
+                        <p>2.10L</p><div class="option-graph" style="width:21.121727958888712%"></div>
+                    </td> <td data-ltp="661.5" data-ltpchp="36.914001862775535" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683000PE"><p> 661.5 <span class="">(36.91%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683100PE" data-name="BSE:SENSEX25O1683100PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874230&quot;,&quot;ltp&quot;:740.6,&quot;ltpch&quot;:35.91,&quot;ltpchp&quot;:35.91484676087355,&quot;oi&quot;:11440,&quot;oich&quot;:-12560,&quot;oichp&quot;:-52.33,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:24000,&quot;strike_price&quot;:83100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683100PE&quot;,&quot;volume&quot;:173020}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683100PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683100PE">
+                        <p>11.00K</p><div class="option-graph" style="width:1.1482254697286012%"></div>
+                    </td> <td data-ltp="740.6" data-ltpchp="35.91484676087355" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683100PE"><p> 740.6 <span class="">(35.91%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683200PE" data-name="BSE:SENSEX25O1683200PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873949&quot;,&quot;ltp&quot;:818.8,&quot;ltpch&quot;:33.58,&quot;ltpchp&quot;:33.58348968105066,&quot;oi&quot;:7820,&quot;oich&quot;:-5480,&quot;oichp&quot;:-41.2,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:13300,&quot;strike_price&quot;:83200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683200PE&quot;,&quot;volume&quot;:96580}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683200PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683200PE">
+                        <p>8.00K</p><div class="option-graph" style="width:0.7848883892725228%"></div>
+                    </td> <td data-ltp="818.8" data-ltpchp="33.58348968105066" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683200PE"><p> 818.8 <span class="">(33.58%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683300PE" data-name="BSE:SENSEX25O1683300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874811&quot;,&quot;ltp&quot;:907.05,&quot;ltpch&quot;:31.99,&quot;ltpchp&quot;:31.992142025611177,&quot;oi&quot;:7300,&quot;oich&quot;:-860,&quot;oichp&quot;:-10.54,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:8160,&quot;strike_price&quot;:83300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683300PE&quot;,&quot;volume&quot;:32960}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683300PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683300PE">
+                        <p>7.00K</p><div class="option-graph" style="width:0.7326963224666774%"></div>
+                    </td> <td data-ltp="907.05" data-ltpchp="31.992142025611177" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683300PE"><p> 907.05 <span class="">(31.99%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683400PE" data-name="BSE:SENSEX25O1683400PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874439&quot;,&quot;ltp&quot;:996.25,&quot;ltpch&quot;:31.91,&quot;ltpchp&quot;:31.909963588215824,&quot;oi&quot;:3560,&quot;oich&quot;:1300,&quot;oichp&quot;:57.52,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:2260,&quot;strike_price&quot;:83400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683400PE&quot;,&quot;volume&quot;:15460}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683400PE"><p> Long build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683400PE">
+                        <p>4.00K</p><div class="option-graph" style="width:0.35731491890155775%"></div>
+                    </td> <td data-ltp="996.25" data-ltpchp="31.909963588215824" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683400PE"><p> 996.25 <span class="">(31.91%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683500PE" data-name="BSE:SENSEX25O1683500PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875574&quot;,&quot;ltp&quot;:1087.8,&quot;ltpch&quot;:27.29,&quot;ltpchp&quot;:27.28761993915282,&quot;oi&quot;:28320,&quot;oich&quot;:-6660,&quot;oichp&quot;:-19.04,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:34980,&quot;strike_price&quot;:83500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683500PE&quot;,&quot;volume&quot;:69620}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683500PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683500PE">
+                        <p>28.00K</p><div class="option-graph" style="width:2.8424602537337402%"></div>
+                    </td> <td data-ltp="1087.8" data-ltpchp="27.28761993915282" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683500PE"><p> 1087.8 <span class="">(27.29%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683600PE" data-name="BSE:SENSEX25O1683600PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875190&quot;,&quot;ltp&quot;:1185.15,&quot;ltpch&quot;:26.83,&quot;ltpchp&quot;:26.828615763283214,&quot;oi&quot;:580,&quot;oich&quot;:-180,&quot;oichp&quot;:-23.68,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:760,&quot;strike_price&quot;:83600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683600PE&quot;,&quot;volume&quot;:2740}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683600PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683600PE">
+                        <p>1.00K</p><div class="option-graph" style="width:0.05821422836036615%"></div>
+                    </td> <td data-ltp="1185.15" data-ltpchp="26.828615763283214" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683600PE"><p> 1185.15 <span class="">(26.83%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683700PE" data-name="BSE:SENSEX25O1683700PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875985&quot;,&quot;ltp&quot;:1309.05,&quot;ltpch&quot;:30.73,&quot;ltpchp&quot;:30.728516502721327,&quot;oi&quot;:840,&quot;oich&quot;:-160,&quot;oichp&quot;:-16,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:1000,&quot;strike_price&quot;:83700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683700PE&quot;,&quot;volume&quot;:1120}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683700PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683700PE">
+                        <p>1.00K</p><div class="option-graph" style="width:0.0843102617632889%"></div>
+                    </td> <td data-ltp="1309.05" data-ltpchp="30.728516502721327" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683700PE"><p> 1309.05 <span class="">(30.73%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683800PE" data-name="BSE:SENSEX25O1683800PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874091&quot;,&quot;ltp&quot;:1545.65,&quot;ltpch&quot;:37.74,&quot;ltpchp&quot;:37.74005257764114,&quot;oi&quot;:340,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:340,&quot;strike_price&quot;:83800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683800PE&quot;,&quot;volume&quot;:180}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683800PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683800PE">
+                        <p>340</p><div class="option-graph" style="width:0.0341255821422836%"></div>
+                    </td> <td data-ltp="1545.65" data-ltpchp="37.74005257764114" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683800PE"><p> 1545.65 <span class="">(37.74%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1683900PE" data-name="BSE:SENSEX25O1683900PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873796&quot;,&quot;ltp&quot;:1753.75,&quot;ltpch&quot;:23.48,&quot;ltpchp&quot;:23.481781376518217,&quot;oi&quot;:880,&quot;oich&quot;:880,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:83900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1683900PE&quot;,&quot;volume&quot;:880}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1683900PE"><p> Long build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1683900PE">
+                        <p>1.00K</p><div class="option-graph" style="width:0.08832503613296933%"></div>
+                    </td> <td data-ltp="1753.75" data-ltpchp="23.481781376518217" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1683900PE"><p> 1753.75 <span class="">(23.48%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684000PE" data-name="BSE:SENSEX25O1684000PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874109&quot;,&quot;ltp&quot;:1556.05,&quot;ltpch&quot;:17.42,&quot;ltpchp&quot;:17.424442515941593,&quot;oi&quot;:7500,&quot;oich&quot;:-160,&quot;oichp&quot;:-2.09,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:7660,&quot;strike_price&quot;:84000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684000PE&quot;,&quot;volume&quot;:3600}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684000PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684000PE">
+                        <p>7.00K</p><div class="option-graph" style="width:0.7527701943150795%"></div>
+                    </td> <td data-ltp="1556.05" data-ltpchp="17.424442515941593" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684000PE"><p> 1556.05 <span class="">(17.42%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684100PE" data-name="BSE:SENSEX25O1684100PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875102&quot;,&quot;ltp&quot;:1823.8,&quot;ltpch&quot;:14.45,&quot;ltpchp&quot;:14.445281124497992,&quot;oi&quot;:40,&quot;oich&quot;:40,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684100PE&quot;,&quot;volume&quot;:300}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684100PE"><p> Long build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684100PE">
+                        <p>40</p><div class="option-graph" style="width:0.004014774369680424%"></div>
+                    </td> <td data-ltp="1823.8" data-ltpchp="14.445281124497992" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684100PE"><p> 1823.8 <span class="">(14.45%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684200PE" data-name="BSE:SENSEX25O1684200PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874590&quot;,&quot;ltp&quot;:1748.75,&quot;ltpch&quot;:3.93,&quot;ltpchp&quot;:3.9283273408017116,&quot;oi&quot;:40,&quot;oich&quot;:40,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684200PE&quot;,&quot;volume&quot;:480}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684200PE"><p> Long build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684200PE">
+                        <p>40</p><div class="option-graph" style="width:0.004014774369680424%"></div>
+                    </td> <td data-ltp="1748.75" data-ltpchp="3.9283273408017116" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684200PE"><p> 1748.75 <span class="">(3.93%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684300PE" data-name="BSE:SENSEX25O1684300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875702&quot;,&quot;ltp&quot;:1773.05,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684300PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684300PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684300PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="1773.05" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684300PE"><p> 1773.05 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684400PE" data-name="BSE:SENSEX25O1684400PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875458&quot;,&quot;ltp&quot;:1864.7,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84400,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684400PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684400PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684400PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="1864.7" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684400PE"><p> 1864.7 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684500PE" data-name="BSE:SENSEX25O1684500PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876125&quot;,&quot;ltp&quot;:2049.6,&quot;ltpch&quot;:17.07,&quot;ltpchp&quot;:17.06982721690704,&quot;oi&quot;:500,&quot;oich&quot;:-20,&quot;oichp&quot;:-3.85,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:520,&quot;strike_price&quot;:84500,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684500PE&quot;,&quot;volume&quot;:400}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684500PE"><p> Short Cover</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684500PE">
+                        <p>1.00K</p><div class="option-graph" style="width:0.0501846796210053%"></div>
+                    </td> <td data-ltp="2049.6" data-ltpchp="17.06982721690704" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684500PE"><p> 2049.6 <span class="">(17.07%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684600PE" data-name="BSE:SENSEX25O1684600PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874226&quot;,&quot;ltp&quot;:1810.7,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:20,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:20,&quot;strike_price&quot;:84600,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684600PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684600PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684600PE">
+                        <p>20</p><div class="option-graph" style="width:0.002007387184840212%"></div>
+                    </td> <td data-ltp="1810.7" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684600PE"><p> 1810.7 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684700PE" data-name="BSE:SENSEX25O1684700PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873943&quot;,&quot;ltp&quot;:2145.8,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84700,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684700PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684700PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684700PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="2145.8" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684700PE"><p> 2145.8 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684800PE" data-name="BSE:SENSEX25O1684800PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874796&quot;,&quot;ltp&quot;:2058.15,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:40,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:40,&quot;strike_price&quot;:84800,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684800PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684800PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684800PE">
+                        <p>40</p><div class="option-graph" style="width:0.004014774369680424%"></div>
+                    </td> <td data-ltp="2058.15" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684800PE"><p> 2058.15 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1684900PE" data-name="BSE:SENSEX25O1684900PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874430&quot;,&quot;ltp&quot;:2640.6,&quot;ltpch&quot;:12.98,&quot;ltpchp&quot;:12.978928227617928,&quot;oi&quot;:260,&quot;oich&quot;:260,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:84900,&quot;symbol&quot;:&quot;BSE:SENSEX25O1684900PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1684900PE"><p> Long build</p></td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1684900PE">
+                        <p>260</p><div class="option-graph" style="width:0.026096033402922752%"></div>
+                    </td> <td data-ltp="2640.6" data-ltpchp="12.978928227617928" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1684900PE"><p> 2640.6 <span class="">(12.98%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1685000PE" data-name="BSE:SENSEX25O1685000PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016874849&quot;,&quot;ltp&quot;:2250,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:980,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:980,&quot;strike_price&quot;:85000,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685000PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1685000PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1685000PE">
+                        <p>1.00K</p><div class="option-graph" style="width:0.09836197205717039%"></div>
+                    </td> <td data-ltp="2250" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1685000PE"><p> 2250 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1685100PE" data-name="BSE:SENSEX25O1685100PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016875823&quot;,&quot;ltp&quot;:2531.1,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oi&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:85100,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685100PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1685100PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1685100PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="2531.1" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1685100PE"><p> 2531.1 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1685200PE" data-name="BSE:SENSEX25O1685200PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016873899&quot;,&quot;ltp&quot;:2628.75,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:85200,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685200PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1685200PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1685200PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="2628.75" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1685200PE"><p> 2628.75 <span class="">(0.00%)</span></p></td></tr>
+                
+                    <tr class="put-item" id="data-BSE:SENSEX25O1685300PE" data-name="BSE:SENSEX25O1685300PE" data-object="{&quot;ask&quot;:0,&quot;bid&quot;:0,&quot;fyToken&quot;:&quot;1211251016876266&quot;,&quot;ltp&quot;:2726.75,&quot;ltpch&quot;:0,&quot;ltpchp&quot;:0,&quot;oich&quot;:0,&quot;oichp&quot;:0,&quot;option_type&quot;:&quot;PE&quot;,&quot;prev_oi&quot;:0,&quot;strike_price&quot;:85300,&quot;symbol&quot;:&quot;BSE:SENSEX25O1685300PE&quot;}">
+                        <td class="call-option analysis-field-itm bg-itm-element" id="strike-analysis-BSE:SENSEX25O1685300PE">NA</td><td class="call-option oi-field bg-itm-element" id="oi-BSE:SENSEX25O1685300PE">
+                        <p>0</p><div class="option-graph" style="width:0%"></div>
+                    </td> <td data-ltp="2726.75" data-ltpchp="0" class="call-option ltp-field bg-itm-element" id="ltp-BSE:SENSEX25O1685300PE"><p> 2726.75 <span class="">(0.00%)</span></p></td></tr>
+                </tbody>
+                            </table>
+                        </div>
+                            
+                        <div class="option-chain-opt call-sell" style="top: 458.1px; display: none;">
+            <a href="#" class="option-chain-action" data-value="BUY" data-bs-toggle="tooltip" data-placement="top" title="BUY"> <img src="https://assets.fyers.in/option-chain/buy.svg" alt=""> </a>
+            <a href="#" class="option-chain-action" data-value="SELL" data-placement="top" title="SELL"> <img src="https://assets.fyers.in/option-chain/sell.svg" alt=""> </a>
+            <a href="#" class="option-chain-action" data-value="GRAPH" data-placement="top" title="CHART"> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+      
+            <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Group-48" transform="translate(-76.000000, -8.000000)">
+                    <g id="Group-27" transform="translate(76.000000, 8.000000)">
+                        <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                        <g id="Group-26" transform="translate(4.000000, 4.000000)" fill-rule="nonzero">
+                            <path d="M2.79069767,16 C1.25023261,16 0,14.7497674 0,13.2093023 L0,0.558139535 C0,0.253023258 0.253023258,0 0.558139535,0 C0.863255811,0 1.11627907,0.253023258 1.11627907,0.558139535 L1.11627907,13.2093023 C1.11627907,14.132093 1.86790697,14.8837209 2.79069767,14.8837209 L15.4418605,14.8837209 C15.7469767,14.8837209 16,15.1367442 16,15.4418605 C16,15.7469767 15.7469767,16 15.4418605,16 L2.79069767,16 Z" id="Vector"></path>
+                            <path d="M2.42591428,12.1449897 C2.1952166,11.9440595 2.16544887,11.5942939 2.36637911,11.3561543 L5.78219356,7.36730496 C6.15428658,6.93567706 6.6901002,6.67521829 7.25568159,6.65289271 C7.82126298,6.63800899 8.37940229,6.84637198 8.78126277,7.24823246 L9.48823938,7.95521829 C9.67428589,8.1412648 9.91986752,8.2305635 10.1803326,8.2305635 C10.4407977,8.22312164 10.678937,8.10405006 10.8500998,7.90311982 L14.2659146,3.91429353 C14.4668448,3.68359586 14.8166118,3.6538157 15.0547514,3.85474594 C15.2854491,4.05567618 15.3152164,4.40544177 15.1142862,4.6435813 L11.6984714,8.63243032 C11.3263784,9.06405822 10.7905648,9.32451699 10.2249834,9.34684257 C9.659402,9.36172629 9.10126234,9.15336329 8.69940186,8.75150281 L7.99986764,8.04451698 C7.81382113,7.85847047 7.5682395,7.76172992 7.30777439,7.76917178 C7.04730928,7.77661364 6.80917002,7.89568522 6.63800723,8.09661546 L3.22219316,12.0854421 C3.1031234,12.2119538 2.94684433,12.2789378 2.79056527,12.2789378 C2.66405364,12.2789378 2.53010032,12.234292 2.42591428,12.1449897 Z" id="Vector"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg> </a>
+            <a href="#" class="option-chain-action" data-value="CART" data-placement="top" title="BASKET"> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+            
+            <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Group-48" transform="translate(-108.000000, -8.000000)">
+                    <g id="Group-31" transform="translate(108.000000, 8.000000)">
+                        <g id="Group-28">
+                            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                            <path d="M20,4 L20,20 L4,20 L4,4 L20,4 Z" id="Vector" opacity="0"></path>
+                        </g>
+                        <g id="Group-30" transform="translate(4.000000, 4.000000)">
+                            <path d="M2.16975608,3.8283762 C1.94341465,3.6021451 1.94341465,3.22769365 2.16975608,3.00146255 L5.00292662,0.169673329 C5.22926805,-0.0565577686 5.60390269,-0.0565577686 5.83024413,0.169673329 C6.05658556,0.395904427 6.05658556,0.770355855 5.83024413,0.996586953 L2.99707301,3.8283762 C2.87999985,3.93759121 2.73170739,4 2.58341472,4 C2.43512205,4 2.27902437,3.93759121 2.16975608,3.8283762 Z" id="Vector" fill-rule="nonzero"></path>
+                            <path d="M13.0029274,3.8283762 L10.1697561,0.996586953 C9.94341465,0.770355855 9.94341465,0.395904427 10.1697561,0.169673329 C10.3960975,-0.0565577686 10.7707319,-0.0565577686 10.9970734,0.169673329 L13.8302441,3.00146255 C14.0565856,3.22769365 14.0565856,3.6021451 13.8302441,3.8283762 C13.7209758,3.93759121 13.5648778,4 13.4165851,4 C13.2682924,4 13.1200005,3.94539229 13.0029274,3.8283762 Z" id="Vector" fill-rule="nonzero"></path>
+                            <path d="M13.9534884,6.99841025 L13.7823259,6.99841025 L2.04651163,6.99841025 C1.5255814,7.00568009 0.930232514,7.0056796 0.498604619,6.58402912 C0.156279032,6.2568865 0,5.74799806 0,4.99920495 C0,3 1.49581381,3 2.2102324,3 L13.789768,3 C14.5041865,3 16,3 16,4.99920495 C16,5.75526789 15.8437209,6.2568865 15.5013953,6.58402912 C15.1144186,6.96206058 14.5934877,6.99841025 14.1097668,6.99841025 C14.0576737,6.99841025 14.0055814,6.99841025 13.9534884,6.99841025 Z M13.9609304,5.90793482 C14.2958141,5.91520466 14.6083724,5.91520458 14.7125585,5.81342687 C14.7646515,5.76253801 14.8762789,5.58806168 14.8762789,4.99920495 C14.8762789,4.17771347 14.6679074,4.09047543 13.7823259,4.09047543 L2.2102324,4.09047543 C1.32465096,4.09047543 1.11627907,4.17771347 1.11627907,4.99920495 C1.11627907,5.58806168 1.23534886,5.76253801 1.28000002,5.81342687 C1.38418607,5.90793474 1.70418606,5.90793482 2.03162792,5.90793482 L2.2102324,5.90793482 L13.9609304,5.90793482 Z" id="Vector"></path>
+                            <path d="M6,12.4059405 L6,9.5940595 C6,9.26930697 6.22666667,9 6.5,9 C6.77333333,9 7,9.26930697 7,9.5940595 L7,12.4059405 C7,12.7386138 6.77333333,13 6.5,13 C6.22666667,13 6,12.730693 6,12.4059405 Z" id="Vector" fill-rule="nonzero"></path>
+                            <path d="M9,12.4059405 L9,9.5940595 C9,9.26930697 9.22666667,9 9.5,9 C9.77333333,9 10,9.26930697 10,9.5940595 L10,12.4059405 C10,12.7386138 9.77333333,13 9.5,13 C9.22666667,13 9,12.730693 9,12.4059405 Z" id="Vector" fill-rule="nonzero"></path>
+                            <path d="M5.62554325,16 C2.91564726,16 2.31008425,14.422308 2.07542844,13.0520117 L1.00812293,6.64495085 C0.955136135,6.34126358 1.16708343,6.05979756 1.47743465,6.00794852 C1.78778587,5.95609947 2.07542821,6.16349559 2.12841501,6.46718286 L3.19572059,12.8668365 C3.4152373,14.1778767 3.86940955,14.888949 5.62554325,14.888949 L10.189978,14.888949 C12.1353502,14.888949 12.3548667,14.2223189 12.6046616,12.9334997 L13.8763441,6.45236851 C13.9369005,6.14868124 14.232112,5.94869263 14.5424632,6.01535569 C14.8528144,6.07461174 15.0496226,6.3634844 14.9890663,6.66717167 L13.717383,13.1483022 C13.4221709,14.6519245 12.9301521,16 10.189978,16 L5.62554325,16 Z" id="Vector" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg></a>
+            <a href="#" class="option-chain-action" data-value="MARKRT_DEPTH" data-placement="top" title="MARKET DEPTH"> <!--?xml version="1.0" encoding="UTF-8"?-->
+            <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="market-depth">
+                        <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                        <g id="Group-57" transform="translate(4.502786, 5.433993)" fill-rule="nonzero">
+                            <path d="M7.51949861,0 C7.79564098,0 8.01949861,0.223857625 8.01949861,0.5 L8.019,1.867 L13.5389972,1.8679868 C14.3674243,1.8679868 15.0389972,2.53955967 15.0389972,3.3679868 L15.0389972,8.37293729 C15.0389972,9.20136442 14.3674243,9.87293729 13.5389972,9.87293729 L8.019,9.872 L8.01949861,13.5759076 C8.01949861,13.85205 7.79564098,14.0759076 7.51949861,14.0759076 C7.24335623,14.0759076 7.01949861,13.85205 7.01949861,13.5759076 L7.019,11.74 L1.5,11.7409241 C0.720303883,11.7409241 0.0795513218,11.146036 0.00686657806,10.3853841 L0,10.2409241 L0,5.2359736 C0,4.40754647 0.671572875,3.7359736 1.5,3.7359736 L7.019,3.735 L7.01949861,0.5 C7.01949861,0.223857625 7.24335623,0 7.51949861,0 Z M7.019,9.434 L1,9.434 L1,10.2409241 C1,10.486384 1.17687516,10.6905325 1.41012437,10.7328684 L1.5,10.7409241 L7.019,10.7399736 L7.019,9.434 Z M14.038,7.537 L8.019,7.537 L8.01999721,8.8719868 L13.5389972,8.87293729 C13.8151396,8.87293729 14.0389972,8.64907967 14.0389972,8.37293729 L14.038,7.537 Z M7.019,7.099 L1,7.099 L1,8.434 L7.019,8.434 L7.019,7.099 Z M14.038,5.202 L8.019,5.202 L8.019,6.537 L14.038,6.537 L14.038,5.202 Z M7.019,4.7359736 L1.5,4.7359736 C1.25454011,4.7359736 1.05039163,4.91284876 1.00805567,5.14609797 L1,5.2359736 L1,6.099 L7.019,6.099 L7.019,4.7359736 Z M13.5389972,2.8679868 L8.01999721,2.8679868 L8.019,4.202 L14.038,4.202 L14.0389972,3.3679868 L14.0309415,3.27811117 C13.9886056,3.04486196 13.7844571,2.8679868 13.5389972,2.8679868 Z" id="Combined-Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </svg></a>
+            <a href="#" class="option-chain-action" data-value="WATCHLIST" data-placement="top" title="WATCHLIST"> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25px" height="24px" viewBox="0 0 25 24" version="1.1">
+            
+            <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Group-48-Copy" transform="translate(-179.000000, -13.888319)">
+                    <g id="watchlist" transform="translate(179.666767, 13.888319)">
+                        <g id="Group-29" opacity="0">
+                            <path d="M24,0 L24,24 L0,24 L0,0 L24,0 Z" id="Vector"></path>
+                            <path d="M20,4 L20,20 L4,20 L4,4 L20,4 Z" id="Vector"></path>
+                        </g>
+                        <g id="archive-add" transform="translate(4.000000, 4.000000)">
+                            <path d="M11.6402079,14.8600006 L8.38687515,13.0533333 C8.19354182,12.9466666 7.81354207,12.9466666 7.62020874,13.0533333 L4.36687517,14.8600006 C3.70687517,15.2266673 3.03354168,15.266667 2.52020836,14.9600004 C2.00687504,14.6600004 1.71354167,14.0533338 1.71354167,13.3000005 L1.71354167,3.90666676 C1.71354167,2.21333345 3.09354146,0.833333333 4.78687477,0.833333333 L11.2202085,0.833333333 C12.9135418,0.833333333 14.2935422,2.21333345 14.2935422,3.90666676 L14.2935422,13.3000005 C14.2935422,14.0533338 14.0002082,14.6600004 13.4868749,14.9600004 C13.2535416,15.1000004 12.986875,15.1666667 12.7135417,15.1666667 C12.3735417,15.1666667 12.0002079,15.0666673 11.6402079,14.8600006 Z M8.86687533,12.1800003 L12.1202087,13.9866664 C12.4602087,14.1799997 12.7735413,14.2199998 12.9735413,14.0999997 C13.1735413,13.9799997 13.2868754,13.6933338 13.2868754,13.3000005 L13.2868754,3.90666676 C13.2868754,2.76666673 12.3535417,1.83333333 11.2135417,1.83333333 L4.78687477,1.83333333 C3.64687475,1.83333333 2.71354167,2.76666673 2.71354167,3.90666676 L2.71354167,13.3000005 C2.71354167,13.6933338 2.82687501,13.9866664 3.02687502,14.0999997 C3.22687503,14.2133331 3.5402085,14.1799997 3.88020849,13.9866664 L7.13354174,12.1800003 C7.38020841,12.0400003 7.6868752,11.9733327 8.00020854,11.9733327 C8.31354187,11.9733327 8.62020866,12.0400003 8.86687533,12.1800003 Z" id="Vector"></path>
+                            <path d="M16,0 L16,16 L0,16 L0,0 L16,0 Z" id="Vector" opacity="0"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+        </a>
+            <a href="#" class="option-chain-action" data-value="NOTIFICATION" data-placement="top" title="ALERTS"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+            
+            <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="Group-48" transform="translate(-172.000000, -8.000000)">
+                    <g id="Group-35" transform="translate(172.000000, 8.000000)">
+                        <path d="M24,0 L24,24 L0,24 L0,0 L24,0 Z" id="Vector" opacity="0"></path>
+                        <g id="Group-34" transform="translate(6.000000, 4.000000)">
+                            <path d="M1.42270329,13.492257 C0.801340716,13.277739 0.327921621,12.841306 0.120800757,12.2717236 C-0.0937172738,11.7021413 -0.0197455744,11.0733814 0.320524421,10.5111962 L1.17119927,9.09833542 C1.34873143,8.80244847 1.51146937,8.21067523 1.51146937,7.86300806 L1.51146937,5.72522462 C1.51146937,2.97347598 3.75281351,0.732132376 6.50456214,0.732132376 C9.25631077,0.732132376 11.4976544,2.97347598 11.4976544,5.72522462 L11.4976544,7.86300806 C11.4976544,8.20327806 11.6603908,8.80244865 11.837923,9.10573276 L12.6812017,10.5111962 C12.9992802,11.0437927 13.0584571,11.6873469 12.8439391,12.2717236 C12.629421,12.8561003 12.1633991,13.2999305 11.5790223,13.492257 C9.95164409,14.0396478 8.22810355,14.3133437 6.50456214,14.3133437 C4.78102073,14.3133437 3.0574787,14.0396478 1.42270329,13.492257 Z M2.62104543,5.72522462 L2.62104543,7.86300806 C2.62104543,8.40300176 2.39913016,9.2018962 2.12543473,9.66791813 L1.2747596,11.0807782 C1.11202178,11.3544736 1.06763902,11.6429635 1.16380228,11.8870702 C1.25256836,12.1385741 1.47448361,12.3309005 1.77776773,12.4344609 C4.8697862,13.4700652 8.14673455,13.4700652 11.238753,12.4344609 C11.5050513,12.3456948 11.7121725,12.1459712 11.8083357,11.8796729 C11.904499,11.6133746 11.8823072,11.3248849 11.7343637,11.0807782 L10.883689,9.66791813 C10.6025964,9.18710186 10.3880783,8.39560441 10.3880783,7.85561072 L10.3880783,5.72522462 C10.3880783,3.58004418 8.64974258,1.84170843 6.50456214,1.84170843 C4.36677887,1.84170843 2.62104543,3.58004418 2.62104543,5.72522462 Z" id="Vector"></path>
+                            <path d="M7.72491528,2.01942843 C7.51039724,1.96025104 7.30327627,1.91586813 7.10355257,1.88627943 C6.47479279,1.80491052 5.86822495,1.84929343 5.29864259,2.01942843 C5.09152173,2.086003 4.86960617,2.0194284 4.72905987,1.86408776 C4.58851357,1.70874711 4.54413027,1.48683201 4.62549918,1.28710832 C4.9287833,0.510405115 5.66850075,0 6.51177854,0 C7.35505633,0 8.09477385,0.503007948 8.39805797,1.28710832 C8.47202971,1.48683201 8.43504358,1.70874711 8.29449728,1.86408776 C8.18353967,1.98244253 8.02819943,2.04162011 7.88025595,2.04162011 C7.82847574,2.04162011 7.77669549,2.03422278 7.72491528,2.01942843 Z" id="Vector" fill-rule="nonzero"></path>
+                            <path d="M4.54406026,15.1863106 C4.02625811,14.6685085 3.73037157,13.9583801 3.73037157,13.2260599 L4.83994763,13.2260599 C4.83994763,13.6624931 5.01747969,14.0915293 5.32816098,14.4022106 C5.63884226,14.7128919 6.06787848,14.8904239 6.50431171,14.8904239 C7.42156125,14.8904239 8.16867579,14.1433094 8.16867579,13.2260599 L9.27825184,13.2260599 C9.27825184,14.7572748 8.03552661,16 6.50431171,16 C5.7719915,16 5.06186241,15.7041128 4.54406026,15.1863106 Z" id="Vector" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg> </a>
+        </div></div>
+                        <input type="range" class="range-slider" id="oc-range-slider" step="1" value="0" min="0" max="0" style="display: none;">
+                    </div>
+                </div>
+    </div>
