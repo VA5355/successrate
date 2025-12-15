@@ -258,7 +258,7 @@ function useWebSocketStreamDummy(expiryDate) {
 
 
 // --- Mock Data ---
-const mockExpiryDates = [
+const mockExpiryDates = [  //this is a configuration setting to be set every change in month for exipry data 
     '2025-12-16', 
     '2025-12-23', 
     '2025-12-30', // Default selected
@@ -269,7 +269,7 @@ const mockExpiryDates = [
 const spot = "25,250.00"; // Current NIFTY/Index Spot Price
 
 // Example structure for a strike row
-const mockStrikes = [
+const mockStrikes = [ // this alsos is a configuration setting for change in every month 
     { expiry: '2025-12-16', strike: "25900", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
     { expiry: '2025-12-23', strike: "26000", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
     { expiry: '2025-12-30', strike: "26100", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
@@ -1267,7 +1267,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
 
   // Mock data for demonstration and initial state setup
 //const spot = "25,250.00";
-const strikes =  [ 
+const strikes =  [  // this is a configuraton setting for every change in month of expiry 
 
   { name: "NIFTY25D2326100CE", strike: "26100", call: { ltp: "247.65", bid: "247.1", ask: "248.5" }, put: { ltp: "68.65", bid: "68.45", ask: "69.1" } },
   { name: "NIFTY25D2326200CE", strike: "26200", call: { ltp: "326.45", bid: "325.35", ask: "327.1" }, put: { ltp: "46.8", bid: "46.65", ask: "47.2" } },
@@ -1492,7 +1492,7 @@ export default function OptionChainTable({positionData}) {
 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
-    const generateSymbolsForExpiry = (exr) =>{
+    const generateSymbolsForExpiry = (exr) =>{ // this is also a configuration setting  
          let  symbols =  ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
                     'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
                 'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
@@ -1714,7 +1714,7 @@ export default function OptionChainTable({positionData}) {
         Object
       */
        let table = new Map();
-       
+         // this is also a configuration setting for converting yymmdd to fyers specific yyMdd format 
         table.set('251216','25D16')
         table.set('251223','25D23')
         table.set('251230','25DEC')

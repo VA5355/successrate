@@ -153,12 +153,16 @@ export function useWebSocketStreamSeq(url, dispatch) {
         // dispatch({ type: 'SET_LOADING', payload: true });
         dispatch(setConnected(true));
         // Request to add symbols for live data
-        const request = {
+        const request = {    // this is another or the main request originating configuration setting that needs change every month expiry change 
             method: 'addsymbol',
-            symbols: ['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
+            symbols: /*['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
                 'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
             'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
-            'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE']
+            'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE']*/
+            ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
+                    'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
+                'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
+                'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE']
         };
         return request;
          };
