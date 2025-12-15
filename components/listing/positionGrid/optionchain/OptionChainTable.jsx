@@ -259,11 +259,11 @@ function useWebSocketStreamDummy(expiryDate) {
 
 // --- Mock Data ---
 const mockExpiryDates = [
-    '2025-10-07', 
-    '2025-10-14', 
-    '2025-10-28', // Default selected
-    '2025-11-07', 
-    '2025-11-14'
+    '2025-12-16', 
+    '2025-12-23', 
+    '2025-12-30', // Default selected
+    '2026-01-06', 
+    '2026-01-13'
 ];
 
 const spot = "25,250.00"; // Current NIFTY/Index Spot Price
