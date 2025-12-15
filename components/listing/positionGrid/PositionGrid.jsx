@@ -34,7 +34,7 @@ import isEqual from 'lodash.isequal';
  //import OptionChainTable from "./optionchain/OptionChainTable"; // ✅ import the big component
  import OptionChainTableSideway from "./optionchain/OptionChainTable-Sideway"; // ✅ import the big component
  import OptionChainTableSingleUI from "./optionchain/OptionChainTableSingleUI"; // ✅ import the big component
-
+import OptionChainTabs from "./optionchain/OptionChainTabs";
 
 import  {  PositionBookMobileView as  MobileView }   from "./PositionBookMobileView";
 const PositionRow = {
@@ -1228,13 +1228,16 @@ const getSortIndicator = (column) =>
   </table>
 </div> */}
      <div className="p-1 justify-start mx-auto">   {/* p-4 max-w-3xl  */}
-      <h4 className="text-2xl font-bold "> {/* text-center mb-6 */}
+      {/* text-center mb-6 */}
+      {/*<h4 className="text-2xl font-bold "> 
         Option Chain 
-      </h4>
+      </h4>*/}
       
       {/* ✅ drop in the main option chain component OptionChainTableSideway OptionChainTable <OptionChainSwipeUI /><OptionChainTableSingleUI/>
      */}
-      <OptionChainTable/>
+     <div className="min-h-screen bg-gray-50 p-4">
+      <OptionChainTabs positionData={parsedData} />
+    </div>
     </div>
 
      

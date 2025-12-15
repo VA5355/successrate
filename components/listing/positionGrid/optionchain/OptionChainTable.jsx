@@ -1403,7 +1403,7 @@ function OptionRow({  idx ,  row, onAction }) {
 }
 
 
-export default function OptionChainTable() {
+export default function OptionChainTable({positionData}) {
     const dispatch = useDispatch();
         const url =  "wss://artilleryfeed.onrender.com/";
 //"wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55"; //'wss://localhost:8443/';
@@ -1465,15 +1465,25 @@ export default function OptionChainTable() {
   const [showModal, setShowModal] = useState(false);
     const [showPositionModal, setShowPositionModal] = useState(false);
     //  const [optionStrikes, setOptionStrikes] = useState([]);
+  const [currentPositions, setCurrentPositions] = useState([]);
   // Mock Position Generator based on cached strikes
-  const currentPositions = optionStrikes.slice(0, 3).map((s, index) => ({
-    strike: s.strike,
-    type: index % 2 === 0 ? 'CALL' : 'PUT',
-    quantity: (index + 1) * 50,
-    ltp: parseFloat(index % 2 === 0 ? s.call?.ltp : s.put?.ltp),
-    pnl: (index % 3 === 0 ? 1 : -1) * (index + 1) * 125.50,
-  }));
-
+  const arrayStrikeMap  = Array.from((positionData !==undefined && positionData !==null) ? positionData.entries() : []);
+  /*
+  position data fro cahce {"isValid":true,"data":"[{\"netQty\":1,\"qty\":1,\"avgPrice\":72256,\"netAvg\":71856,
+  \"side\":1,\"productType\":\"MARGIN\",\"realized_profit\":400,\"unrealized_profit\":461,\"pl\":861,\"ltp\":72717,
+  \"buyQty\":2,\"buyAvg\":72256,\"buyVal\":144512,\"sellQty\":1,\"sellAvg\":72656,\"sellVal\":72656,\"slNo\":0,
+  \"fyToken\":\"1120200831217406\",\"crossCurrency\":\"N\",\"rbiRefRate\":1,\"qtyMulti_com\":1,\"segment\":20,
+  \"symbol\":\"MCX:SILVERMIC20AUGFUT\",\"id\":\"MCX:SILVERMIC20AUGFUT-MARGIN\",\"cfBuyQty\":0,\"cfSellQty\":0,
+  \"dayBuyQty\":0,\"daySellQty\":1,\"exchange\":10}]","ttl":1760093209392}
+  */
+  /*const currentPositions = arrayStrikeMap.slice(0, 3).map((s, index) => ({
+    strike: s.symbol,
+    type:  s.side ===1 ?   'BUY' : 'SELL',  //index % 2 === 0 ? 'CALL' : 'PUT',
+    quantity:  s.netQty , //  (index + 1) * 50,
+    ltp:  s.avgPrice !==undefined ? s.avgPrice : 0, // parseFloat(index % 2 === 0 ? s.call?.ltp : s.put?.ltp),
+    pnl: s.pl   //(index % 3 === 0 ? 1 : -1) * (index + 1) * 125.50,
+  }));*/
+  
   // State for the selected expiry date
     const [selectedExpiry, setSelectedExpiry] = useState(mockExpiryDates[0]); // Default to the second date
 
@@ -1570,6 +1580,31 @@ export default function OptionChainTable() {
         // Filter mock data based on selectedExpiry
         return mockStrikes.filter(s => s.expiry === selectedExpiry);
     }, [selectedExpiry]);
+
+
+
+  useEffect(() => {
+    // Safely derive arrayStrikeMap from props
+    const arrayStrikeMap = Array.from(
+      positionData !== undefined && positionData !== null
+        ? positionData.entries()
+        : []
+    ).map(([key, value]) => value); // extract actual position objects
+
+    // Build initial currentPositions array
+    const derivedPositions = arrayStrikeMap.slice(0, 3).map((s, index) => ({
+      strike: s.symbol,
+      type: s.side === 1 ? "BUY" : "SELL",
+      quantity: s.netQty ?? 0,
+      ltp: s.avgPrice ?? 0,
+      pnl: s.pl ?? 0,
+    }));
+
+    // Initialize or update the state
+    setCurrentPositions(derivedPositions);
+  }, [positionData]); // re-run when props change
+
+
 
    // Caching logic for strikes data
   useEffect(() => {
