@@ -710,10 +710,26 @@ export function useWebSocketStreamSeq(url, dispatch) {
                 }
                 if (response.symbollist) {
                     console.log('Received symbol data:', response.symbollist);
+
+                    /*
+                    Received symbol data: 
+(28) [Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18), Array(18)]
+0
+: 
+(18) ['NIFTY25D1625600CE', '131560099', '2025-12-15T23:59:32.122Z', '154.72', '0', '0', '0', '164.63', '120.01', '151.91', '110.41', '6992771', '7020235', '0', '0', '0', '0', '0']
+1
+: 
+(18) ['NIFTY25D1625600PE', '752011948', '2025-12-15T23:59:32.122Z', '167.11', '0', '0', '0', '157.80', '137.73', '136.70', '144.81', '5458515', '2453231', '0', '0', '0', '0', '0']
+2
+: 
+(18) ['NIFTY25D1625700CE', '188084754', '2025-12-15T23:59:32.122Z', '132.48', '0', '0', '0', '108.17', '129.43', '130.88', '129.05', '1755193', '8523168', '0', '0', '0', '0', '0']
+                    */
                     // Update state with the new symbol data
                     const formattedSymbols = response.symbollist.map(s => {  
+                        let ss  = s[0];
+                        
                         if(Array.isArray(s) && s.length == 18){
-                            let ss  = s[0];
+                            if(ss[17] !== null && ss[17] !== undefined ) {  
                                 return  ({
                             strike: ss[17],
                             expiry : ss[17].slice(5, 6),
@@ -726,8 +742,10 @@ export function useWebSocketStreamSeq(url, dispatch) {
                             ask: ss[7],
                             volume: ss[11],
                          })
+                         }
                         }
                         else { 
+                          if(s[0] !== null && s[0] !== undefined ) {  
                               return    ({
                             strike: s[0],
                             expiry : s[0].slice(5, 6),
@@ -741,6 +759,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
                             volume: s[11],
                          })
                         }
+                       }
                        });
                    // dispatch({ type: 'SET_SYMBOLS', payload: formattedSymbols });
                    // dispatch(setSymbols(formattedSymbols)); 
