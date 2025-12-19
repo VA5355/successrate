@@ -210,10 +210,10 @@ const handlePositionPrice = (e) => {
           >
             <span  className={`px-1 py-1 w-[150px] rounded text-white transition-colors duration-300 ${
                     positionQty === 0
-                      ? "bg-brandgreenlight"
+                      ? "bg-brandgreen"
                       : positionQty < (boughtQty - qtySold)  
                       ? "bg-brandgreen"
-                      : "bg-brandgreenlight"
+                      : "bg-brandgreen"
                   }`}>{symbol}
                   
                      {/* Range Slider for Position Qty */}
