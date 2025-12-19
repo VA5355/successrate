@@ -231,7 +231,7 @@ const websocketSlice = createSlice({
       if (!state.selectedExpiry && expiries.length > 0) {
         state.selectedExpiry = expiries[0]; // default = nearest expiry
       }
-      state.spot = JSON.parse(expiries[0]).strikeNumber;
+      //state.spot = JSON.parse(expiries[0]).strikeNumber;
     },
     setExpiry: (state:any, action:any) => {
       state.selectedExpiry = action.payload;
