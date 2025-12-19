@@ -13,7 +13,7 @@ import {
 import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
 import {  AnimatePresence} from "framer-motion";
-
+import "./sidewaysPriceSlider.css";
 
 function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPrice }) {
   const [value, setValue] = useState(min);
@@ -27,6 +27,7 @@ function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPri
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
+        id="strikePrice"
       >
         <span className="px-2 rounded-full bg-indigo-600 text-white text-sm font-semibold shadow-md">
           {value}
@@ -248,9 +249,10 @@ function SwipePillBase({
   return (
     <div className={`relative flex items-center rounded-2xl p-2 transition ${className}`}>
       {/* Lock button - doesn't get re-created by spinner */}
-      <button
+      <button  id="optionLock"
         onClick={() => setLocked((s) => !s)}
-        className="absolute -right-5 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-100 shadow z-20"
+        className={`absolute -right-5 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-100 shadow z-20
+           ${locked ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'} ` }
         aria-pressed={locked}
         title={locked ? "Unlock" : "Lock"}
       >
@@ -319,7 +321,7 @@ function SwipePillBase({
         {/* Scroll wheel dial (replace with your ScrollArrows component) */}
         <div className="absolute right-[-44px] z-10 top-1/2 -translate-y-1/2">
           {/* A simple up/down control to adjust units */}
-          <div className="flex flex-col gap-1 items-center">
+          <div id="chevronUpDownBtn" className="flex flex-col gap-1 items-center">
             <button
               onClick={() => setUnits((q) => Math.max(0, q + 1))}
               disabled={loading}

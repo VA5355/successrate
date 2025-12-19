@@ -19,7 +19,7 @@ import {SwipeCallPill , SwipePutPill} from "./SwipePills";
 
 import { showModal as modalShow, showError } from '../../../common/service/ModalService';
 import "./index.css";
-
+import "./sidewaysPriceSlider.css";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
 
@@ -474,22 +474,29 @@ function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 1, onLimitPrice
   const [value, setValue] = useState(min);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center py-2">
+    <div className="w-full flex flex-col items-center justify-center py-1 sm:py-2">
       {/* Floating Value */}
       <motion.div
         key={value}
-        className="mb-2"
+        className="mb-1 sm:mb-2"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
       >
-        <span className="px-2 rounded-full bg-indigo-600 text-white text-sm font-semibold shadow-md">
+        {/* className="px-2 rounded-full bg-indigo-600 text-white text-sm font-semibold shadow-md" */}
+        <span className="
+        px-1.5 sm:px-2
+        rounded-full
+        bg-indigo-600 text-white
+        text-xs sm:text-sm
+        font-semibold shadow-md
+      ">
           {value}
         </span>
       </motion.div>
 
-      {/* Horizontal Slider */}
-      <div className="relative w-40 flex items-center">
+      {/* Horizontal Slider className="relative w-40 flex items-center"*/}
+      <div className="relative w-56 sm:w-40 flex items-center" >
         <motion.input
           type="range"
           min={min}
@@ -500,10 +507,15 @@ function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 1, onLimitPrice
             setValue(Number(e.target.value));
             onLimitPrice(Number(e.target.value));
           }}
-          className="w-full h-2 appearance-none cursor-pointer rounded-full
-                     bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+         className="
+        w-full
+        h-3 sm:h-2
+        appearance-none cursor-pointer rounded-full
+        bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
           whileTap={{ scale: 1.05 }}
-        />
+        /> 
+         {/*   className="w-full h-2 appearance-none cursor-pointer rounded-full
+                     bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"  */}
       </div>
     </div>
   );
@@ -890,7 +902,7 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
        <div className={`relative w-full select-none ${className}`}>
 
          {/* Lock Button */}
-      <button
+      <button id="optionLock"
         onClick={() => setLocked(!locked)}
         className="absolute -top-2 -right-2 z-20 rounded-full bg-zinc-200 p-1 shadow hover:bg-zinc-300"
       >
@@ -915,7 +927,9 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
          </div>
            )}
    
-         {/* Draggable Card */}
+         {/* Draggable Card 
+           className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm"
+          */}
          <motion.div
             drag={locked || loading ? false : "x"}   // 🚀 disable drag if locked
            dragConstraints={{ left: -160, right: 160 }}
@@ -923,7 +937,11 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
            whileTap={{ scale: 0.98 }}
            onDragEnd={handleDragEnd}
            style={{ x, background: bg }}
-           className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm"
+          className="
+  relative z-10
+  flex flex-col gap-2
+  sm:grid sm:grid-cols-[1fr_auto] sm:items-center
+  rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm"
          >
            <div>
              {/*<div className="text-[13px] font-semibold leading-5 tracking-tight">
@@ -1153,10 +1171,12 @@ const [limitPrice, setLimitPrice] = useState(ltp);
         ${locked ? "opacity-70" : "cursor-grab"}`}
         
        >
-        {/* Lock button */}
-        <button
+        {/* Lock button 
+           className="absolute -right-5 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-100 shadow"
+         */}
+        <button id="optionLock"
           onClick={() => setLocked(!locked)}
-          className="absolute -right-5 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-100 shadow"
+          className="absolute right-2 top-2 p-1 rounded-full bg-gray-100 shadow"
         >
           {locked ? <Lock size={16} /> : <Unlock size={16} />}
         </button>
@@ -1178,6 +1198,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
          </div>
    
          {/* Draggable Card */}
+         {/*  className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm" */}
          <motion.div
             drag={locked || loading ? false : "x"}   // 🚀 disable drag if locked
           
@@ -1186,7 +1207,11 @@ const [limitPrice, setLimitPrice] = useState(ltp);
            whileTap={{ scale: 0.98 }}
            onDragEnd={handleDragEnd}
            style={{ x, background: bg }}
-           className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm"
+          className="
+            relative z-10
+            flex flex-col gap-2
+            sm:grid sm:grid-cols-[1fr_auto] sm:items-center
+            rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm"
          >
            <div>
              {/*<div className="text-[13px] font-semibold leading-5 tracking-tight">
@@ -1198,25 +1223,39 @@ const [limitPrice, setLimitPrice] = useState(ltp);
              </div>
              <div className="text-[11px] text-zinc-600">{subtitle}</div>
            </div>
-           <div className="flex items-center gap-2 text-[10px]">
-             <span
-               className={`px-2 py-0.5 rounded-full ${
-                 side === "CALL"
-                   ? "bg-emerald-600/10 text-emerald-700"
-                   : "bg-blue-600/10 text-blue-700"
-               }`}
-             >
-               {side}
-             </span>  {/*parseInt(Math.round(parseFloat(  )))    parseInt(Math.round(parseFloat(  )))*3     */}
- <SidewaysPriceSlider  idx={idx}    min={ltp} max={  600   } step={1}  onLimitPrice  ={ onLimit } />
-                {/*  onSell={(qty) => onAction?.({ side: "CALL", action: "SELL", qty:qty, strike, row })} */}
-             <div className="h-[5px] right-[-56px] w-full flex items-center justify-center 
-                        bg-grey-400 dark:text-white font-bold text-base">
-                   {parseInt(quantity * 75)}
-               </div>
-           </div>
-           {/* Scroll wheel dial ScrollDial*/}
-           <ScrollArrows value={quantity} setValue={setQuantity} />
+           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                  {/* Side */}
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] self-start sm:self-center ${
+                      side === "CALL"
+                        ? "bg-emerald-600/10 text-emerald-700"
+                        : "bg-blue-600/10 text-blue-700"
+                    }`}
+                  >
+                    {side}
+                  </span>
+
+                  {/* Slider */}
+                  <div className="flex-1 min-w-0">
+                    <SidewaysPriceSlider
+                      idx={idx}
+                      min={ltp}
+                      max={600}
+                      step={1}
+                      onLimitPrice={onLimit}
+                    />
+                  </div>
+
+                  {/* Qty */}
+                  <div className="text-xs font-semibold text-center sm:w-[70px]">
+                    {parseInt(quantity * 75)}
+                  </div>
+
+                  {/* Arrows */}
+                  <div className="self-center">
+                    <ScrollArrows value={quantity} setValue={setQuantity} />
+                  </div>
+                </div>
 
 
          </motion.div>
