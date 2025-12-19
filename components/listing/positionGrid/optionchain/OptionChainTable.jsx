@@ -282,8 +282,8 @@ const mockStrikes = [ // this alsos is a configuration setting for change in eve
 function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch , resetStrikeMap}) {
 
     const { isConnected ,sendSubscriptionRequest } = useWebSocket();
-   const generateSymbolsForExpiry = (exr) =>{
-         let  symbols = ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
+   const generateSymbolsForExpiry = (exr) =>{ // NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
+         let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
                     'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
                 'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
                 'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE'];
@@ -1492,8 +1492,8 @@ export default function OptionChainTable({positionData}) {
 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
-    const generateSymbolsForExpiry = (exr) =>{ // this is also a configuration setting  
-         let  symbols =  ['NIFTY 50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
+    const generateSymbolsForExpiry = (exr) =>{// NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
+         let  symbols = [ /* 'NIFTY 50' */ ,'NIFTY-50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
                     'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
                 'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
                 'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE'];
@@ -1534,9 +1534,35 @@ export default function OptionChainTable({positionData}) {
     function dedupeStrikeMap(strikeMap) {
   const seen = new Map(); // key: "NIFTY24100CE", value: entry
 
+         let fyersExpiryDateMapper = new Map();
+        fyersExpiryDateMapper.set('25D16','251216')
+        fyersExpiryDateMapper.set('25D23','251223')
+        fyersExpiryDateMapper.set('25DEC','251230')
+        fyersExpiryDateMapper.set('26106','260106')
+        fyersExpiryDateMapper.set('26113','260113')
+        
+
   for (const [symbol, data] of strikeMap) {
     // Extract expiry, strike, type (CE/PE)
-    const match = symbol.match(/^([A-Z]+)(\d{6})(\d+)(CE|PE)$/);
+    let standDate = '';
+    let standUnderlying = '';
+    let standExpiry = '';
+    let standStrike= '';
+    let standType= '';
+
+
+    const extFyersDate = symbol.match(/^([A-Z]+)(\d{2}[A-Z]\d{2})(\d+)(CE|PE)$/);
+    if (extFyersDate) {
+      const expiry = extFyersDate[2];   // ✅ "25D16"
+      standStrike  = extFyersDate[3];   // ✅  "25600",            // group 3: strike
+      standType  = extFyersDate[4];   // ✅   "CE"                // group 4: type
+      standUnderlying = extFyersDate[1];  //   "NIFTY",            // group 1: underlying
+       //   console.log('fyers expiry date :: '+expiry);
+      standDate = fyersExpiryDateMapper.get(expiry);
+    }
+    let exp =standDate;
+    let standSymbol = standUnderlying+standDate+standStrike+standType;
+    const match = standSymbol.match(/^([A-Z]+)(\d{6})(\d+)(CE|PE)$/);
     if (!match) continue; // skip invalid format
 
     const [, underlying, expiry, strike, type] = match;
@@ -1544,7 +1570,7 @@ export default function OptionChainTable({positionData}) {
 
     if (!seen.has(uniqueKey)) {
       // keep first encountered (default behaviour)
-      seen.set(uniqueKey, [symbol, data]);
+      seen.set(uniqueKey, [standSymbol, data]);
     } else {
       // 🔄 Optionally: choose latest by timestamp instead of first
       const existing = seen.get(uniqueKey);
@@ -1552,11 +1578,12 @@ export default function OptionChainTable({positionData}) {
       const currentTs = new Date(data[2]).getTime();
 
       if (currentTs > existingTs) {
-        seen.set(uniqueKey, [symbol, data]); // replace with newer
+        seen.set(uniqueKey, [standSymbol, data]); // replace with newer
       }
     }
   }
-   // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
+    // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
+   // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(strikeMap.entries()))}`)
   // Convert back to same structure as strikeMap
   return Array.from(seen.entries());
 }
@@ -1867,8 +1894,17 @@ export default function OptionChainTable({positionData}) {
                               // const [name, id, timestamp, ltp,, , , bid, ask, , , volume] = value;
                                const [name, id, timestamp, ltp, , , , bid, ask, , , volume] = rawRow;
                                   let type = name.slice(-2);
-                                   let strike =  name.slice(11,-2);
-                                    let expiry = name.slice(5, 11);
+                                  
+                                    
+                                   
+                                   let strike =  name.slice(-7);
+                                      /* this is for artilery code i.e. self generated values of INDICES  strikeNumber: key.slice(-7)*/
+                                        /* this is  fyers.marketfeed code i.e. truedata  values of INDICES strike =  name.slice(11,-2); */
+                                    let expiry = name.slice(5, 10);
+                                      /* this is for artilery code i.e. self generated values of INDICES  expiry: key.slice(5, 10),  */
+                                      /* this is  fyers.marketfeed code i.e. truedata  values of INDICES
+                                      expiry = name.slice(5, 11);
+                                      */
                                             // construct a row object to pass down
                                             const rowvalue = {
                                               strike,

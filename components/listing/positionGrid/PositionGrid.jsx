@@ -1248,7 +1248,7 @@ const getSortIndicator = (column) =>
   userLogged={userLogged}
   handleSort={handleSort}
   getSortIndicator={getSortIndicator}
-  handleSymbolClick={handleSymbolClick} />
+  handleSymbolClick={handleSymbolClick}   tableRef={tableRef}/>
        {/*  MOBILE or DESKTOP VIEW  */}
      <div className="max-h-[100px] overflow-y-auto   divide-gray-200">
            {/*<BuyButton />*/}

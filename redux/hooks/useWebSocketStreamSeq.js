@@ -1,4 +1,5 @@
 import React, {createContext, useContext, useEffect, useRef, useState, useReducer } from 'react';
+import {  useCallback } from 'react';
 import { setConnected, setSymbols ,setSpot ,setSubscriptionFailure,setOptions } from '@/redux/slices/webSocketSlice';
 import { useDispatch } from "react-redux";
 
@@ -94,7 +95,8 @@ import { useDispatch } from "react-redux";
 export default function   useWebSocketStreamSeq   (url, dispatch)  {
     //const ws = useRef(null);
      // const dispatch = useDispatch();
-
+  const wsRef = useRef(null);
+     const [isConnected, setIsConnected] = useState(false);
     // const [stateOptionMap , setStateOptionsMap ] = useState( (state) => state?.websocket?.symbols);
     // const [optionsMap , setOptionsMap ] = useState(null);
    // const [strikeMap , setStrikeMap ] = useState(null);
@@ -108,7 +110,52 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
             let strikeMapSymbol = new Map();    
          let symbolsMap = new Map();
          let symbolsStrikeWiseMap =[];
-        /**
+
+
+
+         // 2. Define the connection function (This becomes the 'openConnection' prop)
+    const connect = useCallback(() => {
+        if (!url) {
+            console.error("URL missing for WebSocket connection.");
+            return;
+        }
+        
+        // --- IMPROVED CHECK TO PREVENT DOUBLE CONNECTION ---
+        // Check if a WebSocket instance exists AND if its state is open or connecting.
+        // We also check if it's a valid WebSocket instance type.
+        if (wsRef.current instanceof WebSocket && wsRef.current.readyState < 2) { 
+            console.log("WebSocket already open or connecting. Aborting connection attempt.");
+            return; 
+        }
+
+        // --- ACTUAL CONNECTION LOGIC ---
+        console.log(`[useWS] Creating NEW WebSocket for: ${url}`);
+        wsRef.current = new WebSocket(url);
+        
+        // This state update is crucial for triggering the WebSocketProvider's useEffect
+        wsRef.current.onopen = () => {
+            console.log("[useWS] Connection opened successfully.");
+
+            let initialReq = onOpen();
+            wsRef.current.send(JSON.stringify(initialReq));
+            setIsConnected(true);
+        } 
+        wsRef.current.onmessage = (event) => {
+            onMessage(event);
+
+        }
+        wsRef.current.onclose = () => {
+            console.log("[useWS] Connection closed.");
+            onClose();
+            setIsConnected(false);
+        }
+        wsRef.current.onerror = (e) => {
+            console.error("[useWS] Connection error.", e);
+            onError(e);
+            setIsConnected(false);
+        };
+    }, [url]);
+/**
          * Parses the WebSocket response and extracts option contracts into a Map.
          * @param {string} jsonResponse The raw JSON string from the WebSocket.
          * @returns {Map<string, string> | null} A Map of option IDs to their names, or null if parsing fails.
@@ -657,8 +704,10 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                     console.log('Received symbol data:', response.symbollist);
                     // Update state with the new symbol data
                     const formattedSymbols = response.symbollist.map(s => {  
+                         let ss  = s[0];
+                        
                         if(Array.isArray(s) && s.length == 18){
-                            let ss  = s[0];
+                            if(ss[17] !== null && ss[17] !== undefined ) {  
                                 return  ({
                             strike: ss[17],
                             expiry : ss[17].slice(5, 6),
@@ -671,8 +720,10 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                             ask: ss[7],
                             volume: ss[11],
                          })
+                         }
                         }
                         else { 
+                          if(s[0] !== null && s[0] !== undefined ) {  
                               return    ({
                             strike: s[0],
                             expiry : s[0].slice(5, 6),
@@ -686,6 +737,7 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
                             volume: s[11],
                          })
                         }
+                       }
                        });
                    // dispatch({ type: 'SET_SYMBOLS', payload: formattedSymbols });
                    // dispatch(setSymbols(formattedSymbols)); 
@@ -742,5 +794,5 @@ export default function   useWebSocketStreamSeq   (url, dispatch)  {
   //  }, [url, dispatch]);
 
 
-     return { optionsMap, strikeMap ,getOptionsMapFromResponse ,onOpen ,  onMessage,onError, onClose  };
+     return { optionsMap, strikeMap ,getOptionsMapFromResponse ,onOpen , connect, onMessage,onError, onClose  };
 };

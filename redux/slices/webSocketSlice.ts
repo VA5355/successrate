@@ -66,12 +66,58 @@ const websocketSlice = createSlice({
     selectedExpiry: null,  // current filter
   },*/
   reducers: {
-    setSpot: (state, action) => { state.spot = action.payload; },
+    setSpot: (state, action) => { //state.spot = action.payload;  
+
+       let niftySpot = action.payload;
+
+       // structure of action.payload = { id: id , name: name , symbol : symbol }
+       // e.g NIFTY-50  784832087_NIFTY-50  --> NIFTY-50,784832087,2025-12-17T13:32:45.995Z,25600.19,0,0,0,25601.02,25602.49,25600.72,25601.03,5056279,2899111,0,0,0,0,0 
+             // let tempSymbolTickReceived = action.payload;
+         let spotPrice = niftySpot.symbol[3];
+         state.spot = spotPrice;
+      /*tempSymbolTickReceived structure 
+      /* stateSymbols tructure 
+     strikeMap, [["NIFTY25D1625600CE",["NIFTY25D1625600CE","753989373","2025-12-16T10:39:25.056Z","130.21",null,null,null,"0","132.28",
+                       null,null,"0"]],["NIFTY25D2325600CE",
+         ["NIFTY25D2325600CE","981497307","2025-12-16T10:39:25.499Z","183.21",null,null,null,"0","137.09",null,null,"0"]],
+         ["NIFTY25D1625600PE",["NIFTY25D1625600PE","452684477","2025-12-
+                            */
+     
+
+      // 2. Iterate through the new payload and update the Map.
+      // This will add new symbols and update existing ones.
+    /*  tempSymbolTickReceived.forEach((newSymbol:any) => {
+        //  FIND the NIFTY 50 Symbol 
+            let   strike = newSymbol ;
+            if(Array.isArray(strike)){ 
+               if ( strike[0] ==='NIFTY-50')
+              {   let niftTrade =  newSymbol[1];
+                  if( niftTrade[0]==='NIFTY-50'){
+                      let  spot  =  niftTrade[3];
+                      console.log("SPOT  " + JSON.stringify(spot))
+                      if(!Array.isArray(spot) ){ 
+                         //state.spot = spot;
+                      }
+                     
+
+
+                  }
+                 
+
+              } 
+            }
+            else {
+
+            }
+      });*/
+
+       
+    },
     setOptions :  (state, action) => { state.options = action.payload; },
     setStrikeNumber: (state, action) => {
       let temp  = action.payload;
           // 1. Create a single Map from the existing symbols for efficient lookups.
-      const symbolsMap = new Map(state.symbols.map(symbol => [symbol.id, symbol]));
+      const symbolsMap = new Map(state.symbols.map((symbol:any) => [symbol.id, symbol]));
 
       // 2. Iterate through the new payload and update the Map.
       // This will add new symbols and update existing ones.
@@ -80,35 +126,48 @@ const websocketSlice = createSlice({
         let   strike = newSymbol.strike.slice(11);
         let strikN  =  strike.slice(-2)
              
-        const updateInSymbol  = {...newSymbol.strikeNumber =strikN }
+      //  const updateInSymbol  = {...newSymbol.strikeNumber =strikN }
+         const updateInSymbol = {
+      strikeNumber: strikN
+    };
 
-        const updatedSymbol = { ...symbolsMap.get(newSymbol.id), ...updateInSymbol };
+      //  const updatedSymbol = { ...symbolsMap.get(newSymbol.id), ...updateInSymbol };
+      /* const updatedSymbol = {
+         ...symbolsMap.get(newSymbol.id),
+         ...updateInSymbol
+       }; */
+         const updatedSymbol = {
+      ...(symbolsMap.get(newSymbol.id) ?? {}),
+      ...updateInSymbol
+      };
+
         symbolsMap.set(newSymbol.id, updatedSymbol);
       });
        // 3. Convert the Map's values back into an array to update the state.
       state.symbols = Array.from(symbolsMap.values());
     
     },
-    setSubscriptionFailure: (state, action) => {
+    setSubscriptionFailure: (state:any, action:any) => {
        // setSubscriptionFailure
         state.subscriptionStatus =     action.payload
         state.connected  = false;
     }, 
-     setConnected: (state, action) => {
+     setConnected: (state:any, action:any) => {
       state.connected = action.payload;
     },
-    setSymbols: (state, action) => {
+    setSymbols: (state:any, action:any) => {
 
       let tempSymbolTickReceived = action.payload;
 
       // 1. Create a single Map from the existing symbols for efficient lookups.
-      const symbolsMap = new Map(state.symbols.map(symbol => [symbol.id, symbol]));
+      const symbolsMap = new Map(state.symbols.map((symbol:any) => [symbol.id, symbol]));
 
       // 2. Iterate through the new payload and update the Map.
       // This will add new symbols and update existing ones.
       tempSymbolTickReceived.forEach((newSymbol:any) => {
         // Merging old and new data. This is crucial for updating existing symbols.
-        const updatedSymbol = { ...symbolsMap.get(newSymbol.id), ...newSymbol };
+        const updatedSymbol = {  ...(symbolsMap.get(newSymbol.id) ?? {}), ...newSymbol };
+     
         symbolsMap.set(newSymbol.id, updatedSymbol);
       });
 
@@ -166,7 +225,7 @@ const websocketSlice = createSlice({
        }*/
       // Extract unique expiry dates from incoming data
       const expiries: string[] = Array.from(
-             new Set<string>(state.symbols.map ( sy => JSON.stringify(sy)))   
+             new Set<string>(state.symbols.map (( sy :any)=> JSON.stringify(sy)))   
             );  // //action.payload.map((s:any) => s.expiry)
       state.expiries = expiries.map(st =>    JSON.parse(st));
       if (!state.selectedExpiry && expiries.length > 0) {
@@ -174,10 +233,10 @@ const websocketSlice = createSlice({
       }
       state.spot = JSON.parse(expiries[0]).strikeNumber;
     },
-    setExpiry: (state, action) => {
+    setExpiry: (state:any, action:any) => {
       state.selectedExpiry = action.payload;
     },
-    resetExpiry: (state) => {
+    resetExpiry: (state:any) => {
       // safest fallback: pick nearest expiry (first in sorted list)
       if (state.expiries.length > 0) {
         state.selectedExpiry = state.expiries[0];

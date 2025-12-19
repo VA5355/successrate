@@ -23,16 +23,16 @@ const tradeSlice = createSlice({
     name: "trade",
     initialState,
     reducers: {
-        saveSymbol: (state, action) => {
+        saveSymbol: (state:any, action:any) => {
             state.symbol=action.payload
         },
-        saveName: (state, action) => {
+        saveName: (state:any, action:any) => {
             state.name=action.payload
         },
-         saveStockResults: (state, action) => {
+         saveStockResults: (state:any, action:any) => {
             state.searchResults=action.payload
         },
-          saveTradeBook: (state, action: PayloadAction<  any []   >) => {
+          saveTradeBook: (state:any, action: PayloadAction<  any []   >) => {
                   state.tradeBook = action.payload;
          },
     },

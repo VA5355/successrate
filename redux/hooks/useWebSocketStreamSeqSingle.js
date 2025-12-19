@@ -10,7 +10,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
     const [isConnected, setIsConnected] = useState(false);
      const [stateOptionMap , setStateOptionsMap ] = useState( (state) => state?.websocket?.symbols);
     const [optionsMap , setOptionsMap ] = useState(null);
-     const [strikeMap , setStrikeMap ] = useState(null);
+     const [strikeMap , setStrikeMap ] = useState((state) => (state?.websocket?.options) ? state?.websocket?.options : new Map() );
    /*  const  stateOptionMap = {};
      const setStateOptionsMap = ( () =>  {});
      const  optionsMap ={};
@@ -89,7 +89,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
         ws: wsRef.current, 
         // connect is the 'openConnection' prop
         connect: connect ,
-        strikeMap ,
+        strikeMap:strikeMap ,
          resetStrikeMap: resetStrikeMap, // NEW: Expose reset function
     };
 
@@ -117,6 +117,15 @@ export function useWebSocketStreamSeq(url, dispatch) {
                 // Tag the option with its unique ID and name
                 optionsMap.set(id, name);
                  strikeMapSymbol.set (id+"_"+name , symbol)    
+                }                        //SEPCIAL --- NIFTY-50 PARSING 
+                // ["NIFTY-50","182258479","2025-12-16T20:29:50.359Z","25600.52","0","0","0","25600.25","25601.49","25600.40","25601.35","8679393","7032240","0","0","0","0","0"]
+                // from the artilery response 
+                else if (typeof name === 'string' && (name.endsWith('-50') || name.endsWith('-50'))) { 
+                   // Tag the option with its unique ID and name
+                  optionsMap.set(id, name);
+                  strikeMapSymbol.set (id+"_"+name , symbol) 
+                  console.log(` NIFTY-50  ${id}_${name}  --> ${symbol} ` );
+                    dispatch(setSpot({ id: id , name: name , symbol: symbol }));
                 }
                 else if (typeof id === 'string' && (id.endsWith('CE') || id.endsWith('PE'))){
                     // Tag the option with its unique ID and name
@@ -209,6 +218,14 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                 if (options instanceof Map  ) {
                         Array.from(options.entries()).map(([key, value]) => {  
+                // strikeMap 
+                /*
+                [["NIFTY25100724100CE",   --> key 
+                   ["NIFTY25100724100CE","932610542","2025-10-02T04:54:31.647Z","114.35",null,null,null,"145.84","110.12",null,null,"5854549"] --> [] 
+                ],["NIFTY25100724100PE",
+                  ["NIFTY25100724100PE","158704644","2025-10-02T04:54:31.648Z","114.96",null,null,null,"145.02","178.79",null,null,"2576579"]
+                ],
+                */
                                 symbolsMap.set(key , []);
                               });
                 }
@@ -245,13 +262,13 @@ export function useWebSocketStreamSeq(url, dispatch) {
                     */
                 if (strikeMapSymbol !==null && strikeMapSymbol !== undefined){
                    // setStrikeMap(strikeMapSymbol);
-                }
-                if (strikeMapSymbol !==null && strikeMapSymbol !== undefined){
+                } 
+                if (strikeMapSymbol !==null && strikeMapSymbol !== undefined){           // strikeMapSymbol set inside getOptionsFromResponse above code 
                       if (response.trade !==null && response.trade !== undefined){
                          console.log(` response trade `);
                             let temp  =stateOptionMap !==undefined && Array.isArray(stateOptionMap) && 
-                                        stateOptionMap.length > 0 ? stateOptionMap: [];
-                            let s= response.trade;
+                                        stateOptionMap.length > 0 ? stateOptionMap: [];         // check the stateOptionMap i.e. state.websocket.symbols or set temp empty arry
+                            let s= response.trade; // this is each trade being received from when artilery starts streaming or generating trades i.e stream INDICES strike prices
                             let sym = {
                                           strike: s[0],
                                            /* expiry : s[0].slice(5, 11),
@@ -339,29 +356,62 @@ export function useWebSocketStreamSeq(url, dispatch) {
                               //     type:  ${key.slice(-2)}, strikeNumber: ${key.slice(11, -2)}`);
 
 
-
-                                   let t = {
+                                let isNitftySpot =  key === 'NIFTY-50' ? true: false; 
+                                if(!isNitftySpot){ 
+                                  let t = {
                                 ...value,
                                 strike: key,
                                 name : key,
-                                expiry: key.slice(5, 11),
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                expiry: key.slice(5, 10),
+                                  /* this is  fyers.marketfeed code i.e. truedata  values of INDICES
+                                   expiry: key.slice(5, 11),
+                                   */
                                 type: key.slice(-2),
-                                strikeNumber: key.slice(11, -2)
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                strikeNumber: key.slice(-7)
+                                 /* this is for fyers.marketfeed code i.e. truedata  values of INDICES
+                                  strikeNumber: key.slice(11, -2) */
                                 };
                                 symbolsStrikeWiseMap.push(t);
                                 return t;
+
+                                }
+                                else {
+                                   console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 364 `);
+                                  let t = {
+                                ...value,
+                                strike: 'NIFTY-50',
+                                name : 'NIFTY-50',
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                expiry: 'NIFTY-50',
+                                  /* this is  fyers.marketfeed code i.e. truedata  values of INDICES
+                                   expiry: key.slice(5, 11),
+                                   */
+                                type: 'SP',
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                strikeNumber: 'NIFTY-50'
+                                 /* this is for fyers.marketfeed code i.e. truedata  values of INDICES
+                                  strikeNumber: key.slice(11, -2) */
+                                };
+                                symbolsStrikeWiseMap.push(t);
+                                return t;
+                                }   
+                                   
                                  }
                                  
                                 } );
                             
-                          //    console.log(` stateSymbols, ${JSON.stringify(stateSymbols)} `)
-                             
+                           //  console.log(` stateSymbols, ${JSON.stringify(stateSymbols)} `)
+                             let onlyNiftySymbols = stateSymbols.filter(item => (item !== null && item !== undefined) ?  item.strike?.startsWith("NIFTY") :'');
+
+                           //   console.log(` onlyNiftySymbols, ${JSON.stringify(onlyNiftySymbols)} `)
                             //Array.from(symbolsMap.values());
 
                             // Step 1: filter only NIFTY records
                             const niftyRecords = symbolsStrikeWiseMap.filter(item => item.strike.startsWith("NIFTY"));
 
-                            console.log(` niftyRecords, ${JSON.stringify(niftyRecords)} `)
+                         //   console.log(` niftyRecords, ${JSON.stringify(niftyRecords)} `)
                           const niftyMap = new Map(
                                 niftyRecords
                                    
@@ -381,7 +431,30 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                     ])
                                 );
                              stateSymbols =Array.from(niftyMap.entries())
-                            console.log(` niftyMap, ${JSON.stringify(stateSymbols)} `)   
+                            //console.log(` niftyMap, ${JSON.stringify(stateSymbols)} `)   
+                         
+                            //  let onlyNiftySymbols = stateSymbols.filter(item => (item !== null && item !== undefined) ?  item.strike?.startsWith("NIFTY") :'');
+                            for (const niftySym of stateSymbols.entries()) {
+                                // niftySym = ["NIFTY25D1625600CE", [...data]]
+                               // console.log("PAIR:", niftySym);
+                                 //  console.log("niftySym  type =", typeof niftySym);
+                                const [symbol, data] = niftySym;
+
+                                for (const elem of data) {
+                                  let nindex = elem[0];
+                                  if( nindex ==="NIFTY-50"){ console.log("NIFTY stikes :", elem);  }
+                                 
+                                }
+                              }
+                           /* for (let niftySym in stateSymbols){
+                                if(Array.isArray(niftySym)) {
+                                    for (let idxElem  in niftySym){
+                                         console.log(` elem , ${JSON.stringify(idxElem)} `)  
+
+                                    }
+                                    
+                                }
+                            }*/
                            // console.log(` niftyMap, ${JSON.stringify(niftyMap.entries())} `)     
                            // suppose niftyMap already exists (Map<name, valueArray>)
                             const sortedEntries = [...niftyMap.entries()].sort(([, a], [, b]) => {
@@ -400,13 +473,26 @@ export function useWebSocketStreamSeq(url, dispatch) {
                             return 0;
                             });
                             const sortedNiftyMap = new Map(sortedEntries);
-                            setStrikeMap(Array.from(sortedNiftyMap.entries()));
+                           // setStrikeMap(Array.from(sortedNiftyMap.entries()));
+                            setStrikeMap(new Map(Array.from(niftyMap.entries())));
                             if(callBackStrikeMap !==undefined){  
-                            callBackStrikeMap(Array.from(sortedNiftyMap.entries()));
+                            callBackStrikeMap(Array.from(niftyMap.entries()));
                             }// setStrikeMap(sortedNiftyMap);
                              stateSymbols =Array.from(sortedNiftyMap.entries())
-                            console.log(` strikeMap, ${JSON.stringify(stateSymbols)} `)
+                           // console.log(` strikeMap, ${JSON.stringify(stateSymbols)} `)
+
+
+
+
+
                             dispatch(setSymbols([stateSymbols])); 
+                            /* stateSymbols tructure 
+                            strikeMap, [["NIFTY25D1625600CE",["NIFTY25D1625600CE","753989373","2025-12-16T10:39:25.056Z","130.21",null,null,null,"0","132.28",
+                            null,null,"0"]],["NIFTY25D2325600CE",
+                            ["NIFTY25D2325600CE","981497307","2025-12-16T10:39:25.499Z","183.21",null,null,null,"0","137.09",null,null,"0"]],
+                            ["NIFTY25D1625600PE",["NIFTY25D1625600PE","452684477","2025-12-
+                            */
+                           // dispatch(setSpot([stateSymbols])); 
                       }
                      if (response.bidask !==null && response.bidask !== undefined){
                         // console.log(` response bidask `);
@@ -500,13 +586,32 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                               indexActual = sKey[1] ;
                                               kt = sKey[0];
                                           }
-                                         console.log(`kt  ${kt}:  indexActual  ${indexActual}`)    
+                                        // console.log(`kt  ${kt}:  indexActual  ${indexActual}`)    
 
                                       }catch(erew){
                                           
                                       }
                                    if( indexActual !==''){ 
-                                    let sym = {
+                                    let sym = '';
+                                 
+                                  
+                                    if(indexActual ==='NIFTY-50'){
+                                         sym = {
+                                          strike: indexActual,
+                                           expiry: 'NIFTY-50',
+                                          type: 'SP',
+                                            strikeNumber: 'NIFTY-50',
+                                            id : value[1],
+                                            timestamp: value[2],
+                                            ltp: value[3],
+                                            bid: value[7],
+                                            ask: value[8],
+                                            volume: value[11],
+                                        }
+                                           console.log("NIFTY-50 type: SP as in SPOT set ");
+                                    }
+                                    else { 
+                                      sym = {
                                           strike: indexActual,
                                             expiry : indexActual.slice(5, 6),
                                             type: indexActual.slice(-2),
@@ -518,7 +623,9 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                             ask: value[8],
                                             volume: value[11],
                                         }
-                                      console.log(` Symbol: ${JSON.stringify([sym])}`);
+                                    }
+                                   
+                                    //  console.log(` Symbol: ${JSON.stringify([sym])}`);
                                         ntMap.push(sym);
                                       dispatch(setSymbols([sym])); 
                                   }  
@@ -543,7 +650,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                     ])
                                 );
                       let stateSymbols =Array.from(niftyMap.entries())
-                                console.log(` niftyMap, ${JSON.stringify(stateSymbols)} `)
+                             //   console.log(` niftyMap, ${JSON.stringify(stateSymbols)} `)
                            // suppose niftyMap already exists (Map<name, valueArray>)
                             const sortedEntries = [...niftyMap.entries()].sort(([, a], [, b]) => {
                             // a[0] is name according to our value array structure
@@ -564,7 +671,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
                            //  const sortedNiftyMap = new Map(sortedEntries);  NOT WORKING after sorting 
                             const sortedNiftyMap = new Map(sortedEntries);
 
-                             setStrikeMap(Array.from(niftyMap.entries()));
+                             setStrikeMap(new Map(Array.from(niftyMap.entries())));
                                if(callBackStrikeMap !==undefined){  
                              callBackStrikeMap(Array.from(niftyMap.entries()));    
                                }
@@ -638,19 +745,51 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                 if(key !== null && key !== undefined){
                                //  console.log(` ${key}, expiry: ${key.slice(5, 11)}, 
                               //     type:  ${key.slice(-2)}, strikeNumber: ${key.slice(11, -2)}`);
+  
 
 
 
-                                   let t = {
+                               let isNitftySpot =  key === 'NIFTY-50' ? true: false; 
+                                if(!isNitftySpot){ 
+                                  let t = {
                                 ...value,
                                 strike: key,
                                 name : key,
-                                expiry: key.slice(5, 11),
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                expiry: key.slice(5, 10),
+                                  /* this is  fyers.marketfeed code i.e. truedata  values of INDICES
+                                   expiry: key.slice(5, 11),
+                                   */
                                 type: key.slice(-2),
-                                strikeNumber: key.slice(11, -2)
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                strikeNumber: key.slice(-7)
+                                 /* this is for fyers.marketfeed code i.e. truedata  values of INDICES
+                                  strikeNumber: key.slice(11, -2) */
                                 };
                                 symbolsStrikeWiseMap.push(t);
                                 return t;
+
+                                }
+                                else {
+                                   console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 717 `);
+                                  let t = {
+                                ...value,
+                                strike: 'NIFTY-50',
+                                name : 'NIFTY-50',
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                expiry: 'NIFTY-50',
+                                  /* this is  fyers.marketfeed code i.e. truedata  values of INDICES
+                                   expiry: key.slice(5, 11),
+                                   */
+                                type: 'SP',
+                                 /* this is for artilery code i.e. self generated values of INDICES */
+                                strikeNumber: 'NIFTY-50'
+                                 /* this is for fyers.marketfeed code i.e. truedata  values of INDICES
+                                  strikeNumber: key.slice(11, -2) */
+                                };
+                                symbolsStrikeWiseMap.push(t);
+                                return t;
+                                }   
                                  }
                                  
                                 } );
@@ -661,7 +800,18 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                             // Step 1: filter only NIFTY records
                             const niftyRecords = symbolsStrikeWiseMap.filter(item => item.strike.startsWith("NIFTY"));
+    /*  niftyRecords, [
+        {"strike":"NIFTY25D1625600CE","id":"753989373","timestamp":"2025-12-16T06:44:00.126Z",
+            "ltp":"147.65","bid":"0","ask":"171.46","volume":"0",
+            "name":"NIFTY25D1625600CE",
+            "expiry":"25D162",             // this is WRONG          
+            "type":"CE",
+            "strikeNumber":"5600"          // this is WRONG 
+         },
+                          
+                        {"strike":"NIFTY25D1625600PE","id":"452684477","timestamp":"2025-12-16T06:44:00.172Z","ltp":"168.76","bid":"0","ask":"134.27","volume":"0",
 
+                          */
                            
                           const niftyMap = new Map(
                                 niftyRecords
@@ -699,7 +849,8 @@ export function useWebSocketStreamSeq(url, dispatch) {
                             });
                             const sortedNiftyMap = new Map(sortedEntries);
 
-                             setStrikeMap(sortedNiftyMap);
+                            // setStrikeMap(sortedNiftyMap);
+                             setStrikeMap(new Map(Array.from(niftyMap.entries())));
                                if(callBackStrikeMap !==undefined){  
                               callBackStrikeMap(Array.from(sortedNiftyMap.entries()));
                                }

@@ -5,9 +5,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const CSV_URLS = [
-  'http://192.168.1.4:3000/NSE_CM.csv',
-  'http://192.168.1.4:3000/NSE_CM.csv',
-  'http://192.168.1.4:3000/NSE_CM.csv'
+  'https://successrate.netlify.app/NSE_CM.csv',
+  'https://successrate.netlify.app/NSE_CM.csv',
+  'https://successrate.netlify.app/NSE_CM.csv'
 ];
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect , forwardRef } from "react";
 import { startEventSource } from "./positionFeed.actions";
 import {useDispatch, useSelector} from 'react-redux';
 import { ToggleLeft, Activity } from 'lucide-react';
@@ -6,14 +6,16 @@ import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';  
  import   useIsMobile   from "../tradeGrid/useIsMobile";
-export default function PositionsTabs({
+const PositionsTabs = forwardRef(function PositionsTabs({
   sortedData, parsedData,
   sortedSocketData,
   userLogged,
   handleSort,
   getSortIndicator,
   handleSymbolClick,
-}) {
+},
+  tableRef
+){
   const [activeTab, setActiveTab] = useState("tab1"); // default tab
      //let  quickOrderBookFeed   = useSelector((state ) => state.positions.position);
          const[ computedSocketData , setComputedSocketData] = useState();
@@ -223,7 +225,10 @@ export default function PositionsTabs({
     };
  useEffect(() => {
     let isMounted = true;
-
+     if (tableRef?.current) {
+      const rect = tableRef.current.getBoundingClientRect();
+      console.log("Positions table rect:", rect);
+    }
     const fetchParsedData = () => {
       try {
         let g =   StorageUtils._retrieve(CommonConstants.recentPositionsKey)  || "null" ;
@@ -624,7 +629,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
   );
 
   return (
-    <div className="w-full">
+    <div ref={tableRef} className="w-full">
       {/* Tabs */}
       <div className="flex border-b mb-2">
         <button
@@ -654,4 +659,5 @@ const callBackPositionFeedAction = (positionsFeed) => {
       {activeTab === "tab2" && renderTable(computedSocketData)} {/* can pass diff dataset */}
     </div>
   );
-}
+});
+export default PositionsTabs;
