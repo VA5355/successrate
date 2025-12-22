@@ -45,8 +45,8 @@ const getAlpaVantageStyleStock = (fyersQuote:any ) => {
  
       }
 
-}
-const SearchCard = ({item}: { item: any }) => {
+}//{item }: { item: any }, {searchResults}:{searchResults:any}
+const SearchCard = ({ item, onSelect }: any) => {
     const dispatch = useAppDispatch();
     const gainers = useSelector((state: GlobalState) => state.stock.gainers)
     const losers = useSelector((state: GlobalState) => state.stock.gainers)
@@ -76,8 +76,16 @@ const SearchCard = ({item}: { item: any }) => {
                   
                    sy   = (sy=='' || sy === undefined) ? symbol: sy;
                    console.log("symbol "+sy);
+                   // sanve the symbole for StockCandleChart to get it 
+                     StorageUtils._save (CommonConstants.companySymbolStockChart,sy);
+                        let stockChartSym = StorageUtils._retrieve(CommonConstants.companySymbolStockChart);
+                    if (stockChartSym.isValid && stockChartSym.data !== null) {
+                        console.log("Stock Chart Symbol "+ stockChartSym.data);
+                           stockChartSym.data ;
+                    }
                    // '/fyersgetquote' 
-                  let res =     await FYERSAPI.get('/fyersquicklogin', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
+                 // let res =     await FYERSAPI.get('/fyersquicklogin', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
+                  let res =     await FYERSAPI.get('/apinseindia', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
                   //  popupCenter(FYERSAPILOGINURL, "Fyers Signin")
 
                   let data = await res .data; 
@@ -104,7 +112,9 @@ const SearchCard = ({item}: { item: any }) => {
                            dispatch(saveCompanyData(data))
 
                            dispatch(saveSelectedCard({ ...stock, ticker:ticker }));
-                             router.push(`/company/${ticker}`);
+                           //  router.push(`/company/${ticker}`);
+                           router.push(`/`);
+                            onSelect();
                          //  dispatch(saveSelectedCard(data))
                        }
                        else {  dispatch(saveSelectedCard(data[0]));
@@ -134,7 +144,10 @@ const SearchCard = ({item}: { item: any }) => {
                              let  alphaStock =   getAlpaVantageStyleStock(quoteData); 
 
                              dispatch(saveSelectedCard({ ...alphaStock, ticker:ticker }));
-                              router.push(`/company/${ticker}`);
+                             console.log("quoteData FYERSAPI.get('/fyersgetquote'  "+JSON.stringify(quoteData));
+                             // router.push(`/company/${ticker}`);
+                             router.push(`/`);
+                               onSelect();
                             }
                             else {
                                console.log( "Meta Data / 2. Symbol not visible ticker not set ")

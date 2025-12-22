@@ -3,7 +3,8 @@ import {GlobalState} from '@/redux/store'
 import React, {useEffect} from 'react'
 import {useSelector} from 'react-redux'
 import {ActionLoader} from '../../loader/actionLoader/loader.component'
-import SearchCard from '../item/item.component'
+ import SearchCard from '../item/item.component'
+import StockCandleChart from '../item/StockCandleChart'
 import Chip from '../../common/textChip/chip.component'
 import {CommonConstants} from '@/utils/constants'
 import {saveRecentSearches} from '@/redux/slices/miscSlice'
@@ -109,7 +110,8 @@ const SearchResults = ({query, setQuery}: { query: string, setQuery: Function })
                 {
                     results ? results.map((item: any) => {
                         if (category !== 'All' && item[CommonConstants.typeDataKey] !== category) return null
-                        return <SearchCard item={item} key={item[CommonConstants.symbolDataKey]}/>
+                        return <SearchCard item={item} key={item[CommonConstants.symbolDataKey]}    onSelect={() => setQuery('')} />
+                        //return   <StockCandleChart symbol={item[CommonConstants.symbolDataKey]}   key={item[CommonConstants.symbolDataKey]} />  
                     }) : null
                 }
             </div>}

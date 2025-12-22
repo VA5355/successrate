@@ -365,6 +365,7 @@ export const CommonConstants = {
     sampleData :  JSON.stringify( { "top_gainers":  otherData ,  "top_losers":loserData } ),
     //stockDataCacheKey: 'CKFRQC4GPZQUB56W',
     companyDataCacheKey: 'companyData',
+    companySymbolStockChart:"stockChartSymbol",
     // companyDataCacheKey: 'CKFRQC4GPZQUB56W',
      apiKey: 'CKFRQC4GPZQUB56W',
      sampleDataVersion1 :  JSON.stringify( { "top_gainers":  otherObjData ,  "top_losers":loserObjData } ),
@@ -381,7 +382,22 @@ export const CommonConstants = {
      sampleTickerSensexDataVersion1:  JSON.stringify(      sensexTickerData), 
      sampleIndicesDataVersion1:  JSON.stringify(      indicesTickerData), 
      sampleThreeSecSensexDataVersion1:  JSON.stringify(      sensexThreeSecData), 
-     sampleTickerNiftyDataVersion1:  JSON.stringify(      niftyTickerData) 
+     sampleTickerNiftyDataVersion1:  JSON.stringify(      niftyTickerData) ,
+
+    // ICICI DIRECT Details 
+    ICICI_API_KEY : "7`xZ6=v63s37L227e214j454mFN#h5Q4",
+    icici_session_token: 'icici_session_token' ,
+    ICICI_CUSTOMER_DETAILS_URL: '',
+      IP: '', 
+      PORT : '' ,
+      NSEHOLIDAYS:"01-26-2023,07-Mar-2023,30-Mar-2023,04-Apr-2023,07-Apr-2023,14-Apr-2023,01-May-2023,28-Jun-2023,15-Aug-2023,19-Sep-2023,02-Oct-2023,24-Oct-2023,14-Nov-2023,27-Nov-2023,25-Dec-2023",
+      BREEZE_API_KEY:"7`xZ6=v63s37L227e214j454mFN#h5Q4",
+
+     BREEZE_SECRET_KEY:"005@303Vgc26vI5153QD6^73672145~h",
+
+      TRADE_LOGIN_URL:"https://api.icicidirect.com/apiuser/login?api_key="
+
+      
     }
 
 /*  JSON.stringify( { "top_gainers":  otherData ,  "top_losers":loserData } )

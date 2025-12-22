@@ -2,6 +2,8 @@
 const express = require('express');
 const fyersExtra = require('extra-fyers');
 const  queue =  require('./tokenQueue.js');
+const  alphaTimeSeries =  require('./alphaadvantage-candle-series.js');
+const  alphaT =  require('./alphaTimeSeries.js');
 const router  = express.Router()
 var path = require('path');
 var ejs = require('ejs');
@@ -90,6 +92,99 @@ if( res !==null && res !==undefined && typeof(res.send ==='function')){
    res.setHeader("Access-Control-Allow-Methods", "*");
 }
 } 
+
+function transformAPINSEINDIAToTimeSeries(data, symbol = "SBET") {
+  try {
+   // if (!data || data.info == undefined ||  data.preOpenMarket == undefined ||  !Array.isArray(data.preOpenMarket.preopen)) {
+   //   throw new Error("Invalid or missing candle data");
+   // }
+
+  let timeSeries = {};
+    let alphatimeSeriesArray = {};
+    let lastRefreshed = null;
+ // Sort candles descending by timestamp (optional, to find latest easily)
+	if (
+	alphaTimeSeries &&
+	alphaTimeSeries["Time Series (5min)"]
+	) {
+	const sourceSeries = alphaTimeSeries["Time Series (5min)"];
+
+	Object.entries(sourceSeries).forEach(([dateStr, timeSingleObj]) => {
+		timeSeries[dateStr] = {
+		"1. open":  Number(timeSingleObj["1. open"]).toFixed(4),
+		"2. high":  Number(timeSingleObj["2. high"]).toFixed(4),
+		"3. low":   Number(timeSingleObj["3. low"]).toFixed(4),
+		"4. close": Number(timeSingleObj["4. close"]).toFixed(4),
+		"5. volume": timeSingleObj["5. volume"].toString()
+		};
+	});
+	}
+    const symbol =
+  alphaTimeSeries["Meta Data"]?.["2. Symbol"] || "N/A";
+  if(alphaT !== undefined && alphaT.default !== undefined ){  
+  alphatimeSeriesArray = alphaT.default;
+  const jsonString = JSON.stringify(alphatimeSeriesArray, (key, value) => {
+		  const keySET = [  "2025-12-19 19:55:00" , "2025-12-19 19:50:00" , "2025-12-19 19:45:00", "2025-12-19 19:40:00" ]
+		if (key in keySET) {
+			return value; // returning undefined omits the key-value pair
+		}
+		//return value; // otherwise, return the original value
+	})
+  console.log("alphaT "+JSON.stringify(jsonString));
+   }
+const lastRefreshedOne =
+  alphaTimeSeries["Meta Data"]?.["3. Last Refreshed"] || "N/A";
+
+const result = {
+  "Meta Data": {
+    "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+    "2. Symbol": symbol,
+    "3. Last Refreshed": lastRefreshedOne,
+    "4. Output Size": "Compact",
+    "5. Time Zone": "US/Eastern"
+  },
+  "Time Series (Daily)": alphatimeSeriesArray 
+};
+   return result;
+    /*const sortedCandles = [...data.candles].sort((a, b) => b[0] - a[0]);
+    for (const [ts, open, high, low, close, volume] of sortedCandles) {
+      if (!ts || isNaN(open) || isNaN(close)) {
+		console.log("issue parsing ",JSON.stringify(ts , open , high , low , close ,volume))
+		continue;
+	    }
+      const dateStr = new Date(ts * 1000).toISOString().slice(0, 10); // YYYY-MM-DD
+      if (!timeSeries[dateStr]) {
+       timeSeries[dateStr] = {
+        "1. open": open.toFixed(4),
+        "2. high": high.toFixed(4),
+        "3. low": low.toFixed(4),
+        "4. close": close.toFixed(4),
+        "5. volume": volume.toString()
+       };
+	 }
+      if (!lastRefreshed || dateStr > lastRefreshed) {
+        lastRefreshed = dateStr;
+      }
+    }
+
+    return {
+      "Meta Data": {
+        "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+        "2. Symbol": symbol,
+        "3. Last Refreshed": lastRefreshed || "N/A",
+        "4. Output Size": "Compact",
+        "5. Time Zone": "US/Eastern"
+      },
+      "Time Series (Daily)": timeSeries
+    };*/
+  } catch (err) {
+    console.error("Error transforming candle data:", err.message);
+    return {
+      error: "Failed to transform candle data",
+      reason: err.message
+    };
+  }
+}
 
 function transformCandlesToTimeSeries(data, symbol = "SBET") {
   try {
@@ -565,8 +660,220 @@ router.get('/fyersquicklogin', async function (req,res) {
 
 
 });
+// STOCK NSE INDIA SYMBOL DETAILS FASTER than FYERS , to be HOSTED on render.com 
+router.get('/apinseindia', async function (req,res) {
+
+	try {
+		data = { "APINSEINDIA":"GOOD MORNING"}
+		let symbol = ''; let apikey = '';let resolution = '';let date_format = '';let range_from = '';let range_to = '';let cont_flag = '';
+		let authcode =  global_auth_code;
+		var oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+		let yyyymmddWeekAgo = oneWeekAgo.toISOString().slice(0, 10);
+		if( req.query !== null && req.query !== undefined ){
+			console.log(" APINSEINDIA QUERY PARAMS " +JSON.stringify(req.query))
+			var queryJSON  = JSON.parse(JSON.stringify(req.query));
+			symbol = queryJSON['symbol'];
+			  apikey =queryJSON['apikey'];
+			  authcode= queryJSON['auth_code'];
+			  resolution=queryJSON['resolution'] ? queryJSON['resolution']: 60;
+			  date_format=queryJSON['date_format']? parseInt(queryJSON['date_format']): 0;
+			  range_from=queryJSON['range_from'] ? queryJSON['range_from']: yyyymmddWeekAgo;
+			  range_to=queryJSON['range_to'] ? queryJSON['range_to']: formatDate(oneWeekAgo);
+			  cont_flag=queryJSON['cont_flag'] ? queryJSON['cont_flag']: "1";
+			// global_auth_code= auth_code;
+			 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode} `);
+		}
+		//res.send(output)
+		var appId       = client_id ;  //'7GSQW68AZ4-100' PROD APP ID  app_id recieved after creating app
+	if( symbol !==null && symbol !== undefined && symbol !== ''){
+			console.log("Symbol : "+symbol); 
+		/*	
+	     var axios = require('axios');
+		var data = {  "SessionToken": session_token,    "AppKey": "7`xZ6=v63s37L227e214j454mFN#h5Q4"};
+		var config = {
+			method: 'get',
+			url: "http://localhost:3065/api/equity/"+symbol,
+			headers: { 'Content-Type': 'application/json' },
+			data : data
+		};
+
+        axios(config)
+		.then(function (response) {
+			console.log(JSON.stringify(response.data));
+
+			
+		 
+			 
 
 
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+		*/
+			const output = transformAPINSEINDIAToTimeSeries({}, symbol);
+			console.log(JSON.stringify(output, null, 2));
+  
+							 setCORSHeaders( res );
+
+							res.send( JSON.stringify(output));
+		
+	// if( authcode !==null && authcode !== undefined && authcode !== ''){
+	//		console.log("Authcode : "+authcode);
+	//	var accessToken = authcode;  // access_token recieved after login
+	//	var api = new fyersExtra.Api(appId, accessToken);   // "MGY8LRIY0M", PROD 
+	 // fyers.generate_access_token({"client_id":client_id,"secret_key": secret_key,
+	//		"auth_code":authcode})
+	//	.then(async (response)=>{
+	//	if(response.s=='ok'){
+	//			accessToken = response.access_token;
+	//			console.log("Fyers access_token "+accessToken);
+	//			console.log("FYERS Grants provided  ") 
+	//			api = new fyersExtra.Api(appId, accessToken);
+	//			const x = {
+	//				fromDate: new Date("2025-05-30T09:15:00"),
+	//				toDate: new Date("2025-06-01T15:30:00")
+	//			};
+			/*	var marketRequest =   {
+					symbol: `NSE:${symbol}-EQ`,
+					resolution: resolution,
+					//date_format: "1",
+					//range_from: range_from,
+					//range_to: range_to,
+					//range_from: "2025-05-30 09:15",
+					//range_to: "2025-06-01 15:30",
+					//range_from: new Date("2025-05-30T09:15:00"), // ✅ Date object
+					//range_to: new Date("2025-06-01T15:30:00"),   // ✅ Date object
+					//range_from: '1717200000', // UNIX timestamp (seconds) — FROM
+					//range_to: '1717286400',   // UNIX timestamp (seconds) — TO
+					//range_from: Math.floor(x.fromDate.getTime() / 1000),
+					//range_to: Math.floor(x.toDate.getTime() / 1000),
+					fromDate: Math.floor(x.fromDate.getTime() / 1000),
+					/// Indicating the end date of records.  
+					//	toDate:  Math.floor(x.toDate.getTime() / 1000),
+					continuous: true
+					//cont_flag: cont_flag
+			    }
+	             console.log(" FYERS Market Request " +JSON.stringify(marketRequest));
+				 */
+	  //var marketresonse = await api.getMarketHistory(marketRequest);
+	   // await api.getMarketHistory( marketRequest) 
+	    // List equity and commodity fund limits.
+ 	// await api.getFunds()
+		/*	if(api !==null && api !== undefined){
+					console.log("✅ fyers extra api is initialised" );
+			}	
+			if(fyersAPI !==null && fyersAPI !== undefined){
+					fyersAPI.setAppId(appId)
+				//fyersAPI.setRedirectUrl("https://url.xyz")
+					fyersAPI.setAccessToken(accessToken)
+					const range_to = Math.floor(Date.now() / 1000);
+					const range_from = range_to - (86400 * 1); // 1 day back
+					var inp={
+						"symbol": `NSE:${symbol}-EQ`,
+						"resolution":"60",
+						"date_format":"1",
+						"range_from":   "2025-05-30" , //" "+range_from,
+						"range_to": "2025-06-01" , // " "+range_to,
+						"cont_flag":"1"
+					}
+					
+					console.log("✅ fyers Model api is initialised" );
+				
+					fyersAPI.getHistory(inp).then((response)=>{
+						console.log(response)
+						let wd = `NSE:${symbol}-EQ`;
+						let ret = {  "symbol": wd , "status" : "Data available" }
+						const output = transformCandlesToTimeSeries(response, symbol);
+						 console.log(JSON.stringify(output, null, 2));
+  
+							 setCORSHeaders( res );
+
+							res.send( JSON.stringify(output));
+					}).catch((err)=>{
+						console.log(err)
+						let wd1 = `NSE:${symbol}-EQ`;
+						let ret = {  "symbol": wd1 , "status" : " Input error "+JSON.stringify(err) };
+						 setCORSHeaders( res );
+						res.send( JSON.stringify( ret));
+					})
+
+				}*/
+	/*await api.getMarketHistory( marketRequest) 
+		.then(result => {
+			console.log("✅ Got response:", result);
+			 // Example usage
+				const input = result;
+				console.log(input );
+				//const timeSeriesData = convertToTimeSeries(input);
+			//	console.log(timeSeriesData);
+			 //setCORSHeaders( res )
+				// res.send( input);
+				let wd = `NSE:${symbol}-EQ`;
+				res.send( JSON.stringify({ wd: "Data available" } ));
+		  })
+		  .catch(err => {
+			console.error("❌ Failed:", err);
+			// setCORSHeaders( res )
+			res.send(JSON.stringify({"FYERS": "FYERS MARKET CALL FAILED "}) );
+		  });
+	   */
+	//	}  // response.s == OK 
+	//   });
+
+	 // } // NOT required Auth code 
+  //   }
+		// construct market request  
+		/*{
+			  symbol: string,
+  /// The candle resolution in minutes. /
+  resolution: string,
+  ///0 to enter the epoch value. 1 to enter the date format as yyyy-mm-dd. /
+  date_format: number,
+  /// Indicating the start date of records (epoch, yyyy-mm-dd). /
+  range_from: string,
+  /// Indicating the end date of records. /
+  range_to: string,
+  /// Set cont flag 1 for continues data and future options. /
+  cont_flag: string,
+		} */
+
+		/*
+		await api.connectMarketData(quote => {
+			console.log(quote);
+		  });
+		ejs.renderFile(path.join(__dirname, "views/fyers_callback_template.ejs"),
+		  {
+		  requesterName : "Vinayak Anvekar",
+		  lastlogin: new Date(),
+		  PUSHLIEDDAYFYERSAGREEMENT: client_id,
+		  PUSHLIEDDAYFYERSDIRECTION: redirectUrl +'',
+		 
+		  data : JSON.stringify(data),
+		     TRADECHECKKEY :"7`xZ6=v63s37L227e214j454mFN#h5Q4", //process.env.BREEZE_API_KEY,
+		  })
+		  .then(result => {
+		  	fyersTemplate = result;
+		  	res.send(fyersTemplate);
+		  });
+		  */
+     }
+	} catch (e) {
+		console.log(e);
+		  setCORSHeaders( res )
+		res.send("{ data: error }" );
+	}
+	/*
+	 <% data.forEach(elem=> { %>
+
+                <li> <% console.table(elem) %>
+                </li>
+                <% }); %>
+	*/
+
+
+});
 // STEP FYERS MAKE A CALL to the FYERS PROXY  that CALLBACK OUR APP WITH 
 // REDIRECT URI PROVIDED by US ONLY 
 router.get('/fyerscallback', async function (req,res) {

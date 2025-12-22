@@ -16,6 +16,7 @@ import { StorageUtils } from '@/libs/cache';
 import { savePositionBook } from '@/redux/slices/positionSlice';
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 import { CommonConstants } from '@/utils/constants';
+import StockCandleChart from "@/components/charts/StockCandleChart";
 
 const StockGrid = () => {
     const gainers = useSelector((state: GlobalState) => state.stock.gainers)
@@ -28,6 +29,14 @@ const StockGrid = () => {
     const dispatch = useAppDispatch()
     const loader = useSelector((state: GlobalState) => state.misc.loader)
     const [positionOneFetch ,setPositionOneFetch ]= useState((  StorageUtils._retrieve(CommonConstants.fetchPositions).data ===  false  ? 1:0 )  );
+
+    const selected = useSelector(
+        (state: GlobalState) => state.stock.selectedCard
+    );
+    const symbol =
+    selected?.ticker?.includes(":")
+      ? selected.ticker.split(":")[1].replace("-EQ", "")
+      : selected?.ticker;
 
     const fetchMoreData = async () => {
         dispatch(fetchMoreStocks(gainers, losers, activelyTraded))
@@ -144,6 +153,23 @@ const StockGrid = () => {
 
 
             </div>
+              {
+                    tab === "Top Gainers" ? (  
+                    <div className="space-y-6 px-6 ml-[88px]">
+                                {/* Other content */}
+
+                                {symbol ? (
+                                    <StockCandleChart symbol={symbol} />
+                                ) : (
+                                    <div className="text-sm text-gray-400 italic">
+                                    Select a stock to view chart
+                                    </div>
+                                )}
+                            </div>
+                     ) : tab === "Top Losers" ? (  
+                          <TradeGrid tradeDataB={tradeData} /> 
+                     ) :    <>    </> 
+                }
             {
                 loader ? <ScreenLoader/> : <h1 id="loadMore" onClick={() => fetchMoreData()}
                                                className=' text-black font-regular text-xl transition-all py-10 cursor-pointer p-2  dark:text-white flex items-center justify-center hover:mt-2'>Load
