@@ -9,6 +9,7 @@ import {fetchMoreStocks, fetchStockList} from './grid.actions';
 import {useAppDispatch} from '@/providers/ReduxProvider';
 import TradeTable from '@/components/company/trade/TradeTable';
 import TradeGrid from '../tradeGrid/TradeGrid';
+import TradeGridPlotterPDFCSV from '../tradeGrid/TradeGridPlotterPDFCSVbckp';
 import PositionGrid from '../positionGrid/PositionGrid';
 import { getPositionData } from '../positionGrid/positionGridBook.actions';
 import { orderBookData } from '../positionGrid/orderBook.actions';
@@ -144,7 +145,8 @@ const StockGrid = () => {
                     }) : tab === "Top Losers" ? losers.map((item: any) => {
                         return <StockCard key={item.symbol} stock={item}/>  
                     }) :  tab === "Top Traders" ?   (  
-                          <TradeGrid tradeDataB={tradeData} /> 
+                        
+                         <TradeGridPlotterPDFCSV tradeDataB={tradeData} />
                      ) :  tab === "Positions" ?   (  
                           <PositionGrid positionDataB={positionData} /> 
 
@@ -156,7 +158,7 @@ const StockGrid = () => {
               {
                     tab === "Top Gainers" ? (  
                     <div className="space-y-6 px-6 ml-[88px]">
-                                {/* Other content */}
+                                {/* Other content 
 
                                 {symbol ? (
                                     <StockCandleChart symbol={symbol} />
@@ -164,10 +166,20 @@ const StockGrid = () => {
                                     <div className="text-sm text-gray-400 italic">
                                     Select a stock to view chart
                                     </div>
-                                )}
-                            </div>
+                                )}*/} 
+                        {selected?.ticker && (
+                            <StockCandleChart
+                                key={selected.ticker}   
+                                symbol={selected.ticker}
+                            />
+                                  )}
+
+                    </div>
+
+
+                          
                      ) : tab === "Top Losers" ? (  
-                          <TradeGrid tradeDataB={tradeData} /> 
+                           <>    </> 
                      ) :    <>    </> 
                 }
             {

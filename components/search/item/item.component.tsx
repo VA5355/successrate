@@ -65,7 +65,7 @@ const SearchCard = ({ item, onSelect }: any) => {
                     //{params: {function: 'TOP_GAINERS_LOSERS' , apikey:CommonConstants.apiKey}}
                      let tokenauth = StorageUtils._retrieve(CommonConstants.fyersToken);
                      let auth_code ='';
-                    if (tokenauth.isValid && tokenauth.data !== null) {
+                    if (tokenauth.isValid && tokenauth.data !== null && tokenauth.data !== undefined) {
                         console.log("User is Authorized ");
                           auth_code = tokenauth.data['auth_code'];
                     }
@@ -85,10 +85,48 @@ const SearchCard = ({ item, onSelect }: any) => {
                     }
                    // '/fyersgetquote' 
                  // let res =     await FYERSAPI.get('/fyersquicklogin', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
-                  let res =     await FYERSAPI.get('/apinseindia', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
+                  let res =     await Promise.resolve({
+                                    data:     {
+                                      /*status: "ok",
+                                      source: "mock",
+                                      symbol: sy,
+                                      exchange: "NSE",
+                                      price: 512.35,
+                                      open: 505.1,
+                                      high: 520.4,
+                                      low: 498.6,
+                                      close: 510.2,
+                                      volume: 1234567,
+                                      timestamp: Date.now()*/
+
+                                      "Meta Data": {
+                                            "1. Information": "Intraday (5min) open, high, low, close prices and volume",
+                                            "2. Symbol": "IBM",
+                                            "3. Last Refreshed": "2025-12-19 19:55:00",
+                                            "4. Interval": "5min",
+                                            "6. Time Zone": "US/Eastern"
+                                        },
+                                        "Time Series (5min)": {
+                                            "2025-12-19 19:55:00": {
+                                                "1. open": "301.0000",
+                                                "2. high": "301.5800",
+                                                "3. low": "301.0000",
+                                                "4. close": "301.5111",
+                                                "5. volume": "27"
+                                            },
+                                            "2025-12-19 19:50:00": {
+                                                "1. open": "301.5800",
+                                                "2. high": "301.6800",
+                                                "3. low": "301.5800",
+                                                "4. close": "301.6800",
+                                                "5. volume": "13"
+                                            },
+                                    }  } 
+                                  });
+                  //           await FYERSAPI.get('/apinseindia', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
                   //  popupCenter(FYERSAPILOGINURL, "Fyers Signin")
 
-                  let data = await res .data; 
+                  let data :any = await res .data; 
                   console.log("click data "+JSON.stringify(data))
                   if( data ===undefined){
                     data =  gainers[0]; // gainers.map((elem: any) => elem.ticker === "SBET")
@@ -103,7 +141,7 @@ const SearchCard = ({ item, onSelect }: any) => {
                     console.log( "click item "+JSON.stringify(item))
                     if( item !==undefined){
                        if (!data.length) {
-                          let stock =  data['2. symbol'];
+                          let stock =  data["2. symbol"];
                           let ticker = stock;
                            StorageUtils._save (CommonConstants.companyDataCacheKey,data);
                           // this will allow the 
@@ -138,9 +176,31 @@ const SearchCard = ({ item, onSelect }: any) => {
                             // to retrive properly when router hits `/company/${ticker}`
                             //  dispatch(saveCompanyData(data))
                               // dispatch(saveSelectedCard({ ...stock, ticker:ticker }));
-                             let quoteResponse =     await FYERSAPI.get('/fyersgetquote', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
+                             let quoteResponse  = undefined;
+                                let quoteData = undefined; ;
+                              try {  
+                                quoteResponse =     await Promise.resolve({
+                                    data:     {
+                                      /*status: "ok",
+                                      source: "mock",
+                                      symbol: sy,
+                                      exchange: "NSE",
+                                      price: 512.35,
+                                      open: 505.1,
+                                      high: 520.4,
+                                      low: 498.6,
+                                      close: 510.2,
+                                      volume: 1234567,
+                                      timestamp: Date.now()*/
+                                    } }) ;
+
+                             // await FYERSAPI.get('/fyersgetquote', {params: {auth_code :auth_code , symbol:sy , apikey:CommonConstants.apiKey}})
                             
-                             let quoteData = await quoteResponse .data; 
+                                  quoteData= await quoteResponse.data; 
+                             }
+                             catch(erre){
+                                   console.log("quoteData FYERSAPI.get('/fyersgetquote' failed " );
+                             }
                              let  alphaStock =   getAlpaVantageStyleStock(quoteData); 
 
                              dispatch(saveSelectedCard({ ...alphaStock, ticker:ticker }));

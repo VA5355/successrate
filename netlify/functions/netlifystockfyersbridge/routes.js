@@ -876,10 +876,24 @@ router.get('/apinseindia', async function (req,res) {
 });
 // STEP FYERS MAKE A CALL to the FYERS PROXY  that CALLBACK OUR APP WITH 
 // REDIRECT URI PROVIDED by US ONLY 
-router.get('/fyerscallback', async function (req,res) {
+// OLD EJS CODE -- THAT STOPPED WORKING DEC 21 2025 
+/* router.get('/fyerscallback', async function (req,res) {
 
 	try {
 		data = { "FYERS":"GOOD MORNING"}
+		let s = ''
+	let code = ''
+	let auth_code= '';
+	if( req.query !== null && req.query !== undefined ){
+		console.log(" FYERS Already take the PIN and returned with  QUERY PARAMS " +JSON.stringify(req.query))
+		var queryJSON  = JSON.parse(JSON.stringify(req.query));
+		s = queryJSON['s'];
+		  code =queryJSON['code'];
+		 auth_code= queryJSON['auth_code'];
+
+		 console.log(`s: ${s}  code : ${code}  auth_code:  ${auth_code} `);
+
+	}
 		//res.send(output)
 		ejs.renderFile(path.join(__dirname, "views/fyers_callback_template.ejs"),
 		  {
@@ -896,20 +910,74 @@ router.get('/fyerscallback', async function (req,res) {
 			 setCORSHeaders( res );
 		  	res.send(fyersTemplate);
 		  });
+		 
+		   res.status(302).setHeader("Location", "/fyers-auth");
+  		   res.end();
 	} catch (e) {
 		console.log(e);
 		 setCORSHeaders( res )
 		res.send("{ data: error }" );
 	}
-	/*
-	 <% data.forEach(elem=> { %>
+	 
+});
+ */
+/**
+ /netlify/functions/netlifystockfyersbridge/api/fyerscallback
+Purpose
+Receive FYERS callback
+Parse query safely
+Redirect once to /fyers-auth
+No rendering, no OAuth retry here
+ */
 
-                <li> <% console.table(elem) %>
-                </li>
-                <% }); %>
-	*/
+router.get("/fyerscallback", async (req, res) => {
+  try {
+    const { auth_code = "", code = "", s = "", state = "" } = req.query || {};
+
+  // 🟢 FIRST TIME (clean URL)
+    if (!auth_code) {
+      return res.redirect(302, "/fyers-auth");
+    }
+
+    console.log("FYERS callback received:", {
+      auth_code,
+      code,
+      s,
+      state,
+    });
+		// 🟢 CALLBACK FROM FYERS (auth_code present)
+    const params = new URLSearchParams({
+      auth_code,
+      code: code || "",
+      s: s || "",
+      state: state || "",
+    });
 
 
+    // Always redirect to Next.js auth page
+    // Do NOT call FYERS again from backend
+   /// res.writeHead(302, {
+    //  Location: "/fyers-auth",
+   // });
+   // res.end();
+   const now = Date.now()
+    globalLogin = { "value" : {"auth_code" :auth_code , "code" :code, "s" :s ,"ttl" :now}};
+		 return res.redirect(
+      302,
+      `/fyers-fallback?${params.toString()}`
+    );
+
+
+
+    
+  } catch (err) {
+    console.error("FYERS callback error:", err);
+
+    res.writeHead(302, {
+      Location: "/fyers-error?reason=callback_failed",
+    });
+    res.end();
+  }
 });
 
 // 
@@ -2154,7 +2222,7 @@ router.get('/fyersauthcodeverify', async function (req,res) {
 		 globalLogin = { "value" : {"auth_code" :auth_code , "code" :code, "s" :s ,"ttl" :now}};
 
 		//res.send(output)
-		ejs.renderFile(path.join(__dirname, "views/fyers_show_logged_in.ejs"),
+		/*ejs.renderFile(path.join(__dirname, "views/fyers_show_logged_in.ejs"),
 		  {
 		  requesterName : "Vinayak Anvekar",
 		  lastlogin: new Date(),
@@ -2173,6 +2241,26 @@ router.get('/fyersauthcodeverify', async function (req,res) {
 			 setCORSHeaders( res )
 		  	res.send(emailTemplate);
 		  });
+
+		  */
+		  // NEXT JS page 
+		   // build redirect URL to Next.js page
+				const params = new URLSearchParams({
+					 lastlogin: new Date(),
+				  client_id: client_id,
+		  			secret_key: secret_key,
+				 auth_code : auth_code  +'',
+				code: code || "",
+				s: s || "",
+				state: isfrompython || "",
+				triggerredirectpython: triggerredirectpython+'',
+				 
+				});
+
+				// IMPORTANT: redirect to Next.js page
+				res.redirect(302, `/fyers-callback?${params.toString()}`);
+
+
 	} catch (e) {
 		console.log(e);
 		 setCORSHeaders( res )

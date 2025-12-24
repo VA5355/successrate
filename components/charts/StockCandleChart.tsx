@@ -155,13 +155,36 @@ const gap = 6;
     fetchCandle();
 
     // Auto-refresh every 15s
-    retryTimer.current = setInterval(fetchCandle, 15000);
+   // retryTimer.current = setInterval(fetchCandle, 15000);
 
     return () => {
-      if (retryTimer.current) clearInterval(retryTimer.current);
+    //  if (retryTimer.current) clearInterval(retryTimer.current);
     };
   }, [symbol]);
 
+  // THIS is Based on the Search Bar typed second time new stock symbols 
+  // which actually happens in the header.component line 40 near SearchResults where query is the synbole 
+  // from SearchResult at line 113 after category etc it set's the SearchCard with onSelect to clear the search text 
+  // SearchCard is item.component this has <Link onClieck where the sym is set and the selectedCard is also set 
+  // now once the router.push is done the passed in onSelect slear's the search Text before leaving the 
+  // call to grid.conponenet whoer StockCanfelChat is being include after first 5 cards  the 5 once below 
+   useEffect(() => {
+     // we are calling the fetchCandle just to fail 
+     // only when the StorageUtils._retrieve(CommonConstants.companySymbolStockChart) is changed 
+     // this below should fails and re-generation of Candles happens 
+
+     fetchCandle();
+        // we hope the render happens autpmatically and there is not need of any change in the grid.component where the symbol && StockCandleChart is 
+        // logic crafted here 
+        // the symbol change based on interval code os written above 
+    // Auto-refresh every 15s
+   // retryTimer.current = setInterval(fetchCandle, 15000);
+
+    return () => {
+      //   if (retryTimer.current) clearInterval(retryTimer.current);
+    };
+  }, [actualSymbol]);
+   
   async function fetchCandle() {
     try {
       const controller = new AbortController();

@@ -184,7 +184,7 @@ const getSortIndicator = (column) =>
                         let data =    result.data.value;
                         StorageUtils._save(CommonConstants.fyersToken,data)
                         const res = StorageUtils._retrieve(CommonConstants.fyersToken);
-                        if (res.isValid && res.data !== null) {
+                        if (res !==undefined && res.isValid && res.data !== null && res.data !==undefined)  {
                            
                             let auth_code = res.data['auth_code'];
                             if (auth_code&& auth_code !== null && auth_code !== undefined) {
