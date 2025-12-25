@@ -1,5 +1,5 @@
 // FetchPositionButton.jsx
-import React, { useState } from 'react';
+import React, { useState ,  useRef} from 'react';
 import { ToggleLeft, Activity } from 'lucide-react';
 //import { getSensexTickerData  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./streamTicker.actions";
 // ThreeSec HTTP FETCH 
@@ -17,6 +17,8 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
   const [isStreaming, setIsStreaming] = useState(false);
   const [threeSec , setThreeSec] = useState(0);
    const [showModal, setShowModal] = useState(false);
+   const intervalRef = useRef(null);
+   const timeoutRef = useRef(null);
     let  positionData   = useSelector((state ) => state.position.positionBook)
  const dispatch = useDispatch();
 
@@ -34,27 +36,51 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
           }
       }
  }
-  const handlePositions = () => {
+ const stopPolling = () => {
+  if (intervalRef.current) {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }
+  if (timeoutRef.current) {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = null;
+  }
+  setIsStreaming(false);
+};
+
+
+  const handlePositions = (e) => {
      console.log("Fetch Position enter ");
+      e?.preventDefault();
+     e?.stopPropagation();
 const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
   if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
     let auth_code = res1.data['auth_code'];
     if (auth_code&& auth_code !== null && auth_code !== undefined) {
         console.log("User is Authorized ");
         // fetchTradeBook();
-             setIsStreaming((prev) => !prev);
+        if (isStreaming) return; // 🛑 prevent re-entry
+          //   setIsStreaming((prev) => !prev);
+          setIsStreaming(true);
     // Optionally, trigger your stream start/stop logic here
     if (!isStreaming) {
       console.log("Fetch Position started");
       //START THE THREE SEC INTEVAL 
-     let threeSecInterval =   setInterval (  () => {
+/*     let threeSecInterval =   setInterval (  () => {
          // make or dispatch action to the streamTicker.actions.js
        //TRIIGER the position and order Book Fetch  
+*/
 
-           // FETHE POSITION BOOK DATA 
-               dispatch(getPositionData(''));
+
+      if (!intervalRef.current) {
+          intervalRef.current = setInterval(() => {
+             // make or dispatch action to the streamTicker.actions.js
+             //TRIIGER the position and order Book Fetch  
+
+             // FETHE POSITION BOOK DATA 
+            dispatch(getPositionData(''));
            // WE have to place this in a time out as the get Position make take time to fetch 
-           setTimeout( () => {
+             setTimeout( () => {
                 // FETH The recentTRades from storage if above call succeeded data will be there
                let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
                const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
@@ -73,7 +99,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
               
                  positionData.forEach(row => {
                                  console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
-                                  let sty = row.symbol.split(":");let custSy= undefined;
+                                  let sty = row.symbol?.split(":");let custSy= undefined;
                                   if(Array.isArray(sty)){
                                     custSy = sty[1];
                                   } 
@@ -116,12 +142,31 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
       // SO THE TICKERCHIP should be able to get the DATA from later on 
       //   dispatch(updateTickerStatusFromCache('BSE:SENSEX-INDEX'));
 
-       },3000);
-     setThreeSec(threeSecInterval);
+           }, 1000);
+
+           let threeSecInterval =  intervalRef.current;
+
+
+       }
+      //START THE THREE SEC INTEVAL 
+     /*let threeSecInterval =   setInterval (  () => {
+        
+
+       },3000);*/
+        timeoutRef.current = setTimeout(() => {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          setIsStreaming(false);
+           stopPolling();
+      }, 1000);
+   /*  setThreeSec(threeSecInterval);
         let after45SecClosePoll =   setTimeout (  () => {
              clearInterval(threeSecInterval)
-             setIsStreaming((prev) => !prev);
-        }, 10000);
+             clearInterval(intervalRef.current);
+             intervalRef.current = null;
+             //setIsStreaming((prev) => !prev);
+             setIsStreaming(false);  // stop
+        }, 10000);*/
 
     } else {
       console.log("Fetch position stopped");
@@ -149,7 +194,8 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
   return (
     <>  
     <button
-      onClick={handlePositions}
+       type="button"     
+     onClick={(e) => handlePositions(e)}
       className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
         isStreaming
           ? 'bg-primary green hover:bg-green-800 border-green-700'
