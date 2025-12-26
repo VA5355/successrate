@@ -20,6 +20,7 @@ import {SwipeCallPill , SwipePutPill} from "./SwipePills";
 import { showModal as modalShow, showError } from '../../../common/service/ModalService';
 import "./index.css";
 import "./sidewaysPriceSlider.css";
+import expirySymbols from "./OptionChainExpirySymbols";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
 
@@ -290,7 +291,20 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
            
             const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
             console.log(formatted);
-
+          /* to send symbols like this 
+             symbols: [
+    'NIFTY-50',          'NIFTY2512235600CE',
+    'NIFTY2512235600PE', 'NIFTY2512235700CE',
+    'NIFTY2512235700PE', 'NIFTY2512235800PE',
+    'NIFTY2512235800CE', 'NIFTY2512235900CE',
+    'NIFTY2512235900PE', 'NIFTY2512235600CE',
+    'NIFTY2512235600PE', 'NIFTY2512235700CE',
+    'NIFTY2512235700PE', 'NIFTY2512235800CE',
+    'NIFTY2512235800PE', 'NIFTY2512235900CE',
+    'NIFTY2512235900PE'
+  ]
+          
+          */
           if(exr !==undefined && exr !==null){
                let shrExpr = exr.replace(/-/g,"").slice(2);
               console.log("generated short date : "+shrExpr)
@@ -300,7 +314,8 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                           const prefix = newStr.substring(0, 5); // 'NIFTY'
                           const suffix = newStr.substring(11);  // e.g., '24100CE'
 
-                          return prefix+shrExpr+suffix;
+                        //  return prefix+shrExpr+suffix;  // this sends 'NIFTY2512235600CE'  like this 
+                           return newStr;  // send this way as we are converting is there at artilery side properly 
                       }
                       else {
                           return newStr;
@@ -309,6 +324,35 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                if( newSymbls !==undefined && Array.isArray(newSymbls)){
                      console.log("generated new sybols : "+JSON.stringify(newSymbls))
                   return newSymbls;
+               }
+               else if (expirySymbols !== undefined ) { 
+                   // hard typed expiries of the current month 
+
+                   if(Array.isArray(expirySymbols)){
+                     //  
+                        const newSymbls =     expirySymbols.map( symIdKeys => { 
+                            let symBol = symIdKeys.symbol;
+                          if(symBol.indexOf('CE') >-1 || symBol.indexOf('PE') > -1 ){
+                            // let lastCEandStrk = newStr.slice(11, -2);
+                              const prefix = symBol.substring(0, 5); // 'NIFTY'
+                              const suffix = symBol.substring(11);  // e.g., '24100CE'
+
+                              return prefix+shrExpr+suffix;
+                          }
+                          else {
+                              return symBol;
+                            }
+                         })
+                        if( newSymbls !==undefined && Array.isArray(newSymbls)){
+                            console.log(" from external hard typed generated new sybols : "+JSON.stringify(newSymbls))
+                            return newSymbls;
+                       }
+                       else {
+                          return [];
+                       }
+
+                   }
+
                }
                else {
                 return [];
