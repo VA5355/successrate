@@ -593,18 +593,19 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                             });
 
                             let { _id, price , qty   } = comprisedBuyOrder;
+                             let { orderType   , scheduled } =  comprisedBuyOrder;
                               let sym1 = comprisedBuyOrder.symbol;
                             if ( _id !==undefined && price !==undefined && qty !==undefined && sym1 !== undefined){ 
                              console.log("Order BUY: -> "+JSON.stringify({  "id" : _id,
                             "symbol":sym1 ,    ltp:price,  price: price,
-                            qty:qty }));
+                            qty:qty ,  orderType:orderType   , scheduled:scheduled }));
                             }
 
 
                     const fetchData = createAsyncThunk('data/fetch', async (_, { rejectWithValue }) => {
                           try {
                                const res = await API.get(FYERSAPIBUYORDER , {params: { "auth_code" : auth_code, "id" : _id,
-                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty }});  //   "access_token" : acctoken ,
+                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty  ,orderType:orderType   , scheduled:scheduled }});  //   "access_token" : acctoken ,
                               // Axios auto-parses JSON
                               const responseData = res.data;
                               let buyOrderJSON = responseData;
@@ -1026,16 +1027,17 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                             });
 
                             let { _id, price , qty   } = comprisedSellOrder;
+                            let { orderType   , scheduled } = comprisedSellOrder;
                               let sym1 = comprisedSellOrder.symbol;
                             if ( _id !==undefined && price !==undefined && qty !==undefined && sym1 !== undefined){ 
                              console.log("Order SELL: -> "+JSON.stringify({  "id" : _id,
-                            "symbol":sym1 ,    ltp:price,  price: price,
-                            qty:qty }));
+                            "symbol":sym1 ,    ltp:price,  price: price, 
+                            qty:qty , orderType:orderType   , scheduled:scheduled  }));
                             }
                     const fetchData = createAsyncThunk('data/fetch', async (_, { rejectWithValue }) => {
                           try {
                                const res = await API.get(FYERSAPISELLORDER , {params: { "auth_code" : auth_code, "id" : _id,
-                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty }});  //   "access_token" : acctoken ,
+                                       "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty  , orderType:orderType   , scheduled:scheduled }});  //   "access_token" : acctoken ,
                               // Axios auto-parses JSON
                               const responseData = res.data;
                               let sellOrderJSON = responseData;

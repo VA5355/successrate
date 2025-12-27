@@ -343,7 +343,8 @@ export const startEventSource = (connectionStatus,orderBook , canceledOrd, onFee
                   
                  }
                 catch(ere){
-                console.log(` Order Feed Action: sortedSocketData : CommonConstants.recentOrdersSocketKey ${CommonConstants.recentOrdersSocketKey} :: not available set to [] `); 
+                  // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+               // console.log(` Order Feed Action: sortedSocketData : CommonConstants.recentOrdersSocketKey ${CommonConstants.recentOrdersSocketKey} :: not available set to [] `); 
                 sortedSocketData =[];
                 //return [];
                }
@@ -357,11 +358,13 @@ export const startEventSource = (connectionStatus,orderBook , canceledOrd, onFee
                }
               }               
              } catch (err) {
-                 console.error("❌ ----ORDER FEED ACTION Failed to parse SSE data: ", err);
+              // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                // console.error("❌ ----ORDER FEED ACTION Failed to parse SSE data: ", err);
              }
             };
             es.onerror = (err) => {
-                console.error("⚠ EventSource error: ----ORDER FEED ACTION", err);
+              // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+              //  console.error("⚠ EventSource error: ----ORDER FEED ACTION", err);
                 setIsConnected(false);
                 // Optional: auto-close on persistent error
                 if (es.readyState === EventSource.CLOSED) {

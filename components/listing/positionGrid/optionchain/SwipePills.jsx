@@ -171,6 +171,11 @@ function SwipePillBase({
   const [units, setUnits] = useState(initialUnits);
   const [limitPrice, setLimitPrice] = useState(ltp ?? 0);
 
+  // LIMIT MARGING and Scheduled order buttons 
+  const [orderType, setOrderType] = useState("LIMIT"); // LIMIT | MARGIN
+const [scheduled, setScheduled] = useState(false);
+
+
   // Persist units back into the map whenever it changes (so other renders see it)
   useEffect(() => {
     try {
@@ -203,7 +208,11 @@ function SwipePillBase({
       if (info.offset.x > threshold) {
         setJustAction("BUY");
         try {
-          await callAction(onBuy, parseInt(units * 75), roundToNearest5(limitPrice));
+          await callAction(onBuy, parseInt(units * 75), roundToNearest5(limitPrice) ,
+              
+                orderType,
+                scheduled
+              );
         } catch (err) {
           // swallow or handle errors as you need
           // you may want to set an error toast here
@@ -211,7 +220,11 @@ function SwipePillBase({
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
         try {
-          await callAction(onSell, parseInt(units * 75), roundToNearest5(limitPrice));
+          await callAction(onSell, parseInt(units * 75), roundToNearest5(limitPrice),
+               
+                orderType,
+                scheduled
+               );
         } catch (err) {
           // handle error
         }
@@ -279,6 +292,47 @@ function SwipePillBase({
         style={{ x, background: bg }}
         className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm min-w-[220px] max-w-[640px] w-full"
       >
+
+                      {/* Order Options (Top Right) */}
+            <div className="absolute top-1 right-3 z-30 flex items-center gap-2">
+              
+              {/* Limit / Margin Toggle */}
+              <div className="flex rounded-full bg-zinc-100 p-0.5 shadow-inner">
+                <button
+                  onClick={() => setOrderType("LIMIT")}
+                  className={`px-2 py-0.5 text-[10px] rounded-full transition
+                    ${orderType === "LIMIT"
+                      ? "bg-indigo-600 text-white shadow"
+                      : "text-zinc-600 hover:text-zinc-900"}
+                  `}
+                >
+                  Limit
+                </button>
+                <button
+                  onClick={() => setOrderType("MARGIN")}
+                  className={`px-2 py-0.5 text-[10px] rounded-full transition
+                    ${orderType === "MARGIN"
+                      ? "bg-indigo-600 text-white shadow"
+                      : "text-zinc-600 hover:text-zinc-900"}
+                  `}
+                >
+                  Margin
+                </button>
+              </div>
+
+              {/* Scheduled Checkbox */}
+              <label className="flex items-center gap-1 text-[10px] text-zinc-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={scheduled}
+                  onChange={(e) => setScheduled(e.target.checked)}
+                  className="accent-indigo-600 scale-90"
+                />
+                Sched
+              </label>
+            </div>
+
+
         <div>
           <div className="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
             <span>{label}</span>

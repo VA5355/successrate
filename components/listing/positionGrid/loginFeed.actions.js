@@ -345,7 +345,8 @@ export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
          }
         };
         es.onerror = (err) => {
-            console.error("⚠ EventSource error:", err);
+           //// COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+           // console.error("⚠ EventSource error:", err);
             setIsConnected(false);
             // Optional: auto-close on persistent error
             if (es.readyState === EventSource.CLOSED) {

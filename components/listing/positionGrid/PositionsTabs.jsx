@@ -85,7 +85,8 @@ const PositionsTabs = forwardRef(function PositionsTabs({
                   if(Array.isArray(indexWebSocketFeeds)){
 
                     const result = indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX"));
-                     console.log(` index's to update ::: ${result}  is Array indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX")  ${Array.isArray(result)}`);
+                    // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                    // console.log(` index's to update ::: ${result}  is Array indexWebSocketFeeds.filter(item => !item.endsWith("-INDEX")  ${Array.isArray(result)}`);
                     result.forEach( (webSockIndx) => {
                          // CHECK YOU HAVE the ticker in localstore 
                         let ticker =    StorageUtils._retrieve("INDX::" +webSockIndx );

@@ -55,31 +55,35 @@ export default function FyersFallback(props: Props) {
        code_split.length ==3 ;
    //   if( code_split.length ==3){  
         let data = {
-          value: {
+         // value: {
             auth_code,
             code,
             s,
             ttl: Date.now(),
-          }};
+         // }
+        
+        };
     
     
       localStorage.setItem(
         "fyersToken",
         JSON.stringify({
-          value: {
+       //   value: {
             auth_code,
             code,
             s,
             ttl: Date.now(),
-          },
+        //  },
         })
       ); 
          // Optional: keep your utility, but ONLY on client
         try {
-          StorageUtils?._save?.(CommonConstants.fyersToken, {
-            isValid: true,
-            data: data,
-          });
+          StorageUtils?._save?.(CommonConstants.fyersToken, data
+            //{
+            //isValid: true,
+            //data: data,
+          //  }
+        );
         } catch (e) {
           console.warn("StorageUtils failed, localStorage already set");
         }

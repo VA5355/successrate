@@ -21,9 +21,32 @@ import { showModal as modalShow, showError } from '../../../common/service/Modal
 import "./index.css";
 import "./sidewaysPriceSlider.css";
 import expirySymbols from "./OptionChainExpirySymbols";
+import expiryMonthSymbols from "./OptionChainMonthEndSymbols";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
-
+// Fyers Custom Format Exipry Table Mapper 
+ const tableGlobalExipryMapper = new Map();
+             // this is also a configuration setting for converting yymmdd to fyers specific yyMdd format 
+             tableGlobalExipryMapper.set('251216','25D16')
+             tableGlobalExipryMapper.set('251223','25D23')
+             tableGlobalExipryMapper.set('251230','25DEC')
+             tableGlobalExipryMapper.set('260106','26J06')
+             tableGlobalExipryMapper.set('260113','26J13')
+              tableGlobalExipryMapper.set('2025-12-16','25D16')
+             tableGlobalExipryMapper.set('2025-12-23','25D23')
+             tableGlobalExipryMapper.set('2025-12-30','25D30') // convert to 25DEC while sending to netlify function 
+             tableGlobalExipryMapper.set('2026-01-06','26J06')
+             tableGlobalExipryMapper.set('2026-01-13','26J13')
+              tableGlobalExipryMapper.set('2026-01-20','26J20')
+             tableGlobalExipryMapper.set('2026-01-27','26J27')
+     
+              tableGlobalExipryMapper.set('25D16', '2025-12-16')
+             tableGlobalExipryMapper.set('25D23','2025-12-23')
+             tableGlobalExipryMapper.set('25D30','2025-12-30') // convert to 25DEC while sending to netlify function 
+             tableGlobalExipryMapper.set('26J06','2026-01-06')
+             tableGlobalExipryMapper.set('26J13', '2026-01-13')
+       tableGlobalExipryMapper.set('26J20', '2026-01-20')
+         tableGlobalExipryMapper.set('26J27', '2026-01-27')
 // --- Mocking External Dependencies for Runnable Demo ---
 
 // 1. Mock Redux and Actions
@@ -283,6 +306,31 @@ const mockStrikes = [ // this alsos is a configuration setting for change in eve
 function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch , resetStrikeMap}) {
 
     const { isConnected ,sendSubscriptionRequest } = useWebSocket();
+    // Active expiry dates updatedfrom the mockexpiryDates array below configurable 
+   const [activeExpiryDates, setActiveExpiryDates] = useState([]);
+    useEffect(() => {
+      try {
+        // Normalize "today" to date-only (no time)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const filtered = mockExpiryDates.filter((dateStr) => {
+          if (!dateStr || typeof dateStr !== "string") return false;
+
+          const expiryDate = new Date(dateStr);
+          if (isNaN(expiryDate.getTime())) return false;
+
+          expiryDate.setHours(0, 0, 0, 0);
+
+          return expiryDate >= today;
+        });
+
+        setActiveExpiryDates(filtered);
+      } catch (err) {
+        console.error("Error while filtering expiry dates:", err);
+        setActiveExpiryDates([]);
+      }
+    }, []); 
    const generateSymbolsForExpiry = (exr) =>{ // NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
          let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
                     'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
@@ -306,9 +354,27 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
           
           */
           if(exr !==undefined && exr !==null){
-               let shrExpr = exr.replace(/-/g,"").slice(2);
+              console.log("Active Expiry Dates "+JSON.stringify(activeExpiryDates))
+            // CHECK seleceted date is active or not 
+             let isActive =   activeExpiryDates.findIndex ( actDate => actDate === exr );
+            const fyersExpiry = tableGlobalExipryMapper.get(exr);
+            let fitSymbols = [];
+               console.log("selected expiry  : "+JSON.stringify(exr)) ;  
+                console.log("active  expiry  : "+ (isActive > -1 ? "yes present" : "not active ")+ " from "+JSON.stringify(activeExpiryDates)) ;  
+              console.log("generated fyers expirt  : "+JSON.stringify(fyersExpiry)) ;  
+             if (!fyersExpiry) return [];
+               fitSymbols =   symbols.filter(s => s === "NIFTY-50" || s.indexOf(fyersExpiry) > -1 );
+               
+             console.log("generated fitSymbols 1st check  : "+JSON.stringify(fitSymbols)) ;  
+              fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+             console.log("generated fitSymbols 2nd check  : "+JSON.stringify(fitSymbols)) ;  
+
+
+            if( isActive >-1  && fitSymbols.length > 0 ){
+       
+                        let shrExpr = exr.replace(/-/g,"").slice(2);
               console.log("generated short date : "+shrExpr)
-              const newSymbls =     symbols.map( newStr => { 
+              const newSymbls =     fitSymbols.map( newStr => { 
                       if(newStr.indexOf('CE') >-1 || newStr.indexOf('PE') > -1 ){
                          // let lastCEandStrk = newStr.slice(11, -2);
                           const prefix = newStr.substring(0, 5); // 'NIFTY'
@@ -327,10 +393,10 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                }
                else if (expirySymbols !== undefined ) { 
                    // hard typed expiries of the current month 
-
-                   if(Array.isArray(expirySymbols)){
+                     fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+                   if(Array.isArray(fitSymbols)){
                      //  
-                        const newSymbls =     expirySymbols.map( symIdKeys => { 
+                        const newSymbls =     fitSymbols.map( symIdKeys => { 
                             let symBol = symIdKeys.symbol;
                           if(symBol.indexOf('CE') >-1 || symBol.indexOf('PE') > -1 ){
                             // let lastCEandStrk = newStr.slice(11, -2);
@@ -352,11 +418,17 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                        }
 
                    }
-
+                   else {
+                       return [];
+                   }
                }
                else {
                 return [];
                }
+            } ///  SELECTED Expiry is active 
+            else { 
+                dispatch(modalShow({ title: 'Exipry', message: `Please select Active Expiry Dates `, } ));
+            }
           }
           else {
                 return [];
@@ -378,7 +450,7 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                
             }
             else {
-                dispatch(showModal({ title: 'Exipry', message: `Exipry: Current only Available `, } ));
+                dispatch(modalShow({ title: 'Exipry', message: `Exipry: Current only Available `, } ));
             }
   }
 
@@ -1454,8 +1526,8 @@ function OptionRow({  idx ,  row, onAction }) {
         label={`CALL ${strike}`}
         ltp = {`₹${row.ltp}` }
         subtitle={`LTP ₹${row.ltp} · Bid ₹${row.bid} · Ask ₹${row.ask}`}
-        onBuy={(qty,price) => onAction?.({ side: "CALL", action: "BUY",qty:qty,price:price, strike, row })}
-        onSell={(qty,price) => onAction?.({ side: "CALL", action: "SELL", qty:qty,price:price, strike, row })}
+        onBuy={(qty,price, orderType, scheduled) => onAction?.({ side: "CALL", action: "BUY",qty:qty,price:price, strike,  orderType:orderType, scheduled:scheduled ,row })}
+        onSell={(qty,price, orderType, scheduled) => onAction?.({ side: "CALL", action: "SELL", qty:qty,price:price, strike, orderType:orderType, scheduled:scheduled , row })}
         className="sm:order-1"
       />
        
@@ -1476,8 +1548,8 @@ function OptionRow({  idx ,  row, onAction }) {
           label={`PUT ${strike}`}
           ltp = {`₹${row.ltp}` }
           subtitle={`LTP ₹${row.ltp} · Bid ₹${row.bid} · Ask ₹${row.ask}`}
-          onBuy={(qty,price) => onAction?.({ side: "PUT", action: "BUY",qty:qty,price:price, strike, row })}
-          onSell={(qty,price) => onAction?.({ side: "PUT", action: "SELL",qty:qty,price:price, strike, row })}
+          onBuy={(qty,price , orderType , scheduled) => onAction?.({ side: "PUT", action: "BUY",qty:qty,price:price, strike,  orderType:orderType, scheduled:scheduled , row })}
+          onSell={(qty,price,orderType , scheduled) => onAction?.({ side: "PUT", action: "SELL",qty:qty,price:price, strike,  orderType:orderType, scheduled:scheduled, row })}
           className="sm:order-3"
         />
        
@@ -1538,6 +1610,8 @@ export default function OptionChainTable({positionData}) {
   });*/
    const [ arrayMap , setArrayMap ] = useState( mp => [new Map()])
   const spot = useSelector((state) => state.websocket.spot);
+  //const [ nifty50 ,  setNifty50 ] = useState( spot => spot !==undefined ? spot : 'NA');
+   let  nifty50  = ( spot => spot !==undefined ? spot : 'NA');
     const symbols = useSelector((state) => state.websocket.symbols);
      const [options , setOptions ]=  useState([]);// useSelector((state) => state.websocket.options);
      const globOptions = useSelector((state) => state.websocket.options);
@@ -1633,7 +1707,7 @@ export default function OptionChainTable({positionData}) {
     let standStrike= '';
     let standType= '';
 
-
+    if (symbol !== undefined && symbol !== null ) {  
     const extFyersDate = symbol.match(/^([A-Z]+)(\d{2}[A-Z]\d{2})(\d+)(CE|PE)$/);
     if (extFyersDate) {
       const expiry = extFyersDate[2];   // ✅ "25D16"
@@ -1664,7 +1738,8 @@ export default function OptionChainTable({positionData}) {
         seen.set(uniqueKey, [standSymbol, data]); // replace with newer
       }
     }
-  }
+  } else {  console.log(`symbol : ${symbol} , data : ${data} `); continue; } 
+ }
     // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(seen.values()))}`)
    // console.log( `dedupeStrikeMap:::  ${JSON.stringify(Array.from(strikeMap.entries()))}`)
   // Convert back to same structure as strikeMap
@@ -1793,7 +1868,21 @@ export default function OptionChainTable({positionData}) {
 
   }, [strikes , status]); // Only re-run when the status value changes
   */
-
+   const  findKeyByValue =  (map  , targetValue ) =>  {
+        for (const [key, value] of map.entries()) {
+          // exception case values for fyers month end expiry 
+          let fyersExceptionMonth = expiryMonthSymbols;
+          if (fyersExceptionMonth !== undefined){ 
+               let found =    fyersExceptionMonth.find( monEx => monEx.expMonth ===targetValue )
+               if (found)
+                  return found.symbol;
+          }
+          if (value === targetValue) {
+            return key;
+          }
+        }
+        throw new Error(`Value "${targetValue}" not found in Map`);
+    }
     // Action log
     const [log, setLog] = useState([]);
     const handleAction = (evt) => {
@@ -1830,8 +1919,39 @@ export default function OptionChainTable({positionData}) {
         table.set('251230','25DEC')
         table.set('260106','26106')
         table.set('260113','26113')
+        console.log(`Selected or slided evt.row.strike : ${JSON.stringify(evt.row.expiry)}`); 
+        console.log(`Order type evt.row.orderType : ${JSON.stringify(evt.row.orderType)}  schedueld: ${JSON.stringify(evt.row.scheduled)}`); 
+
         let exp = table.get(evt.row.expiry);
-      let sellord = { qty: evt.qty, price : evt.price , symbol : 'NIFTY'+exp+evt.row.strike+evt.row.type  }
+        if(exp !== undefined ){
+              console.log(` Slide expiry format ${evt.row.expiry}  mapped from table of fyers exipries:  ${exp}  ` );
+        }
+        else {   
+        try {
+               console.log(' Searching expiry the Fyers format in table of exipries:' );
+              const resultKey = findKeyByValue(table, evt.row.expiry);
+              console.log('Found Actual exipry:', resultKey); // 👉 251223
+                  // now expiry is in FYERS format 
+                  // so just return or set exp = evt.row.strike
+                  exp = resultKey ; //     evt.row.expiry;
+              } catch (err) {
+                  console.error(err.message);
+              }
+          }
+
+       let cepeAppender = "";
+        if ( evt.row.strike.indexOf("CE") > -1 ||  evt.row.strike.indexOf("PE") > -1 ) {
+            cepeAppender ="";
+
+        } else { 
+              if ( evt.row.strike.indexOf("CE") <= -1  && evt.row.type.indexOf("CE") >-1 ) {
+                    cepeAppender =evt.row.type;
+              }
+              if (   evt.row.strike.indexOf("PE")<=   -1  && evt.row.type.indexOf("PE") >-1 ){
+                   cepeAppender =evt.row.type;
+              }
+        }
+      let sellord = { qty: evt.qty, price : evt.price , symbol : 'NIFTY'+exp+evt.row.strike+cepeAppender ,orderType : evt.orderType , scheduled: evt.scheduled }
       console.log(`place order Selected: ${JSON.stringify(sellord)}`); 
       // validate price and qty 
       if(parseInt(sellord.price) <= 0 || parseInt(sellord.qty) <= 0){
@@ -1841,13 +1961,13 @@ export default function OptionChainTable({positionData}) {
       // place order Selected: {"qty":75,"price":"145.85","symbol":"NSE:NIFTY25093025300PE"}
       if( evt.action == 'SELL'){
          StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: sellord.qty, 
-         price: sellord.price , symbol: sellord.symbol}));
-        dispatch(placeSellOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol}));
+         price: sellord.price , symbol: sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled   }));
+        dispatch(placeSellOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled  }));
      }
       if( evt.action == 'BUY'){
          StorageUtils._save(CommonConstants.recentBuyOrderPlacedExclusive, JSON.stringify({ _id: '' , qty: sellord.qty, 
-         price: sellord.price , symbol: sellord.symbol}));
-        dispatch(placeBuyOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol}));
+         price: sellord.price , symbol: sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled  }));
+        dispatch(placeBuyOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled  }));
      }
      
      
@@ -1956,10 +2076,7 @@ export default function OptionChainTable({positionData}) {
                       </div>
               
                       {/* Option Rows */}
-                 
-                      <div className="grid gap-6 sm:gap-12">
-                        { strikeMap   && dedupeStrikeMap(strikeMap)
-                           .sort(([keyA, valueA], [keyB, valueB]) => {
+                       {/*  .sort(([keyA, valueA], [keyB, valueB]) => {
                             const strikeA = Number(valueA[0].slice(11, -2)); // value[0] = name
                             const strikeB = Number(valueB[0].slice(11, -2));
 
@@ -1970,12 +2087,35 @@ export default function OptionChainTable({positionData}) {
                             const typeB = valueB[0].slice(-2);
                             return typeA.localeCompare(typeB); // CE before PE
                         })
-                           .map(([key, value] , idx) => { 
-                                 let rawRow=  value[1]; //tradeRow[1];
+                          */}
+                 
+                      <div className="grid gap-6 sm:gap-12"> {/* strikeMap   && dedupeStrikeMap(strikeMap)*/}
+                        {strikeMap?.size > 0 &&    
+                                 Array.from(strikeMap.entries())?.map(([key, value] , idx) => { 
+                                
+                                 let rawRow= value ; // value[1]; //tradeRow[1];
                             //   console.log(`iterating map JSX:  ${idx} + ${key} ${JSON.stringify(rawRow)}`)
                              // destructure only the fields you need
+                            // iterating map JSX:  11 + NIFTY25D3026100CE {"strike":"NIFTY25D3026100CE","id":"694458134","timestamp":"2025-12-27T09:29:15.653Z",
+                            // "ltp":"146.15","bid":"0","ask":"147.89","volume":"0","name":"NIFTY25D3026100CE","expiry":"25D30","type":"CE","strikeNumber":"26100CE"}
+                                  
+                                let    name = rawRow.strike  ,  id = rawRow.id , timestamp = rawRow.timestamp, ltp = rawRow.ltp ,   bid = rawRow.bid , ask = rawRow.ask ,
+                                volume  = rawRow.volume; //  }  = rawRow;
                               // const [name, id, timestamp, ltp,, , , bid, ask, , , volume] = value;
-                               const [name, id, timestamp, ltp, , , , bid, ask, , , volume] = rawRow;
+                              if (!Array.isArray(rawRow) ) { 
+                                    if( name    !== 'NIFTY-50'   &&  ltp   !== undefined ){
+                                       nifty50  = ( cur => cur !== ltp ? ltp : cur );
+                                    }
+                              }
+                               if (Array.isArray(rawRow) ) {   
+                                   const [name1, id1, timestamp1, ltp1, , , , bid1, ask1, , , volume1] = rawRow;
+                                     name = name1  ,  id =id1 , timestamp =timestamp1, ltp = ltp1 ,   bid = bid1, ask = ask1 ,
+                                       volume  =volume1;
+
+                              } 
+                              if ( (name    !== undefined && name    !== 'NIFTY-50'  &&  id   !==undefined && timestamp   !==undefined  &&  ltp   !==undefined ) && 
+                                     (   bid !==undefined ||  ask   !==undefined || volume   !==undefined)  ) {
+                              // const [name, id, timestamp, ltp, , , , bid, ask, , , volume] = rawRow;
                                   let type = name.slice(-2);
                                   
                                     
@@ -2007,7 +2147,11 @@ export default function OptionChainTable({positionData}) {
                                       <OptionRow   idx={idx} key={key} row={ rowvalue} onAction={handleAction} />
                                  
                           </OptionProvider>
-                           )
+                           )  }
+                           else { 
+                               return ( <>  </> );
+
+                           }
                             }) 
                         }
                       </div>

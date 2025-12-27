@@ -383,7 +383,8 @@ export const startEventOrderSource = (connectionStatus,orderBook , canceledOrd, 
              }
             };
             es.onerror = (err) => {
-                console.error("⚠ EventSource error: ----QUICK ORDER FEED ACTION", err);
+               // COMMENTED PURPOSELY to reduce CONSOLE LOGS  
+               // console.error("⚠ EventSource error: ----QUICK ORDER FEED ACTION", err);
                 setIsConnected(false);
                 // Optional: auto-close on persistent error
                 if (es.readyState === EventSource.CLOSED) {

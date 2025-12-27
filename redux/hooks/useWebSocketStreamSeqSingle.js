@@ -3,6 +3,9 @@ import { useEffect } from 'react'; // Added useEffect import
 import { setConnected, setSymbols ,setSpot ,setSubscriptionFailure,setOptions } from '@/redux/slices/webSocketSlice';
 import { useDispatch } from "react-redux";
 // NOTE: This file is conceptual, showing how your external hook should behave.
+import expirySymbols from "./OptionChainExpirySymbols";
+import { tableGlobalExipryMapper } from "./OptionChainExpirySymbols";
+
 
 export function useWebSocketStreamSeq(url, dispatch) {
     // 1. Store the WebSocket instance in a ref
@@ -22,6 +25,19 @@ export function useWebSocketStreamSeq(url, dispatch) {
          let symbolsMap = new Map();
          let symbolsStrikeWiseMap =[];
 
+
+     function normalizeDate(date) {
+        if (!(date instanceof Date) || isNaN(date)) {
+          throw new Error("Invalid Date object");
+        }
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+      }
+
+      function isAfterToday(dateObj) {
+        return normalizeDate(dateObj) > normalizeDate(new Date());
+      }
     /**
      * Resets the strikeMap state. This is what you need to call when parameters change.
      */
@@ -138,7 +154,8 @@ export function useWebSocketStreamSeq(url, dispatch) {
              if (optionsMap !==null){
                     // Check if the Map is empty
                     if (optionsMap.size === 0) {
-                          console.log("The optionsMap is empty.");
+                      // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                        //  console.log("The optionsMap is empty."); 
                     } else {
                         setOptionsMap(optionsMap)
                        /* setStrikeMap.forEach((value, key) => {
@@ -161,31 +178,56 @@ export function useWebSocketStreamSeq(url, dispatch) {
         console.log('WebSocket connection opened.');
         // dispatch({ type: 'SET_LOADING', payload: true });
         dispatch(setConnected(true));
+        let fetchNonExpiredSymbols = () => { 
+              if(expirySymbols!==undefined){
+
+                      expirySymbols.map( symEx => { 
+                            let stm =   symEx.symbol;
+                       if(stm.indexOf('CE') >-1 || stm.indexOf('PE') > -1 ){
+                         // let lastCEandStrk = newStr.slice(11, -2);
+                              const prefix = stm.substring(0, 5); // 'NIFTY'
+                              const suffix = stm.substring(11);  // e.g., '24100CE'
+                              let exPiDt = stm.replace(prefix,"")
+                                  exPiDt = exPiDt.replace(suffix,"");
+                        let dateOfExpiry=       tableGlobalExipryMapper.get(exPiDt);
+                        if(isAfterToday(dateOfExpiry)){
+                            //  return prefix+shrExpr+suffix;  // this sends 'NIFTY2512235600CE'  like this 
+                           return newStr;  // send this way as we are converting is there at artilery side properly 
+                        }
+                      
+                      }
+                      else {
+                          return newStr;
+                      }
+                      })
+              }
+             
+        }
         // Request to add symbols for live data
         const request = {    // this is another or the main request originating configuration setting that needs change every month expiry change 
             method: 'addsymbol',
-            symbols: /*['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
+            symbols:  fetchNonExpiredSymbols/*['NIFTY 50', 'NIFTY25100724100CE', 'NIFTY25100724100PE' , 'NIFTY25100724200PE', 'NIFTY25100724200PE', 
                 'NIFTY25100724300CE' , 'NIFTY25100724300PE','NIFTY25100724400CE' , 'NIFTY25100724400PE',
             'NIFTY25100724500CE' , 'NIFTY25100724500PE','NIFTY25100724600CE' , 'NIFTY25100724600PE' ,
-            'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE']*/
+            'NIFTY25100724700CE' , 'NIFTY25100724700PE','NIFTY25100724800PE' , 'NIFTY25100724800CE']
            [
-    'NIFTY 50',          'NIFTY25D1625600CE',
-    'NIFTY25D1625600PE', 'NIFTY25D1625700CE',
-    'NIFTY25D1625700PE', 'NIFTY25D1625800PE',
-    'NIFTY25D1625800CE', 'NIFTY25D1625900CE',
-    'NIFTY25D1625900PE',    'NIFTY25D1626000CE', 'NIFTY25D1626000PE',
-      'NIFTY25D1626100CE', 'NIFTY25D1626100PE',
-      'NIFTY25D1626200CE', 'NIFTY25D1626200PE',
+              'NIFTY 50',          'NIFTY25D1625600CE',
+              'NIFTY25D1625600PE', 'NIFTY25D1625700CE',
+              'NIFTY25D1625700PE', 'NIFTY25D1625800PE',
+              'NIFTY25D1625800CE', 'NIFTY25D1625900CE',
+              'NIFTY25D1625900PE',    'NIFTY25D1626000CE', 'NIFTY25D1626000PE',
+                'NIFTY25D1626100CE', 'NIFTY25D1626100PE',
+                'NIFTY25D1626200CE', 'NIFTY25D1626200PE',
 
- 
-    'NIFTY25D2325600CE',
-    'NIFTY25D2325600PE', 'NIFTY25D2325700CE',
-    'NIFTY25D2325700PE', 'NIFTY25D2325800CE',
-    'NIFTY25D2325800PE', 'NIFTY25D2325900CE',
-    'NIFTY25D2325900PE' ,   'NIFTY25D2326000CE', 'NIFTY25D2326000PE',
-      'NIFTY25D2326100CE', 'NIFTY25D2326100PE',
-     'NIFTY25D2326200CE', 'NIFTY25D2326200PE' 
-  ]
+          
+              'NIFTY25D2325600CE',
+              'NIFTY25D2325600PE', 'NIFTY25D2325700CE',
+              'NIFTY25D2325700PE', 'NIFTY25D2325800CE',
+              'NIFTY25D2325800PE', 'NIFTY25D2325900CE',
+              'NIFTY25D2325900PE' ,   'NIFTY25D2326000CE', 'NIFTY25D2326000PE',
+                'NIFTY25D2326100CE', 'NIFTY25D2326100PE',
+              'NIFTY25D2326200CE', 'NIFTY25D2326200PE' 
+            ]*/
         };
         return request;
          };
@@ -248,7 +290,8 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                     }
                     else  {  
-                        console.log("optionsMap is not a Map.")
+                      // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                       // console.log("optionsMap is not a Map.")
                     }
                 }
 
@@ -265,7 +308,9 @@ export function useWebSocketStreamSeq(url, dispatch) {
                 } 
                 if (strikeMapSymbol !==null && strikeMapSymbol !== undefined){           // strikeMapSymbol set inside getOptionsFromResponse above code 
                       if (response.trade !==null && response.trade !== undefined){
-                         console.log(` response trade `);
+                         // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                      //  console.log(` response trade `);
+
                             let temp  =stateOptionMap !==undefined && Array.isArray(stateOptionMap) && 
                                         stateOptionMap.length > 0 ? stateOptionMap: [];         // check the stateOptionMap i.e. state.websocket.symbols or set temp empty arry
                             let s= response.trade; // this is each trade being received from when artilery starts streaming or generating trades i.e stream INDICES strike prices
@@ -281,7 +326,8 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                             ask: s[6],
                                             volume: s[3],
                                         }
-                              console.log(` trade  sym  ${JSON.stringify(sym)}`);  
+                                        // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                            //  console.log(` trade  sym  ${JSON.stringify(sym)}`);  
                              
                              
                             // 1. Create a single Map from the existing symbols for efficient lookups. Array.from(options.entries())
@@ -311,7 +357,8 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                                     }
                                                     if(sym["id"] !==undefined){
                                                            if(sym["id"] === kt){
-                                                             console.log(`kt  ${kt}:  indexActual  ${indexActual}`) 
+                                                            // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                                           //  console.log(`kt  ${kt}:  indexActual  ${indexActual}`) 
                                                               symbolsMap.set(indexActual , sym);  
 
                                                            }
@@ -378,7 +425,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                                 }
                                 else {
-                                   console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 364 `);
+                              //     console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 364 `);
                                   let t = {
                                 ...value,
                                 strike: 'NIFTY-50',
@@ -410,10 +457,30 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                             // Step 1: filter only NIFTY records
                             const niftyRecords = symbolsStrikeWiseMap.filter(item => item.strike.startsWith("NIFTY"));
+                                 let  niftyFiftyRecords = symbolsStrikeWiseMap.filter(item => item.strike.startsWith("NIFTY-50"));
+                             niftyFiftyRecords = [];
+                            let niftyOptionRecords = [];
+                            let otherRecords = [];
 
+                            for (const item of symbolsStrikeWiseMap) {
+                              if (!item?.strike) continue;
+
+                              if (item.strike === "NIFTY-50") {
+                                niftyFiftyRecords.push(item);
+                              } else if (item.strike.startsWith("NIFTY")) {
+                                niftyOptionRecords.push(item);
+                              } else {
+                                otherRecords.push(item);
+                              }
+                            }      
+                            niftyOptionRecords = symbolsStrikeWiseMap.filter(
+                                  item => item.strike.startsWith("NIFTY") && item.strike !== "NIFTY-50"
+                              );
+                           // console.log(` niftyFiftyRecords, ${JSON.stringify(niftyFiftyRecords)} `)
+                          //  console.log(` niftyOptionRecords, ${JSON.stringify(niftyOptionRecords)} `)
                          //   console.log(` niftyRecords, ${JSON.stringify(niftyRecords)} `)
                           const niftyMap = new Map(
-                                niftyRecords
+                                niftyOptionRecords
                                    
                                     .map(item => [
                                     item.strike, 
@@ -442,7 +509,10 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                                 for (const elem of data) {
                                   let nindex = elem[0];
-                                  if( nindex ==="NIFTY-50"){ console.log("NIFTY stikes :", elem);  }
+                                  if( nindex ==="NIFTY-50"){ 
+                                    // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                  //console.log("NIFTY stikes :", elem); 
+                                   }
                                  
                                 }
                               }
@@ -479,7 +549,33 @@ export function useWebSocketStreamSeq(url, dispatch) {
                             callBackStrikeMap(Array.from(niftyMap.entries()));
                             }// setStrikeMap(sortedNiftyMap);
                              stateSymbols =Array.from(sortedNiftyMap.entries())
-                           // console.log(` strikeMap, ${JSON.stringify(stateSymbols)} `)
+                             // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                                            // add last NIFTY-50 record (if exists)
+                            //
+                            let  strikeMapUniq = [];
+                                if (Array.isArray(niftyFiftyRecords) && niftyFiftyRecords.length > 0) {
+                                  strikeMapUniq.push(niftyFiftyRecords[niftyFiftyRecords.length - 1]);
+                                }
+
+                                // add all NIFTY option records
+                                if (Array.isArray(niftyOptionRecords) && niftyOptionRecords.length > 0) {
+                                  strikeMapUniq.push(...niftyOptionRecords);
+                                }
+                                 let strikeMapNext = 
+                                   Array.from(
+                                    new Map(
+                                      [
+                                        ...(niftyFiftyRecords?.length ? [niftyFiftyRecords.at(-1)] : []),
+                                        ...(niftyOptionRecords ?? [])
+                                      ].map(item => [item.strike, item])
+                                    ) .values() 
+                                );
+                                  const strikeConvertMap = new Map(
+                                    strikeMapNext.map(item => [item.strike, item])
+                                  );
+                                setStrikeMap(strikeConvertMap);
+                                setStrikeMap(new Map(strikeConvertMap));
+                               //console.log(` strikeMap, ${JSON.stringify(Array.from(strikeMap.entries()))} `)
 
 
 
@@ -608,7 +704,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
                                             ask: value[8],
                                             volume: value[11],
                                         }
-                                           console.log("NIFTY-50 type: SP as in SPOT set ");
+                                        //   console.log("NIFTY-50 type: SP as in SPOT set ");
                                     }
                                     else { 
                                       sym = {
@@ -771,7 +867,7 @@ export function useWebSocketStreamSeq(url, dispatch) {
 
                                 }
                                 else {
-                                   console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 717 `);
+                                //   console.log(`NITFY-50 SPOT set in useWebSocketStreamSeqSingle.js line 717 `);
                                   let t = {
                                 ...value,
                                 strike: 'NIFTY-50',

@@ -98,24 +98,27 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
                 /* for faster rendering */
               
                  positionData.forEach(row => {
-                                 console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
+                  // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                         //        console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
                                   let sty = row.symbol?.split(":");let custSy= undefined;
                                   if(Array.isArray(sty)){
                                     custSy = sty[1];
                                   } 
                                   if(custSy !==undefined){
-                                     console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
+                                    // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                    // console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
                                    let posLtpRow  = document.getElementById(`streamedLTP_${custSy}_${row.productType}`);
                                    let posUnrealisedRow  =  document.getElementById(`streamedUnrealized_${custSy}_${row["productType"]}`);
                                    if(posLtpRow !==null && posLtpRow !== undefined){ 
                                       posLtpRow.textContent = row.ltp;
-                                      console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
+                                      // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                      //console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
                                     }
                                     if(posUnrealisedRow !==null && posUnrealisedRow !== undefined){ 
                                       let actUnreal = (( parseInt(row.netQty) *  row.ltp ) -  parseInt(row.buyVal)) ;
                                       posUnrealisedRow.textContent = actUnreal;
-
-                                      console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
+                                     // COMMENTED PURPOSELY to reduce CONSOLE LOGS    
+                                     // console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
                                     }
                                    }
                                })

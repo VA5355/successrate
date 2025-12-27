@@ -1352,7 +1352,7 @@ router.get('/fyersplacebuyorder', async function (req,res) {
 
     let symbol = ''; let apikey = '';
 	let authcode =  global_auth_code;
-	let ltp =  '';let price ='';
+	let ltp =  '';let price ='';let qty = ''; let orderType="LIMIT"   , scheduled= "false"; 
 	if( req.query !== null && req.query !== undefined ){
 		console.log(" FYERS  fyersplacebuyorder QUERY PARAMS " +JSON.stringify(req.query))
 	/*	var queryJSON  = JSON.parse(JSON.stringify(req.query));
@@ -1369,8 +1369,10 @@ router.get('/fyersplacebuyorder', async function (req,res) {
 		  ltp= queryJSON['ltp'];
 		  qty= queryJSON['qty'];
 		  price= queryJSON['price'];
+		  orderType= queryJSON['orderType']  ;
+		   scheduled= queryJSON ['scheduled'] ;
 		// global_auth_code= auth_code;
-		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode}  price: ${price} qty:${qty} ltp:${ltp}`);
+		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode}  price: ${price} qty:${qty} ltp:${ltp}  orderType:${orderType}   , scheduled:${scheduled} `);
 
 	}
 	
@@ -1402,7 +1404,7 @@ router.get('/fyersplacebuyorder', async function (req,res) {
 						"qty":qty,
 						"type":1,
 						"side":1,
-						"productType":"MARGIN",
+						"productType":orderType,
 						"limitPrice":price,
 						"stopPrice":0,
 						"disclosedQty":0,
@@ -1495,7 +1497,7 @@ router.get('/fyersplacesellorder', async function (req,res) {
 
     let symbol = ''; let apikey = '';
 	let authcode =  global_auth_code;
-	let ltp =  ''; let price ='';
+	let ltp =  ''; let price =''; let qty = '';  let orderType="LIMIT"   , scheduled= "false"; 
 	if( req.query !== null && req.query !== undefined ){
 		console.log(" FYERS  fyersplacesellorder QUERY PARAMS " +JSON.stringify(req.query))
 		var queryJSON  = JSON.parse(JSON.stringify(req.query));
@@ -1505,8 +1507,10 @@ router.get('/fyersplacesellorder', async function (req,res) {
 		  ltp= queryJSON['ltp'];
 		  qty= queryJSON['qty'];
 		  price= queryJSON['price'];
+		   orderType= queryJSON['orderType']  ;
+		   scheduled= queryJSON ['scheduled'] ;
 		// global_auth_code= auth_code;
-		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode}  price: ${price} qty:${qty} ltp:${ltp}`);
+		 console.log(`symbol : ${symbol}  code : ${apikey}  auth_code:  ${authcode}  price: ${price} qty:${qty} ltp:${ltp}  orderType:${orderType}   , scheduled:${scheduled}  `);
 	}
 	
 	
@@ -1542,7 +1546,7 @@ router.get('/fyersplacesellorder', async function (req,res) {
 						"qty":qty,
 						"type":1,
 						"side":-1,
-						"productType":"MARGIN",
+						"productType":orderType,
 						"limitPrice":price,
 						"stopPrice":0,
 						"disclosedQty":0,
