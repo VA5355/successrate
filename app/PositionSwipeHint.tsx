@@ -26,7 +26,7 @@ export default function PositionSwipeHint() {
 {/* STEP 1 – Sliding Bricks */}
 <AnimatePresence>
   {step === 0 && (
-    <motion.div
+    <motion.div key="slide-options"
       initial="hidden"
       animate="visible"
       exit="exit"
@@ -43,8 +43,8 @@ export default function PositionSwipeHint() {
     >
       {indices.map((label, idx) => (
          <h2> 
-        <motion.div
-          key={label}
+        <motion.div key={`slide-options-${idx}`}
+         
           variants={{
             hidden: { x: 80, opacity: 0 },
             visible: { x: 0, opacity: 1 },
@@ -90,7 +90,7 @@ export default function PositionSwipeHint() {
 
             <AnimatePresence>
                 {step === 1 && (
-                    <motion.div
+                    <motion.div  key="profit-fade"
                     initial={{ opacity: 0, scale: 0.92 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
@@ -118,7 +118,7 @@ export default function PositionSwipeHint() {
    {/* STEP 3 – Hint Text */}
 <AnimatePresence>
   {step === 2 && (
-    <motion.div
+    <motion.div   key="hint-text"
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
