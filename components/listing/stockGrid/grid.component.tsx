@@ -139,7 +139,7 @@ const StockGrid = () => {
         <div> {/* sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-5  */}
             {/*<StockCard key={item.symbol} stock={item}/>*/}
 
-              <GridCards/>
+            {  ( ( tab === "Top Gainers") || (tab === "Top Losers" )  ?  <GridCards   /> : <></>) } 
             <div
                 className={handleCustomGridCols(tab)}>
                 {
