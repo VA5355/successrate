@@ -232,22 +232,27 @@ const sheet = {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="fixed inset-0 bg-black/40 z-50  sm:w-[220px] flex items-end sm:items-center justify-center"
+      className={`fixed inset-0 bg-black/40 z-50   ${mobileView ? "sm:w-[220px] sm:items-center " :"md:items-center"}  flex items-end justify-center`}
       onClick={() => setShowSymbolModal(false)}
     >
       {/* STOP click propagation */}
+      {/*          bg-white w-[220px] sm:w-[120px] 
+          rounded-t-xl sm:rounded-xl
+          p-3 shadow-xl
+          max-h-[80vh] overflow-y-auto
+      */}
       <motion.div
         variants={sheet}
         initial="hidden"
         animate="visible"
         exit="exit"
         onClick={(e) => e.stopPropagation()}
-        className="
-          bg-white w-[220px] sm:w-[120px] 
+        className={` 
+          bg-white    ${mobileView ? "w-[220px] sm:w-[120px] " :"md:w-[320px]"}
           rounded-t-xl sm:rounded-xl
           p-3 shadow-xl
           max-h-[80vh] overflow-y-auto
-        "
+         `}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
