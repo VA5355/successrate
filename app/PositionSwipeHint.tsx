@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import VroomSwipeButton from './VroomSwipeButton';
-
+import  './PositionSwipeHint.css'
 export default function PositionSwipeHint() {
   const [step, setStep] = useState(0);
     const indices = ["NIFTY", "SENSEX", "BANKNIFTY"];
@@ -10,7 +10,7 @@ export default function PositionSwipeHint() {
   useEffect(() => {
     const timers = [
       setTimeout(() => setStep(1), 6600),
-      setTimeout(() => setStep(2), 7600),
+      setTimeout(() => setStep(2), 7900),
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -20,53 +20,100 @@ export default function PositionSwipeHint() {
     <div className="relative mt-3 px-4 overflow-hidden">
       <div className="h-[254px] flex items-center justify-center">
 
+         {/* STEP 3 – Hint Text */}
+        <AnimatePresence>
+          {step === 2 && (
+            <motion.div   key="hint-text"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="mt-2 flex flex-col items-center text-center"
+            >
+              <div
+                className="
+                  leading-relaxed
+                  text-gray-600 dark:text-gray-400
+                  max-w-[560px] mt-4 mb-4 
+                "
+              >
+            <h2 className="text-black dark:text-white text-lg font-semibold mt-2 leading-snug">
+            Swiped positions?
+            <span
+              className="
+                bg-brandblue text-white text-lg font-semibold rounded-lg
+                px-2 py-1
+                block sm:inline-block
+                mt-2 sm:mt-0
+              "
+            >
+              Click Positions
+            </span>
+            </h2>   
+          </div>
+
+              <div
+                className="
+                  mt-0.5 text-[20px]
+                  text-gray-400
+                  max-w-[360px]
+                "
+              >
+              <h3 className="text-brandgreen text-xs font-semibold  ">  <button className="bg-brandgreenlight p-1 px-3  transition-all rounded-full mx-2 dark:bg-white"><p className="text-brandgreen text-xs font-semibold  "> </p>
+              Try with Fyers :: <span className="bg-brandblue p-1 px-2 text-white text-lg  rounded-lg">  FREE</span> </button></h3> 
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
 
 
-{/* STEP 1 – Sliding Bricks */}
-<AnimatePresence>
-  {step === 0 && (
-    <motion.div key="slide-options"
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      variants={{
-        hidden: {},
-        visible: {
-          transition: { staggerChildren: 0.15 }
-        },
-        exit: {
-          transition: { staggerChildren: 0.1, staggerDirection: -1 }
-        }
-      }}
-      className="flex items-center gap-2"
-    >
-      {indices.map((label, idx) => (
-         <h2  key={`slide-options-${idx+1}`} > 
-        <motion.div key={`slide-options-${idx}`}
-         
-          variants={{
-            hidden: { x: 80, opacity: 0 },
-            visible: { x: 0, opacity: 1 },
-            exit: { x: -80, opacity: 0 }
-          }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-          className="
-            bg-gray-100 dark:bg-gray-900
-            px-3 py-1.5
-            rounded-full
-            text-[21px] font-medium
-            whitespace-nowrap
-          "
-        >
-          {label}
-        </motion.div> </h2>
-      ))}
+          {/* STEP 1 – Sliding Bricks */}
+          <AnimatePresence>
+            {step === 0 && (
+              <motion.div key="slide-options"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={{
+                  hidden: {},
+                  visible: {
+                    transition: { staggerChildren: 0.15 }
+                  },
+                  exit: {
+                    transition: { staggerChildren: 0.1, staggerDirection: -1 }
+                  }
+                }}
+                className="flex items-center gap-2"
+              >
+                {indices.map((label, idx) => (
+                  <h2  key={`slide-options-${idx+1}`} > 
+                  <motion.div key={`slide-options-${idx}`}
+                  
+                    variants={{
+                      hidden: { x: 80, opacity: 0 },
+                      visible: { x: 0, opacity: 1 },
+                      exit: { x: -80, opacity: 0 }
+                    }}
+                    transition={{ duration: 0.45, ease: "easeOut" }}
+                    className="
+                      bg-gray-100 dark:bg-gray-900
+                      px-3 py-1.5
+                      rounded-full
+                      text-[21px] font-medium
+                      whitespace-nowrap
+                    "
+                  >
+                    {label}
+                  </motion.div> </h2>
+                ))}
 
-      <ChevronRight className="w-3 h-3 text-gray-400" />
-    </motion.div>
-  )}
-</AnimatePresence>
+   
+
+                <ChevronRight className="w-3 h-3 text-gray-400" />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
 
         {/* STEP 2 – Profit Fade
@@ -115,40 +162,7 @@ export default function PositionSwipeHint() {
 
       </div>
    <VroomSwipeButton onSwipe={() => {} }/>
-   {/* STEP 3 – Hint Text */}
-<AnimatePresence>
-  {step === 2 && (
-    <motion.div   key="hint-text"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="mt-2 flex flex-col items-center text-center"
-    >
-      <div
-        className="
-          leading-relaxed
-          text-gray-600 dark:text-gray-400
-          max-w-[560px] mt-4 mb-4 
-        "
-      >
-       <h2 className ="text-black dark:text-white text-lg font-semibold mt-2"> Swiped positions?   <span className="bg-brandblue p-1 px-2 text-white text-lg font-semibold  rounded-lg">Click Positions</span></h2>
-      </div>
-
-      <div
-        className="
-          mt-0.5 text-[20px]
-          text-gray-400
-          max-w-[360px]
-        "
-      >
-       <h3 className="text-brandgreen text-xs font-semibold  ">  <button className="bg-brandgreenlight p-1 px-3  transition-all rounded-full mx-2 dark:bg-white"><p className="text-brandgreen text-xs font-semibold  "> </p>
-       Try with Fyers :: <span className="bg-brandblue p-1 px-2 text-white text-lg  rounded-lg">  FREE</span> </button></h3> 
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
+ 
 
     </div>
   );

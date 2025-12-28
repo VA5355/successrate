@@ -18,7 +18,7 @@ import { savePositionBook } from '@/redux/slices/positionSlice';
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 import { CommonConstants } from '@/utils/constants';
 import StockCandleChart from "@/components/charts/StockCandleChart";
-import PositionSwipeHint from '@/app/PositionSwipeHint';
+import GridCards from '@/app/GridCards';
 
 const StockGrid = () => {
     const gainers = useSelector((state: GlobalState) => state.stock.gainers)
@@ -138,6 +138,8 @@ const StockGrid = () => {
     return (
         <div> {/* sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-5  */}
             {/*<StockCard key={item.symbol} stock={item}/>*/}
+
+              <GridCards/>
             <div
                 className={handleCustomGridCols(tab)}>
                 {
@@ -184,7 +186,7 @@ const StockGrid = () => {
                      ) :    <>    </> 
                 }
 
-                <PositionSwipeHint/>
+              
             {
                 loader ? <ScreenLoader/> : <h1 id="loadMore" onClick={() => fetchMoreData()}
                                                className=' text-black font-regular text-xl transition-all py-10 cursor-pointer p-2  dark:text-white flex items-center justify-center hover:mt-2'>Load
