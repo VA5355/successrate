@@ -24,6 +24,9 @@ import expirySymbols from "./OptionChainExpirySymbols";
 import expiryMonthSymbols from "./OptionChainMonthEndSymbols";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
+import {  Wifi } from "lucide-react";
+
+ 
 // Fyers Custom Format Exipry Table Mapper 
  const tableGlobalExipryMapper = new Map();
              // this is also a configuration setting for converting yymmdd to fyers specific yyMdd format 
@@ -105,9 +108,30 @@ const WebSocketContext = createContext(defaultContextValue);
 
 // 3. The Provider Component which holds the connection logic
  const WebSocketProvider = ({ children, url , wsInstance, dispatch,  openConnection}) => {
-       const [isConnected, setIsConnected] = useState(false);
+     const [isConnected, setIsConnected] = useState(false);
+      const [isConnecting, setIsConnecting] = useState(false);
        const [ optionsWebMap, setOptionsWebMap ]  = useState([]);
        const [ strikeWebMap, setStrikeWebMap ]  = useState([]);
+       const connectTimeoutRef = useRef(null);
+
+
+     const cancelConnection = () => {
+      console.log('[WS] Connection cancelled by user');
+
+      setIsConnecting(false);
+
+      // Clear timeout
+      if (connectTimeoutRef.current) {
+        clearTimeout(connectTimeoutRef.current);
+        connectTimeoutRef.current = null;
+      }
+
+      // Close socket if opening
+      if (wsInstance && wsInstance.readyState === WebSocket.CONNECTING) {
+        wsInstance.close();
+      }
+    };
+
       // const ws = useRef(null);
          // Function to set up the handlers on the external WebSocket instance
  const setupEventHandlers =   useCallback((currentWs , url , dispatch,setIsConnected, setOptMap , setStrikeMap) => {
@@ -119,6 +143,12 @@ const WebSocketContext = createContext(defaultContextValue);
             console.log('WebSocket connection opened.');
             let initialRequest =   onOpen();
             setIsConnected(true);
+            setIsConnecting(false); // ✅ HIDE MODAL
+             // ✅ clear timeout
+              if (connectTimeoutRef.current) {
+                clearTimeout(connectTimeoutRef.current);
+                connectTimeoutRef.current = null;
+              }
               // Initial subscription request (like your original onOpen logic)
            /* const initialRequest = {
                 method: 'addsymbol',
@@ -135,9 +165,19 @@ const WebSocketContext = createContext(defaultContextValue);
         currentWs.onclose = () => {
             console.log('WebSocket connection closed.');
             setIsConnected(false);
+             setIsConnecting(false);
+               if (connectTimeoutRef.current) {
+                clearTimeout(connectTimeoutRef.current);
+                connectTimeoutRef.current = null;
+              }
         };
          currentWs.onerror = (error) => {
             console.error('WebSocket Error:', error);
+             setIsConnecting(false); // ❌ FAILED
+              if (connectTimeoutRef.current) {
+              clearTimeout(connectTimeoutRef.current);
+              connectTimeoutRef.current = null;
+            }
         };
     }, []); // setupEventHandlers is stable as it has no external dependencies
      // Initial connection logic (runs once on mount)
@@ -172,6 +212,12 @@ const WebSocketContext = createContext(defaultContextValue);
     const openSubscriptionRequest = useCallback(() => {
         if (typeof openConnection === 'function') {
             console.log('[WS] Triggering external connection attempt...');
+             setIsConnecting(true);          // 🔥 SHOW MODAL
+                // 🔒 Safety timeout (8 seconds)
+            connectTimeoutRef.current = setTimeout(() => {
+              console.warn('[WS] Connection timeout');
+              setIsConnecting(false);
+            }, 8000);
             openConnection();
         } else {
             console.error('openConnection function was not provided to WebSocketProvider as a prop.');
@@ -218,6 +264,54 @@ const WebSocketContext = createContext(defaultContextValue);
     };
      return (
         <WebSocketContext.Provider value={contextValue}>
+            <AnimatePresence>
+                {isConnecting && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center"
+                  >
+                    <motion.div
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.9, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                      className="
+                        bg-white rounded-xl px-6 py-5
+                        flex flex-col items-center gap-3
+                        shadow-xl w-[260px]
+                      "
+                    >
+                      <div className="relative">
+                        <Wifi className="w-8 h-8 text-brandgreen" />
+                        <Loader2 className="w-8 h-8 absolute inset-0 animate-spin text-brandgreen/70" />
+                      </div>
+
+                      <p className="text-sm font-semibold text-gray-700">
+                        Connecting…
+                      </p>
+
+                      <p className="text-xs text-gray-500 text-center">
+                        Establishing real-time market feed
+                      </p>
+                      <button
+                        onClick={cancelConnection}
+                        className="
+                          mt-3 w-full py-1.5 rounded-md
+                          text-sm font-medium
+                          bg-gray-100 text-gray-600
+                          hover:bg-gray-200 transition
+                        "
+                      >
+                        Cancel
+                      </button>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+
             {children}
         </WebSocketContext.Provider>
     );
