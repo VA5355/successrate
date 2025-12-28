@@ -7,14 +7,20 @@ import { ToggleLeft, Activity } from 'lucide-react';
 import {useDispatch, useSelector} from 'react-redux';
 import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
-import './buttonOverride.css'; 
+import { motion, AnimatePresence } from "framer-motion";
+import { X, CheckCircle, Minus, Plus } from "lucide-react";
 
-const SellPlus2Order = ({sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold }) => {
+import './buttonOverride.css'; 
+import './SellPlus2Order.css'; 
+
+
+const SellPlus2Order = ({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold }) => {
   const dispatch = useDispatch();
   const hasMounted = useRef(true);
  const [positionQty  ,setPositionQty ] = useState(() => boughtQty -qtySold ) ; //Number(tradeSet.qty);
   const [positionPrice, setPositionPrice ]= useState(symAvgPrice) ;  // Number(tradeSet.price);
   const [positionSymbol, setPositionSymbol ]= useState(sellPlusSymbol) ;  // Number(tradeSet.price);
+   const [mobileView, setMobileView ]= useState(isMobile) ;  // boolean;
   const [showSymbolModal, setShowSymbolModal] = useState(false);
    const [selectedSymbol, setSelectedSymbol] = useState(null);
  const [ symbolArray,setSymbolArray ] = useState([]);
@@ -155,6 +161,20 @@ const handlePositionPriceOff = (gold)=> {
     
 }
 const handlePositionPrice = (e) => {
+  const minPrice = (symAvgPrice ?? 0) + 2;
+
+  let value = parseFloat(e.target.value);
+  if (isNaN(value)) value = minPrice;
+
+  // Enforce minimum price
+  value = Math.max(value, minPrice);
+
+  // Round to nearest 0.5 (one decimal)
+  const finalValue = Math.round(value * 2) / 2;
+
+  setPositionPrice(finalValue);
+};
+/*const handlePositionPrice = (e) => {
      let value = parseFloat(e.target.value) >(symAvgPrice+2) ? parseFloat(e.target.value) :(symAvgPrice+2) || 0;
     value = Math.round(value * 100) / 100; // 2 decimals
 
@@ -172,14 +192,29 @@ const handlePositionPrice = (e) => {
 
     setPositionPrice(finalValue);
     //setPositionPrice(parseFloat(e.target.value) || 0)
-}
+} */
+  const backdrop = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const sheet = {
+  hidden: { y: "100%" },
+  visible: {
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 30 },
+  },
+  exit: { y: "100%" },
+};
+
+
 
 
   
     return (
      <>  {/*   onClick={() => {  setShowModal(true); handleToggle(); }}  */}
     <button id="SELLPLUS2ORDERBUTTONID"  onClick={() => {  setSellOrder(); }}
-     className="bg-brandgreen text-white text-xs px-2 py-1 rounded hover:bg-red-600"
+     className="bg-brandgreen text-white text-xs px-3 py-1.5 rounded-md hover:bg-red-600 active:scale-95 transition"
     > SELL +2
    {/*   {isStreaming ? (
         <Activity size={5} className=" animate-pulse " />
@@ -190,149 +225,138 @@ const handlePositionPrice = (e) => {
         {isPlaceStreaming ? 'Placing' : 'Place Order'}
       </span>*/}
     </button>
-    {showSymbolModal && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-4 w-[400px]">
-      <h2 className="text-lg font-semibold mb-3">Select Symbol to Sell</h2>
+      <AnimatePresence>
+  {showSymbolModal && (
+    <motion.div
+      variants={backdrop}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      className="fixed inset-0 bg-black/40 z-50  sm:w-[220px] flex items-end sm:items-center justify-center"
+      onClick={() => setShowSymbolModal(false)}
+    >
+      {/* STOP click propagation */}
+      <motion.div
+        variants={sheet}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        onClick={(e) => e.stopPropagation()}
+        className="
+          bg-white w-[220px] sm:w-[120px] 
+          rounded-t-xl sm:rounded-xl
+          p-3 shadow-xl
+          max-h-[80vh] overflow-y-auto
+        "
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-base font-semibold">
+            Select Symbol to Sell
+          </h2>
+          <button onClick={() => setShowSymbolModal(false)}>
+            <X className="ml-4 w-4 h-4 text-gray-500" />
+          </button>
+        </div>
 
-      {/* Horizontal scrollable container   ${
-                selectedSymbol === symbol
-                  ? "bg-brandgreenlight text-sm border-red-500"
-                  : "bg-brandgreen text-white border-gray-300"
-              } */}
-      <div className="flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400">
-        {symbolArray.map((symbol, idx) => (
-          <div
-            key={idx}
-            onClick={() => setSelectedSymbol(symbol)}
-            className={`flex items-center justify-between px-2 py-2 bg-brandgreenlight text-sm border-red-500 min-w-[280px] cursor-pointer rounded-lg border transition-all duration-200
-               `}
-          >
-            <span  className={`px-1 py-1 w-[150px] rounded text-white transition-colors duration-300 ${
-                    positionQty === 0
-                      ? "bg-brandgreen"
-                      : positionQty < (boughtQty - qtySold)  
-                      ? "bg-brandgreen"
-                      : "bg-brandgreen"
-                  }`}>{symbol}
-                  
-                     {/* Range Slider for Position Qty */}
+        {/* Symbols */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {symbolArray.map((symbol, idx) => {
+            const selected = selectedSymbol === symbol;
+
+            return (
+              <motion.div
+                key={idx}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setSelectedSymbol(symbol)}
+                className={`
+                  min-w-[220px] rounded-lg border p-2 cursor-pointer
+                   transition
+                  ${selected
+                    ? "border-brandgreen bg-brandgreen/10"
+                    : "border-gray-200"}
+                `}
+              >
+                {/* Symbol */}
+              <div className="font-medium text-xs mb-1 truncate">
+                    {symbol}
+              </div>
+
+                {/* Qty Slider */}
+                <div className="mb-1">
+                  <label className="text-[10px] text-gray-500">
+                    Qty
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    step="75"
+                    max={boughtQty - qtySold}
+                    value={selected ? positionQty : 0}
+                    onChange={(e) => setPositionQty(Number(e.target.value))}
+                    className="w-full h-1 accent-pink-600  mobile-margin-qty"
+                  />
+                  <div className={`text-[10px] ${mobileView ? "text-left" :"    text-right"}`}>
+                    {positionQty}
+                  </div>
+              </div>
+                  {/* Price Slider */}
+           <div className="mb-1">
+            <label className="text-[10px] text-gray-500">
+              Price
+            </label>
             <input
               type="range"
               min="0"
-              step="75"
-              max={boughtQty - qtySold}
-              className="w-13 h-1 rounded-lg   cursor-pointer bg-gray-300 accent-pink-600 
-                   
-                [&::-webkit-slider-thumb]:w-[2px]
-                [&::-webkit-slider-thumb]:h-9
-                [&::-webkit-slider-thumb]:bg-pink-600
-                [&::-webkit-slider-thumb]:cursor-pointer
-                [&::-webkit-slider-thumb]:rounded-none
-                [&::-webkit-slider-thumb]:hover:bg-pink-700
-                [&::-moz-range-thumb]:appearance-none
-                [&::-moz-range-thumb]:w-[2px]
-                [&::-moz-range-thumb]:h-9
-                [&::-moz-range-thumb]:bg-pink-600
-                [&::-moz-range-thumb]:cursor-pointer
-                [&::-moz-range-thumb]:rounded-none
-                [&::-moz-range-thumb]:hover:bg-pink-700
-                "
-              value={selectedSymbol === symbol ? positionQty : 0}
-              onChange={(e) => setPositionQty( e.target.value )}
+              step="2"
+              max={positionPrice * 3}
+              value={selected ? positionPrice : 0}
+              onChange={handlePositionPrice}
+              className="w-full h-1 accent-pink-600  mobile-margin-price"
             />
-                  </span>
+            <div className={`text-[10px] ${mobileView ? "text-left" :"    text-right"}`}>
+              ₹ {positionPrice}
+            </div>
+          </div>
 
-            {/* Position Qty 
-            <input
-              type="number"
-              min="0"
-              step="75"
-              max={boughtQty - qtySold}
-              className="w-16 px-2 py-1 border rounded text-black"
-              value={selectedSymbol === symbol ? positionQty : ""}
-              onChange={(e) => setPositionQty(e.target.value)
-               
-              }
-            />*/}
-
-           
-                          {/* Show current qty value className="text-sm text-gray-700 mt-1"*/}
-              <span className={`mx-4  py-1 w-[20px] rounded`}>
-                {positionQty}
-              </span>
-                            {/* Show current price */}
-              <span className={`mx-4 px-2 py-1 w-[60px] rounded   transition-colors duration-300  `}>
-                <input id="price"
-                type="range"
-                min="0"
-                step="2"   // moves in 0.10 increments (2 × 0.05)
-                max={positionPrice*3}
-                className=" w-[70px] h-1 rounded-lg  cursor-pointer bg-gray-300 accent-pink-600 
-                [&::-webkit-slider-thumb]:w-[2px]
-                [&::-webkit-slider-thumb]:h-9
-                [&::-webkit-slider-thumb]:bg-pink-600
-                [&::-webkit-slider-thumb]:cursor-pointer
-                [&::-webkit-slider-thumb]:rounded-none
-                [&::-webkit-slider-thumb]:hover:bg-pink-700
-                [&::-moz-range-thumb]:appearance-none
-                [&::-moz-range-thumb]:w-[2px]
-                [&::-moz-range-thumb]:h-9
-                [&::-moz-range-thumb]:bg-pink-600
-                [&::-moz-range-thumb]:cursor-pointer
-                [&::-moz-range-thumb]:rounded-none
-                [&::-moz-range-thumb]:hover:bg-pink-700
-                "
-                value={selectedSymbol === symbol ? positionPrice : 0}
-                onChange={(e) => handlePositionPrice( e )}
-                />
-
-                {  positionPrice }
-              </span>
-
-            {/* Position Price 
-            <input
-              type="number"
-              min="0"
-              step="0.05"
-              className="w-20 px-2 py-1 border rounded text-black"
-              value={selectedSymbol === symbol ? positionPrice : ""}
-              onChange={(e) => handlePositionPrice(e)}
-            />*/}
-
-            {/* Tick mark + SELL button */}
-            {selectedSymbol === symbol && (
-              <div className="flex items-center gap-2">
-                {/*<span className="text-sm font-bold">✓</span> */}
-                <button
-                  className={`mx-2 px-1 py-1 text-sm rounded font-semibold ${
-                    positionQty >= 75 && positionPrice >= 0
-                      ? "bg-brandgreen text-white hover:bg-red-600"
-                      : "bg-brandgreenlight text-gray-600 cursor-not-allowed"
-                  }`}
+                {/* Sell Button */}
+                {selected && (
+                  <button
                   disabled={!(positionQty >= 75 && positionPrice >= 0)}
-                  onClick={() => dispatchSellSelected()}
+                  onClick={dispatchSellSelected}
+                  className={` 
+                    w-full mt-1 flex items-center justify-center gap-1
+                    px-2 py-1.5 rounded-md text-xs font-semibold
+                    transition
+                    ${
+                      positionQty >= 75
+                        ? "bg-brandgreen text-white hover:bg-red-600"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    }
+                  `}
                 >
+                  <CheckCircle className="w-3.5 h-3.5" />
                   Sell
                 </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
 
-      {/* Cancel button at bottom */}
-          <div className="mt-2 flex justify-end">
-            <button
-              className="px-2 py-2 text-sm font-semibold rounded bg-gray-300 hover:bg-gray-400"
-              onClick={() => setShowSymbolModal(false)} // closes dialog
-            >
-              Cancel
-            </button>
-          </div>
-       </div>
-       </div>
-   )}
+        {/* Footer */}
+      <div className="mt-3">
+        <button
+          onClick={() => setShowSymbolModal(false)}
+          className="w-full py-1.5 rounded-lg bg-gray-200 text-xs font-semibold"
+        >
+          Cancel
+        </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
      
    </>

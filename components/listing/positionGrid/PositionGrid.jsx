@@ -536,8 +536,8 @@ const handleSymbolClickOld = (symbol) => {
         setSellPlusSymbol(symbol);
         setNetBought(netBought);
         setSymbolAvgPrice(costPrice);
-      let rect = event.target.getBoundingClientRect() !==undefined ? event.target.getBoundingClientRect(): {right :120, top :340} ;
-    let tableRect = tableRef.current.getBoundingClientRect() !==undefined ? tableRef.current.getBoundingClientRect(): {right :20, top :440} ;
+      let rect = event?.target?.getBoundingClientRect() !==undefined ? event?.target?.getBoundingClientRect(): {right :120, top :340} ;
+    let tableRect = tableRef.current?.getBoundingClientRect() !==undefined ? tableRef.current.getBoundingClientRect(): {right :20, top :440} ;
         //  tableRef.current.getBoundingClientRect(); 
     console.log("handleSymbol Click "+JSON.stringify(rect)+ " "+JSON.stringify(tableRect));
     /*setTooltipData({
@@ -1321,7 +1321,7 @@ const getSortIndicator = (column) =>
               SELL +2
               
             </button>*/} 
-            <SellPlus2Order sellPlusSymbol= {sellPlusSymbol} symAvgPrice={symbolAvgPrice} boughtQty={netBought}  qtySold={symbolSoldQty} />
+            <SellPlus2Order  isMobile ={  isMobile} sellPlusSymbol= {sellPlusSymbol} symAvgPrice={symbolAvgPrice} boughtQty={netBought}  qtySold={symbolSoldQty} />
             <button className="bg-brandgreen text-white text-xs px-2 py-1 rounded hover:bg-red-600">
               SELL +5
             </button>

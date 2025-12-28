@@ -11,12 +11,37 @@ import { updateOrderBook } from "@/redux/slices/tickerSlice";
  import   useIsMobile   from "../tradeGrid/useIsMobile";
  import './quickOrderBookstyles.css'; // ✅ No 'quickOrderBookstyles.'
 
+
+function useOrientation() {
+  const [isLandscape, setIsLandscape] = React.useState(
+    window.matchMedia("(orientation: landscape)").matches
+  );
+
+  React.useEffect(() => {
+    const mq = window.matchMedia("(orientation: landscape)");
+    const handler = (e) => setIsLandscape(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  return isLandscape;
+}
+
+
 export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrderPoll,
     
     parseStoreUtilsOrder,fetchOrdersBookDataCacheKey,setOrderGlobalPoll ,setUserLogged,setParsedDataP,userLogged,
     handleSortP, getSortIndicatorP, handleCancelP }) {
+
+
+      const isLandscape = useOrientation();
+
   const [activeTab, setActiveTab] = useState ("normal");
      const isMobile = useIsMobile();
+
+     const isMobileLandscape = isMobile && isLandscape;
+
+
      const [parsedData, setParsedData] = useState(() =>{ 
           // JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data); 
             let g = JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data);
@@ -182,6 +207,7 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
 useEffect(() => {    // BAASED ON the POLL ORDER's BUTTON in PARENT POSITION GRID (TOGGLED to TRUE ) this EFFECT wILL TRIGGER 
 
   const res = StorageUtils._retrieve(CommonConstants.fyersToken);
+
   if (res.isValid && res.data !== null && res.data !== undefined ) {   // CHECK FOR                   ----> USER LOGGED IN 
       
       let auth_code = res.data['auth_code'];
@@ -1015,6 +1041,51 @@ const callBackEventSource = (eventOrderData) => {
         )}
       </div>
       </>);
+
+  const renderCompactGrid = (data) => (
+  <>
+    <div className="grid grid-cols-[minmax(120px,1fr)_40px_50px_50px_60px]
+                    bg-gray-100 text-gray-700 text-[11px] font-semibold border-b">
+      <div className="px-1">Inst</div>
+      <div className="px-1 text-center">✕</div>
+      <div className="px-1 text-right">Qty</div>
+      <div className="px-1 text-right">Avg</div>
+      <div className="px-1 text-right">LTP</div>
+    </div>
+
+    <div className="max-h-[140px] overflow-y-auto">
+      {data.map((row, idx) => (
+        <div
+          key={idx}
+          className={`grid grid-cols-[minmax(120px,1fr)_40px_50px_50px_60px]
+            text-[11px] items-center
+            ${idx % 2 ? "bg-gray-50" : "bg-white"}
+            ${(row.side === -1 || row.side === "-1")
+              ? "bg-red-100"
+              : "bg-green-100"}`}
+        >
+          <div className="px-1 truncate font-medium">
+            {row.symbol}
+          </div>
+
+          <button
+            className="text-center text-red-600"
+            onClick={() => handleCancel(row.id)}
+          >
+            ✕
+          </button>
+
+          <div className="px-1 text-right">{row.qty}</div>
+          <div className="px-1 text-right">{row.limitPrice}</div>
+          <div className="px-1 text-right">
+            {row.lp ?? "--"}
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+);
+
  const renderNormalFetchTable = (data) => ( <> {!isMobile &&  (
                <>
       <div className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
@@ -1176,10 +1247,15 @@ const callBackEventSource = (eventOrderData) => {
                 </button>
                 </div>
 
-                {/* Tab Content */}
-                {activeTab === "normal" &&  renderNormalFetchTable(sortedData)}
-               
-               {!isMobile && activeTab === "streaming" && ( <>
+                {/* Tab Content &&  renderNormalFetchTable(sortedData)*/}
+                {activeTab === "normal"  && (
+                                isMobileLandscape
+                                  ? renderCompactGrid(sortedData)
+                                  : renderNormalFetchTable(sortedData)
+                              ) }
+                {/* Tab Content !isMobile && activeTab === "streaming" &&*/}
+               {  activeTab === "streaming" && ( isMobileLandscape
+                        ? renderCompactGrid(computedSocketData) : !isMobile ? ( <>
                 {computedSocketData && computedSocketData.length > 0 ? ( <>
                    <div id="quickOrdersHeader" className="grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] bg-gray-100 text-gray-700 font-medium text-[11px] border-b border-gray-300">
                       <div
@@ -1256,9 +1332,9 @@ const callBackEventSource = (eventOrderData) => {
                     
                          }
               </>
-                )}   
-                {/* Mobile Card View */}
-            {isMobile && activeTab === "streaming" && (
+                )  :
+               
+           (
               <div className="grid gap-3 mt-3">
                 {computedSocketData.map((row, index) => (
                   <div
@@ -1287,7 +1363,7 @@ const callBackEventSource = (eventOrderData) => {
                   </div>
                 ))}
               </div>
-            )}
+            ))}
                
                 {/* can pass diff dataset renderTable(computedSocketData)*/}
                {/* </div> */}    

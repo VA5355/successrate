@@ -6,6 +6,59 @@ import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';  
  import   useIsMobile   from "../tradeGrid/useIsMobile";
+
+
+ import { motion } from "framer-motion";
+import { XCircle, Edit3 } from "lucide-react";
+
+
+const SWIPE_CLOSE = 80;   // swipe right
+const SWIPE_MODIFY = -80; // swipe left
+
+
+const SwipeableRow = ({
+  children,
+  onClose,
+  onModify,
+  isMobile
+}) => {
+
+  
+  return (
+    <div className={`relative  ${isMobile ? "overflow-hidden": "text-red-600"} `} >
+      {/* Background actions */}
+      <div className="absolute inset-0 flex justify-between items-center px-3">
+        <div className="flex items-center gap-1 text-green-600">
+          <Edit3 size={16} />
+          <span className="text-xs font-semibold">Modify</span>
+        </div>
+        <div className="flex items-center gap-1 text-red-600">
+          <span className="text-xs font-semibold">Close</span>
+          <XCircle size={16} />
+        </div>
+      </div>
+
+      {/* Foreground draggable row */}
+      <motion.div
+        drag="x"
+        dragConstraints={ isMobile ? { left: -120, right: 120 } : { left: -20, right: 30}}
+        dragElastic={0.2}
+        onDragEnd={(_, info) => {
+          if (info.offset.x > SWIPE_CLOSE) {
+            onClose();
+          } else if (info.offset.x < SWIPE_MODIFY) {
+            onModify();
+          }
+        }}
+        className="relative bg-white z-10"
+      >
+         {children}
+      
+      </motion.div>
+    </div>
+  );
+};
+
 const PositionsTabs = forwardRef(function PositionsTabs({
   sortedData, parsedData,
   sortedSocketData,
@@ -373,6 +426,17 @@ const callBackPositionFeedAction = (positionsFeed) => {
  
  };
 
+const handleClosePosition = (row,e) => {
+  console.log("Close position:", row.symbol);
+  
+   handleSymbolClick(e, row["symbol"], row["avgPrice"], row["netQty"])
+  // fire square-off / close API
+};
+
+const handleModifyPosition = (row) => {
+  console.log("Modify position:", row.symbol);
+  // open modify / add order panel
+};
 
 
   const renderNormalFetchTable = (data) => (<> {!isMobile && ( 
@@ -471,9 +535,9 @@ const callBackPositionFeedAction = (positionsFeed) => {
          
      }
            
-      {/* Mobile Card View */}
-      {isMobile &&   (
-        <div className="grid gap-3 mt-3">
+      {/* Mobile Card View */}   
+      {/*
+           <div className="grid gap-3 mt-3">
           {data && data.map((row, index) => (
             <div
               key={index}
@@ -495,14 +559,42 @@ const callBackPositionFeedAction = (positionsFeed) => {
               </div>
             </div>
           ))}
-           </div>
+           </div> */}
+      {isMobile &&   (<>  {data && data.map((row, index) => 
+            <div
+              key={index}
+              className="border rounded-xl p-3 shadow-sm bg-white"
+            ><SwipeableRow
+                            onClose={() => handleClosePosition(row)}
+                            onModify={() => handleModifyPosition(row)}
+                          >
+                             
+                              <div className="font-semibold">{row.symbol}</div>
+                              <div className="text-sm mt-2 space-y-1">
+                                <div>Avg Price: <strong>{row.avgPrice}</strong></div>
+                                <div>Qty: <strong>{row.netQty}</strong></div>
+                                <div>LTP: <strong>{row.ltp}</strong></div>
+                                <div>
+                                  P&L:
+                                  <strong className={row.unrealized_profit >= 0 ? "text-green-600" : "text-red-600"}>
+                                    {row.unrealized_profit}
+                                  </strong>
+                                </div>
+                              </div>  </SwipeableRow>
+                            </div>
+               )
+              
+              }  
+          </>
       )}
      </>
 
-  );
+  ); // 
   const renderTable = (data) => (<> {!isMobile && (
     <div className="overflow-x-auto w-full">
-      {/* Header row */}
+
+     
+      {/* Header row
       <div className="grid grid-cols-11 bg-gray-100 text-gray-700 font-semibold text-sm">
         <div className="py-1 px-1">SrNo</div>
         <div className="py-1 px-1 cursor-pointer" onClick={() => handleSort("symbol")}>
@@ -535,19 +627,62 @@ const callBackPositionFeedAction = (positionsFeed) => {
         <div className="py-1 px-1 cursor-pointer" onClick={() => handleSort("unrealized_profit")}>
           Unrealized {getSortIndicator("unrealized_profit")}
         </div>
-      </div>
+      </div> */}
 
-      {/* Body rows */}
-      <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200">
+      {/* Body rows 
+      <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200">*/}
+       
         {Array.isArray(data) && data.length > 0 && userLogged ? (
           data.map((row, index) => (
             <div
               key={index}
-              className={`grid grid-cols-11 text-sm text-gray-800 hover:bg-gray-50 transition ${
+              className={` text-sm text-gray-800 hover:bg-gray-50 transition ${
                 row["side"] === "-1" ? "position-row-sell" : "position-row-buy"
               }`}
             >
-              <div className="py-1 px-1">{index + 1}</div>
+                <SwipeableRow  isMobile={isMobile}   onClose={() => handleClosePosition(row)}   onModify={() => handleModifyPosition(row)}> 
+             <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200"> 
+               {!isMobile ? (   <div className="grid grid-cols-11" > 
+                                 <div className="py-1 px-1">{index + 1}</div>
+              <div
+                className="py-1 px-1 text-blue-700 font-bold cursor-pointer hover:underline"
+                onClick={ !isMobile ? (e) =>
+                  handleSymbolClick(e, row["symbol"], row["avgPrice"], row["netQty"]) : ( e)=> { handleClosePosition(row,e) }
+                }
+              >
+                {row["symbol"]}
+              </div>
+              <div className="py-1 px-1">{row["productType"]}</div>
+              <div className="py-1 px-1">{row["netQty"]}</div>
+              <div className="py-1 px-1">{row["avgPrice"]}</div>
+              <div className="py-1 px-1">{row["totCh"]}</div>
+              <div className="py-1 px-1">{row["ltp"]}</div>
+              <div
+                className={`py-1 px-1 ${
+                  row["realized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
+                }`}
+              >
+                {row["calPrf"]}
+              </div>
+              <div className="py-1 px-1">{row["buyVal"]}</div>
+              <div
+                className={`py-1 px-1 ${
+                  row["realized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
+                }`}
+              >
+                {row["realized_profit"]}
+              </div>
+              <div
+                className={`py-1 px-1 ${
+                  row["unrealized_profit"] <= 0 ? "position-row-sell" : "position-row-buy"
+                }`}
+              >
+                {row["unrealized_profit"]}
+              </div>
+                
+                  </div>) : <> 
+                  
+                     <div className="py-1 px-1">{index + 1}</div>
               <div
                 className="py-1 px-1 text-blue-700 font-bold cursor-pointer hover:underline"
                 onClick={(e) =>
@@ -583,6 +718,13 @@ const callBackPositionFeedAction = (positionsFeed) => {
               >
                 {row["unrealized_profit"]}
               </div>
+                  
+                  
+                  
+                    </>}
+             
+               </div>
+               </SwipeableRow>
             </div>
           ))
         ) : (
@@ -590,7 +732,11 @@ const callBackPositionFeedAction = (positionsFeed) => {
             No positions found
           </div>
         )}
-      </div>
+
+        
+     
+
+     
     </div>)
          
      }
@@ -604,6 +750,11 @@ const callBackPositionFeedAction = (positionsFeed) => {
               key={index}
               className="border rounded-xl p-3 shadow-sm bg-white"
             >
+              <SwipeableRow
+                            onClose={() => handleClosePosition(row)}
+                            onModify={() => handleModifyPosition(row)}
+                          >
+                             
               <div className="font-semibold">{row["symbol"]}</div>
               <div className="text-sm mt-2 space-y-1">
                 <div>Avg Price: <strong>{row["avgPrice"]}</strong></div>
@@ -618,6 +769,7 @@ const callBackPositionFeedAction = (positionsFeed) => {
                   </strong>
                 </div>
               </div>
+               </SwipeableRow>
             </div>
           ))}
            </div>
