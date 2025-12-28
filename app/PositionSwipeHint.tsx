@@ -42,7 +42,7 @@ export default function PositionSwipeHint() {
       className="flex items-center gap-2"
     >
       {indices.map((label, idx) => (
-         <h2> 
+         <h2  key={`slide-options-${idx+1}`} > 
         <motion.div key={`slide-options-${idx}`}
          
           variants={{
