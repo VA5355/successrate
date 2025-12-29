@@ -293,14 +293,19 @@ const [scheduled, setScheduled] = useState(false);
         className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm min-w-[220px] max-w-[640px] w-full"
       >
 
-                      {/* Order Options (Top Right) */}
-            <div className="absolute top-1 right-3 z-30 flex items-center gap-2">
-              
+            <div className="
+              absolute top-1 right-2 z-30
+              flex items-center gap-1  pt-[-2px]
+              scale-[0.9] sm:scale-100
+            ">
               {/* Limit / Margin Toggle */}
               <div className="flex rounded-full bg-zinc-100 p-0.5 shadow-inner">
                 <button
                   onClick={() => setOrderType("LIMIT")}
-                  className={`px-2 py-0.5 text-[10px] rounded-full transition
+                  className={`
+                    px-1.5 py-[1px]
+                    text-[9px] sm:text-[10px]
+                    rounded-full transition
                     ${orderType === "LIMIT"
                       ? "bg-indigo-600 text-white shadow"
                       : "text-zinc-600 hover:text-zinc-900"}
@@ -310,7 +315,10 @@ const [scheduled, setScheduled] = useState(false);
                 </button>
                 <button
                   onClick={() => setOrderType("MARGIN")}
-                  className={`px-2 py-0.5 text-[10px] rounded-full transition
+                  className={`
+                    px-1.5 py-[1px]
+                    text-[9px] sm:text-[10px]
+                    rounded-full transition
                     ${orderType === "MARGIN"
                       ? "bg-indigo-600 text-white shadow"
                       : "text-zinc-600 hover:text-zinc-900"}
@@ -321,12 +329,16 @@ const [scheduled, setScheduled] = useState(false);
               </div>
 
               {/* Scheduled Checkbox */}
-              <label className="flex items-center gap-1 text-[10px] text-zinc-600 cursor-pointer">
+              <label className="
+                flex items-center gap-0.5
+                text-[9px] sm:text-[10px]
+                text-zinc-600 cursor-pointer
+              ">
                 <input
                   type="checkbox"
                   checked={scheduled}
                   onChange={(e) => setScheduled(e.target.checked)}
-                  className="accent-indigo-600 scale-90"
+                  className="accent-indigo-600 scale-75 sm:scale-90"
                 />
                 Sched
               </label>
