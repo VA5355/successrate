@@ -232,7 +232,7 @@ const sheet = {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className={`fixed inset-0 bg-black/40 z-50   ${mobileView ? "sm:w-[220px] sm:items-center " :"md:items-center"}  flex items-end justify-center`}
+      className={`fixed inset-0 bg-black/40 z-50   ${mobileView ? "sm:w-[220px] sm:items-center mobile-modal-sellcard" :"md:items-center"}  flex items-end justify-center`}
       onClick={() => setShowSymbolModal(false)}
     >
       {/* STOP click propagation */}
