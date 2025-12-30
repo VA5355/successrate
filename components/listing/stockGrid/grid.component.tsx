@@ -31,14 +31,46 @@ const StockGrid = () => {
     const dispatch = useAppDispatch()
     const loader = useSelector((state: GlobalState) => state.misc.loader)
     const [positionOneFetch ,setPositionOneFetch ]= useState((  StorageUtils._retrieve(CommonConstants.fetchPositions).data ===  false  ? 1:0 )  );
-
+    const [tickSym , setTickSym] = useState("")
     const selected = useSelector(
         (state: GlobalState) => state.stock.selectedCard
     );
-    const symbol =
+
+      const rawTicker = selected?.ticker;
+  const ticker =
+  typeof rawTicker === "string"
+    ? rawTicker
+    : rawTicker?.symbol; // <-- adjust if needed
+
+  /*  const symbol =
     selected?.ticker?.includes(":")
       ? selected.ticker.split(":")[1].replace("-EQ", "")
-      : selected?.ticker;
+      : selected?.ticker; */
+      const symbol =
+  typeof ticker === "string" && ticker.includes(":")
+    ? ticker.split(":")[1].replace("-EQ", "")
+    : ticker;
+
+    setTimeout(() => {
+            //setIsDisplayed(true);
+            let tickerValue ="";
+            console.log( "typeof(symbol)  " + typeof(symbol)+ 
+            " symbol  "+symbol); 
+            console.log( "typeof(selected.ticker)  " + typeof(selected.ticker)+ 
+            "selected.ticker "+selected.ticker);   
+            if(typeof(selected.ticker) == 'object'){
+                    if (Array.isArray(selected?.ticker)) {
+            tickerValue = selected.ticker[1]; // ✅ first element
+            } 
+            else if (typeof selected?.ticker === "object" && selected?.ticker !== null) {
+            tickerValue = Object.values(selected.ticker)[1] as string; // ✅ first property value
+            }
+            console.log( "tickerValue " + tickerValue)
+            setTickSym(tickerValue);
+            }
+                
+    
+    } , 1200)
 
     const fetchMoreData = async () => {
         dispatch(fetchMoreStocks(gainers, losers, activelyTraded))
@@ -137,16 +169,16 @@ const StockGrid = () => {
     }
     return (
         <div> {/* sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-5  */}
-            {/*<StockCard key={item.symbol} stock={item}/>*/}
+            {/*<StockCard key={item.symbol} stock={item}/>*/} {/* <StockCard key={item.symbol ?? index} stock={item}/> */}
 
             {  ( ( tab === "Top Gainers") || (tab === "Top Losers" )  ?  <GridCards   /> : <></>) } 
             <div
                 className={handleCustomGridCols(tab)}>
                 {
-                    tab === "Top Gainers" ? gainers.map((item: any) => {
-                        return <StockCard key={item.symbol} stock={item}/>
-                    }) : tab === "Top Losers" ? losers.map((item: any) => {
-                        return <StockCard key={item.symbol} stock={item}/>  
+                    tab === "Top Gainers" ? gainers.map((item: any , index: number ) => {
+                        return  ( <> </>) 
+                    }) : tab === "Top Losers" ? losers.map((item: any , index: number ) => {
+                        return (<> </>)
                     }) :  tab === "Top Traders" ?   (  
                         
                          <TradeGridPlotterPDFCSV tradeDataB={tradeData} />
@@ -160,8 +192,8 @@ const StockGrid = () => {
             </div>
               {
                     tab === "Top Gainers" ? (  
-                    <div className="space-y-6 px-6 ml-[88px]">
-                                {/* Other content 
+                    <div className="space-y-6 px-6 pt-[10px] ml-[88px]">
+                                {/* Other content selected?.ticker
 
                                 {symbol ? (
                                     <StockCandleChart symbol={symbol} />
@@ -170,12 +202,15 @@ const StockGrid = () => {
                                     Select a stock to view chart
                                     </div>
                                 )}*/} 
-                        {selected?.ticker && (
-                            <StockCandleChart
+                        {selected?.ticker && (    <StockCandleChart
                                 key={selected.ticker}   
-                                symbol={selected.ticker}
-                            />
-                                  )}
+                                symbol={tickSym}
+                            /> )
+
+                            
+                                  }
+                            
+                                  
 
                     </div>
 

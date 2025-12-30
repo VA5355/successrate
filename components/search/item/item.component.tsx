@@ -142,8 +142,11 @@ const SearchCard = ({ item, onSelect }: any) => {
                     if( item !==undefined){
                        if (!data.length) {
                           let stock =  data["2. symbol"];
-                          let ticker = stock;
+                          let ticker = stock ;///==="IBM" ? sy :"";
+                            ticker  = sy;
+                            ticker  = sy;
                            StorageUtils._save (CommonConstants.companyDataCacheKey,data);
+                             StorageUtils._save (CommonConstants.companySymbolStockChart,sy);
                           // this will allow the 
                           //  const dataFromCache = StorageUtils._retrieve(CommonConstants.companyDataCacheKey)
                           // to retrive properly when router hits `/company/${ticker}`
@@ -168,6 +171,7 @@ const SearchCard = ({ item, onSelect }: any) => {
                             let ticker = stock["2. Symbol"];
                             if(ticker !== undefined){
                              console.log( "stock "+JSON.stringify(stock))
+                                ticker = sy;
                              console.log( "ticker "+JSON.stringify(ticker))
                              console.log( "{ ...stock, ticker:ticker } "+JSON.stringify({ ...stock, ticker:ticker }))
                              StorageUtils._save (CommonConstants.companyDataCacheKey,data);

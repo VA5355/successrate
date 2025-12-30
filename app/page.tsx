@@ -18,10 +18,20 @@ export default function Home() {
     const selected = useSelector(
     (state: GlobalState) => state.stock.selectedCard
   );
-    const symbol =
+  const rawTicker = selected?.ticker;
+  const ticker =
+  typeof rawTicker === "string"
+    ? rawTicker
+    : rawTicker?.symbol; // <-- adjust if needed
+
+  /*  const symbol =
     selected?.ticker?.includes(":")
       ? selected.ticker.split(":")[1].replace("-EQ", "")
-      : selected?.ticker;
+      : selected?.ticker; */
+      const symbol =
+  typeof ticker === "string" && ticker.includes(":")
+    ? ticker.split(":")[1].replace("-EQ", "")
+    : ticker;
 
   return (
     <div className={`${isDarkMode ? 'dark' : ''}`}>
