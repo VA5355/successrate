@@ -5,11 +5,26 @@ import {
   ChevronDown, 
 
   RefreshCw, 
-  Layers, 
-  TrendingUp, 
+ 
+ 
   Zap 
 } from 'lucide-react';
 import { ToggleLeft, Activity } from 'lucide-react';
+
+import { 
+  ArrowUpDown, 
+  ArrowUp, 
+  ArrowDown, 
+  Clock, 
+  Hash, 
+  Layers, 
+  DollarSign, 
+ 
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Search
+} from 'lucide-react';
 import { CommonConstants } from "@/utils/constants";
 import { StorageUtils } from "@/libs/cache";
 import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
@@ -56,8 +71,8 @@ const [exportError, setExportError] = useState(null); // string | null
    const [colorSENSEXClass, setColorSENSEXClass] = useState("bg-gray-100 text-black");
             const [colorNIFTYClass, setColorNIFTYClass] = useState("bg-gray-100 text-black");
           const [colorBankNIFTYClass, setColorBankNIFTYClass] = useState("bg-gray-100 text-black");
-
-
+    const [searchTerm, setSearchTerm] = useState("");
+   const [sortConfig, setSortConfig] = useState({ key: 'orderDateTime', direction: 'desc' });
 
   function parseDate(str) {
     // e.g., "14-Jul-2025 09:48:22"
@@ -78,6 +93,14 @@ const [exportError, setExportError] = useState(null); // string | null
       setSortDirection("asc");
     }
   };
+    const handleSortNew = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
  const sortedData = useMemo(() => {
   if (!userLogged) return parsedData;
   if (!sortColumn) return parsedData;
@@ -112,6 +135,38 @@ const [exportError, setExportError] = useState(null); // string | null
       : String(valB).localeCompare(String(valA));
   });
 }, [parsedData, sortColumn, sortDirection]);
+
+  const sortedDataNew = useMemo(() => {
+     if (!userLogged) return parsedData;
+  if (!sortColumn) return parsedData;
+
+    let items = [...parsedData];
+    if (searchTerm) {
+      items = items.filter(i => i.symbol.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    return items.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [parsedData, sortConfig, searchTerm]);
+
+    const getSortIndicatorNew = (key) => {
+    if (sortConfig.key !== key) return <ArrowUpDown size={12} className="opacity-30" />;
+    return sortConfig.direction === 'asc' ? <ArrowUp size={12} className="text-blue-500" /> : <ArrowDown size={12} className="text-blue-500" />;
+  };
+
+
+
+
+  // Mock Data
+  const [dataMock] = useState([
+    { symbol: 'AAPL', productType: 'CNC', tradedQty: 50, tradePrice: 175.20, orderDateTime: '10:15:22', tradeValue: 8760.00, side: '1' },
+    { symbol: 'TSLA', productType: 'MIS', tradedQty: 10, tradePrice: 242.50, orderDateTime: '10:18:05', tradeValue: 2425.00, side: '-1' },
+    { symbol: 'BTC/USD', productType: 'NRML', tradedQty: 0.05, tradePrice: 42500.00, orderDateTime: '09:45:12', tradeValue: 2125.00, side: '1' },
+    { symbol: 'MSFT', productType: 'CNC', tradedQty: 25, tradePrice: 380.10, orderDateTime: '11:02:45', tradeValue: 9502.50, side: '-1' },
+    { symbol: 'RELIANCE', productType: 'MIS', tradedQty: 100, tradePrice: 2540.00, orderDateTime: '11:20:30', tradeValue: 254000.00, side: '1' },
+  ]);
 
 const getSortIndicator = (column) =>
     sortColumn === column ? (sortDirection === "asc" ? " ▲" : " ▼") : "";
@@ -346,7 +401,37 @@ const handleExportCSV = async () => {
     setExporting(null);
   }
 };
+const refreshTrades =  (event ) => {  
 
+   console.log("Refersh   called ")
+     let freshTrade =   setTimeout( async () => { 
+        console.log("Refersh Trade book called ")
+      //TRIIGER the trade Book Fetch again 
+      dispatch(getTradeData('adfg'));
+    let redentTradeData =  StorageUtils._retrieve(CommonConstants.recentTradesKey)
+            const dataFromCache = StorageUtils._retrieve(CommonConstants.tradeDataCacheKey)
+            if( redentTradeData !== null && redentTradeData !==undefined){
+
+            }else {
+            console.log("trade data fro cahce ")
+            redentTradeData = dataFromCache;
+            }
+            console.log(" TradeGridPlotterPDFCSVbckp after login state.trade.tradeBook "+JSON.stringify(tradeData))
+        let tradeLocal  =   tradeData !== undefined? tradeData : redentTradeData;
+        if(tradeData !==undefined &&  Array.isArray(tradeData ) ){
+            setTrades( tradeData );
+              setParsedData(tradeData);
+        }
+        else if(redentTradeData.data !==undefined &&  Array.isArray(redentTradeData.data )) {
+        console.log("TradeGridPlotterPDFCSVbckp after login recenTrades  "+JSON.stringify(redentTradeData.data))
+            setTrades( redentTradeData.data );
+                setParsedData(redentTradeData.data );
+        }
+        clearInterval(freshTrade);
+      }   ,6000);
+
+
+}  
 
    /** Export PDF CSV  */
   return (
@@ -424,7 +509,7 @@ const handleExportCSV = async () => {
             <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
               <RefreshCw className="w-4 h-4" />
               
-              <span></span>
+              <span onClick={(e) => {  refreshTrades(e) } }>Refresh </span>
             </button>
           </div> 
         
@@ -454,46 +539,136 @@ const handleExportCSV = async () => {
 
  
 
-     {isMobile ? <MobileView sortedData={sortedData}
+    {/* } {isMobile ? <MobileView sortedData={sortedData}
       userLogged={userLogged}
       handleSort={handleSort}
       getSortIndicator={getSortIndicator}
        /> : 
-     (  
-     <div className="overflow-x-auto w-full">  
-    {/*  <table className="min-w-full text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden"> */} 
-         <div className="grid grid-cols-8 bg-gray-100 text-gray-700 font-semibold text-sm ">
-            <div className="py-1 px-2  cursor-pointer"  >SrNo </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("symbol")}>Instrument{getSortIndicator("symbol")} </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("productType")}>Product{getSortIndicator("productType")} </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("tradedQty")}>Quantity{getSortIndicator("tradedQty")} </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("tradePrice")}>Price{getSortIndicator("tradePrice")} </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("orderDateTime")}>Time{getSortIndicator("orderDateTime")} </div>
-            <div className="py-1 px-2  cursor-pointer" onClick={() => handleSort("tradeValue")}>Trade Value{getSortIndicator("tradeValue")} </div>
- 
-            <div className="py-1 px-2">Buy/Sell</div>
+     (  */}
+        
+            <div className="w-full max-w-6xl mx-auto p-4 md:p-6 bg-slate-50 min-h-screen">
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Trade Book</h1>
+          <p className="text-sm text-slate-500">View and manage your recent executions</p>
         </div>
-     
-   
-         {/* Table Body Rows  */}
-    <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-200">
-       {/*  Example Row  */}
-        { (Array.isArray(sortedData) &&  sortedData.length > 0 && userLogged  ) ? sortedData?.map((row, index) => (
-      <div key={index}  className={`grid grid-cols-8 text-sm text-gray-800 hover:bg-gray-50 hover:bg-gray-50 transition ${row['side'] === '-1' ? 'trade-row-sell' : 'trade-row-buy'}`} >
-        <div className="py-1 px-2 ">{index}</div>
-        <div className="py-1 px-2 text-center ">{row["symbol"]}</div>
-        <div className="py-1 px-2 text-center"> {row["productType"]}  </div>
-        <div className="py-1 px-2 text-center">{row["tradedQty"]}</div>
-        <div className="py-1 px-2 text-center">{row["tradePrice"]}</div>
-        <div className="py-1 px-2 ">{row["orderDateTime"]}</div>
-        <div className="py-1 px-2 text-center">{row["tradeValue"]}</div>
-        <div className="py-1 px-2 text-green-600 font-bold">{row['side'] === '-1' ? 'SELL' : 'BUY'}</div>
-        </div>  )) : (    <div className="grid grid-cols-8 text-sm text-gray-800 hover:bg-gray-50">No trades found</div>
-          )}
+        
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <input 
+            type="text"
+            placeholder="Search symbol..."
+            className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-full md:w-64 transition-all"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
-       
+
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Desktop Header - Hidden on Mobile */}
+        <div className="hidden md:grid grid-cols-8 bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold text-xs uppercase tracking-wider">
+          <div className="py-4 px-4 flex items-center gap-2"><Hash size={14}/> Sr</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1" onClick={() => handleSort("symbol")}>Instrument {getSortIndicator("symbol")}</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1" onClick={() => handleSort("productType")}>Product {getSortIndicator("productType")}</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1 justify-end" onClick={() => handleSort("tradedQty")}>Qty {getSortIndicator("tradedQty")}</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1 justify-end" onClick={() => handleSort("tradePrice")}>Price {getSortIndicator("tradePrice")}</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1 justify-end" onClick={() => handleSort("tradeValue")}>Value {getSortIndicator("tradeValue")}</div>
+          <div className="py-4 px-2 cursor-pointer hover:text-slate-800 flex items-center gap-1 justify-center" onClick={() => handleSort("orderDateTime")}>Time {getSortIndicator("orderDateTime")}</div>
+          <div className="py-4 px-4 text-center">Side</div>
+        </div>
+
+        {/* Scrollable Body */}
+        <div className="max-h-[600px] overflow-y-auto divide-y divide-slate-100">
+          <AnimatePresence>
+            {((sortedData !== undefined  && Array.isArray(sortedData) &&  sortedData.length > 0 && userLogged  )    )? (
+             sortedData?.map((row, index) => (
+                <motion.div
+                  key={`${row.symbol}-${index}`}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className={`
+                    group transition-colors hover:bg-slate-50/80
+                    flex flex-col md:grid md:grid-cols-8 text-sm
+                    p-4 md:p-0
+                  `}
+                >
+                  {/* Mobile Row Layout */}
+                  <div className="flex md:hidden items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-0.5 py-0.5 rounded">#{index + 1}</span>
+                      <span className="break-words font-bold text-slate-800">{row.symbol}</span>
+                      <span className="text-[10px] text-slate-400 font-medium px-2 py-0.5 border border-slate-200 rounded-full">{row.productType}</span>
+                    </div>
+                    <div className={`flex items-center gap-1 font-bold text-xs ${row.side === '-1' ? 'text-red-500' : 'text-emerald-500'}`}>
+                      {row.side === '-1' ? <TrendingDown size={14}/> : <TrendingUp size={14}/>}
+                      {row.side === '-1' ? 'SELL' : 'BUY'}
+                    </div>
+                  </div>
+
+                  {/* Desktop Columns / Mobile Grid */}
+                  <div className="hidden md:flex items-center py-4 px-1 text-slate-400 font-mono text-xs">{index + 1}</div>
+                  
+                  <div className="break-words hidden md:flex items-center py-4 px-2 font-bold text-slate-700">{row.symbol}</div>
+                  
+                  <div className="hidden md:flex justify-end py-4 px-1">
+                    <span className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">{row.productType}</span>
+                  </div>
+
+                  <div className="flex justify-between md:justify-end md:items-center md:py-4 md:px-2 py-1">
+                    <span className="md:hidden text-slate-400 text-xs">Quantity</span>
+                    <span className="font-medium text-slate-700">{row.tradedQty}</span>
+                  </div>
+
+                  <div className="flex justify-between md:justify-end md:items-center md:py-4 md:px-2 py-1">
+                    <span className="md:hidden text-slate-400 text-xs">Price</span>
+                    <span className="text-slate-600 font-mono">₹{row.tradePrice.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between md:justify-end md:items-center md:py-4 md:px-2 py-1">
+                    <span className="md:hidden text-slate-400 text-xs">Total Value</span>
+                    <span className="font-bold text-slate-800">₹{row.tradeValue.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between md:justify-center md:items-center md:py-4 md:px-2 py-1">
+                    <span className="md:hidden text-slate-400 text-xs italic flex items-center gap-1"><Clock size={12}/> Time</span>
+                    <span className="text-slate-500 text-xs">{row.orderDateTime}</span>
+                  </div>
+
+                  <div className="hidden md:flex items-center justify-center py-4 px-4">
+                    <span className={`
+                      text-[10px] font-bold px-3 py-1 rounded-full w-20 text-center
+                      ${row.side === '-1' 
+                        ? 'bg-red-50 text-red-600 border border-red-100' 
+                        : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                      }
+                    `}>
+                      {row.side === '-1' ? 'SELL' : 'BUY'}
+                    </span>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="py-20 text-center">
+                <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                  <Activity size={32} />
+                </div>
+                <h3 className="text-slate-800 font-semibold">No trades found</h3>
+                <p className="text-slate-500 text-sm">Your trade executions will appear here.</p>
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer info */}
+        <div className="bg-slate-50 border-t border-slate-200 px-6 py-3 flex justify-between items-center text-[11px] text-slate-400 uppercase font-bold tracking-widest">
+          <span>Total Executions: {sortedData.length}</span>
+          <span>Market: Open</span>
+        </div>
+      </div>
     </div>
-    )}   {/*  MOBILE or DESKTOP VIEW  */}
+   {/*  )}    MOBILE or DESKTOP VIEW  */}
 
 
 
