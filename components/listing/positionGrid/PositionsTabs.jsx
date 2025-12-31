@@ -1,4 +1,4 @@
-import React ,{ useState,useEffect , forwardRef } from "react";
+import React ,{ useState,useEffect , useRef,  forwardRef } from "react";
 import { startEventSource } from "./positionFeed.actions";
 import {useDispatch, useSelector} from 'react-redux';
 import { ToggleLeft, Activity } from 'lucide-react';
@@ -6,13 +6,12 @@ import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';  
  import   useIsMobile   from "../tradeGrid/useIsMobile";
+import SellPlus2Order from './SellPlus2Order';
 
-
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence  , useMotionValue, useTransform } from 'framer-motion';
 import { XCircle, Edit3 } from "lucide-react";
 import { 
-  ChevronUp, 
-  ChevronDown, 
+ 
   ArrowUpRight, 
   ArrowDownRight, 
   Info,
@@ -21,6 +20,16 @@ import {
   LayoutGrid,
   List
 } from 'lucide-react';
+import { 
+  ChevronUp, 
+  ChevronDown, 
+ 
+  Settings2, 
+ 
+ 
+  ArrowRightLeft
+} from 'lucide-react';
+
 import { BarChart2, Zap, Layout } from 'lucide-react';
 
 
@@ -70,7 +79,121 @@ const SwipeableRow = ({
     </div>
   );
 };
+const SwipeableRowDesk = ({ row, idx, getPnlClass, getPnlBg  , onClose,
+  onModify,
+  isMobile}) => {
+  const x = useMotionValue(0);
+  // Color transformation based on swipe direction (Left = Red/Close, Right = Blue/Modify)
+  const background = useTransform(
+    x,
+    [-100, 0, 100],
+    ["#ef4444", "#ffffff", "#3b82f6"]
+  );
 
+  return (
+    <div className="relative overflow-hidden group bg-gray-100">
+      
+      {/* Background Action Underlays (Visible during swipe) */}
+      <div className="absolute inset-0 flex justify-between items-center px-6 text-white font-bold">
+        <div className="flex items-center gap-2">
+          <Settings2 size={20} />
+          <span>MODIFY</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span>CLOSE</span>
+          <XCircle size={20} />
+        </div>
+      </div>
+
+      {/* Main Content Card */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -100, right: 100 }}
+        style={{ x }}
+        whileTap={{ cursor: 'grabbing' }}
+         onDragEnd={(_, info) => {
+          if (info.offset.x > SWIPE_CLOSE) {
+            onClose();
+          } else if (info.offset.x < SWIPE_MODIFY) {
+            onModify();
+          }
+        }}
+        className="relative z-10 bg-white"
+      >
+        {/* Desktop View (Grid) */}
+        <div className="hidden md:grid grid-cols-12 items-center px-4 py-4 hover:bg-blue-50/40 transition-colors">
+          <div className="col-span-1 text-gray-400 text-xs">{idx + 1}</div>
+          <div className="col-span-2 font-bold text-blue-600 cursor-pointer hover:underline">{row.symbol}</div>
+          <div className="col-span-1">
+            <span className="px-2 py-0.5 rounded-md bg-gray-100 text-[10px] font-bold text-gray-600">{row.productType}</span>
+          </div>
+          <div className="col-span-1 text-right font-mono text-sm">{row.netQty}</div>
+          <div className="col-span-1 text-right font-mono text-sm">{row.avgPrice?.toFixed(2)}</div>
+          <div className="col-span-1 text-right font-mono text-sm font-semibold">{row.ltp?.toFixed(2)}</div>
+          <div className={`col-span-1 text-right font-mono text-sm ${getPnlClass(row.unrealized_profit)}`}>
+            {row.unrealized_profit?.toFixed(2)}
+          </div>
+          <div className={`col-span-1 text-right font-mono text-sm ${getPnlClass(row.realized_profit)}`}>
+            {row.realized_profit?.toFixed(2)}
+          </div>
+          <div className={`col-span-2 text-right font-mono text-sm font-bold p-2 rounded-lg ${getPnlBg(row.calPrf)} ${getPnlClass(row.calPrf)}`}>
+            {row.calPrf?.toFixed(2)}
+          </div>
+          <div className="col-span-1 flex justify-end gap-2">
+            <button className="p-1 hover:text-blue-600 text-gray-400"><Settings2 size={16}/></button>
+            <button className="p-1 hover:text-red-600 text-gray-400"><XCircle size={16}/></button>
+          </div>
+        </div>
+
+        {/* Mobile View (Card) */}
+        <div className="md:hidden p-4 border-l-4 border-blue-500 shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-base text-gray-800 tracking-tight">{row.symbol}</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[9px] font-bold text-gray-500">{row.productType}</span>
+              </div>
+              <div className="text-[10px] text-gray-400 font-medium mt-0.5 flex items-center gap-1">
+                Qty: <span className="text-gray-700 font-bold">{row.netQty}</span> 
+                <span className="mx-1">•</span> 
+                Avg: <span className="text-gray-700 font-bold">₹{row.avgPrice}</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">LTP</div>
+              <div className="text-sm font-black text-gray-900 font-mono italic">₹{row.ltp?.toFixed(2)}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 border-t border-gray-50 pt-3">
+            <div className="text-center bg-gray-50/50 rounded-lg p-2">
+              <div className="text-[9px] text-gray-400 font-bold uppercase">Unrealized</div>
+              <div className={`text-xs font-bold font-mono ${getPnlClass(row.unrealized_profit)}`}>
+                {row.unrealized_profit > 0 ? '+' : ''}{row.unrealized_profit?.toFixed(2)}
+              </div>
+            </div>
+            <div className="text-center bg-gray-50/50 rounded-lg p-2">
+              <div className="text-[9px] text-gray-400 font-bold uppercase">Realized</div>
+              <div className={`text-xs font-bold font-mono ${getPnlClass(row.realized_profit)}`}>
+                {row.realized_profit?.toFixed(2)}
+              </div>
+            </div>
+            <div className={`text-center rounded-lg p-2 border ${row.calPrf >= 0 ? 'bg-emerald-50/50 border-emerald-100' : 'bg-rose-50/50 border-rose-100'}`}>
+              <div className="text-[9px] text-gray-400 font-bold uppercase">Total P&L</div>
+              <div className={`text-xs font-black font-mono ${getPnlClass(row.calPrf)}`}>
+                {row.calPrf?.toFixed(2)}
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-2 flex justify-center md:hidden">
+            <div className="w-8 h-1 bg-gray-200 rounded-full" /> {/* Drag handle indicator */}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 const PositionsTabs = forwardRef(function PositionsTabs({
   sortedData, parsedData,
   sortedSocketData,
@@ -86,6 +209,12 @@ const PositionsTabs = forwardRef(function PositionsTabs({
          const[ computedSocketData , setComputedSocketData] = useState();
          let statePostionBook  = useSelector(state => state.position.positionBook);
         const isMobile = useIsMobile();
+        const [sellPlusSymbol, setSellPlusSymbol] = useState(null);
+          const [netBought, setNetBought] = useState(0);
+          const [swipeQty, setSwipeQty] = useState(0);
+          const [symbolAvgPrice, setSymbolAvgPrice] = useState(0);
+           const [positionQty  ,setPositionQty ] = useState(() => netBought ) ; 
+         const childRef = useRef(null);
    let dispatch = useDispatch();
  const [filteredData , setFilteredData] =useState(() => {
       try {
@@ -467,6 +596,34 @@ const handleModifyPosition = (row) => {
   console.log("Modify position:", row.symbol);
   // open modify / add order panel
 };
+
+
+const handleDeskClosePosition = (row,e) => {
+  console.log("Close position:", row.symbol);
+  let symbol = row.symbol;
+  let netBought = row.netQty;
+  let costPrice = row.avgPrice;
+
+     setSellPlusSymbol(symbol);
+        setNetBought(netBought);
+        setSwipeQty(netBought);
+        setSymbolAvgPrice(costPrice);
+        setPositionQty(netBought)
+   // 3. Call the exposed function from the parent
+    if (childRef.current) {
+      childRef.current.triggerClick();
+    }      
+  // handleSymbolClick(e, row["symbol"], row["avgPrice"], row["netQty"])
+  // fire square-off / close API
+};
+
+const handleDeskModifyPosition = (row) => {
+  console.log("Modify position:", row.symbol);
+  // open modify / add order panel
+};
+
+
+ const [sortConfig, setSortConfig] = useState({ key: 'symbol', direction: 'asc' });
   // Helper for Profit/Loss colors
   const getPnlClass = (val) => val >= 0 ? "text-emerald-600 font-semibold" : "text-rose-600 font-semibold";
   const getPnlBg = (val) => val >= 0 ? "bg-emerald-50" : "bg-rose-50";
@@ -490,54 +647,44 @@ const handleModifyPosition = (row) => {
 
         {/* DESKTOP TABLE VIEW (Visible md and up) */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-              <tr>
-                <th className="py-3 px-4">Sr.</th>
-                <th className="py-3 px-4 cursor-pointer hover:bg-gray-100" onClick={() => handleSort("symbol")}>
-                  <div className="flex items-center gap-1">Instrument {getSortIndicator("symbol")}</div>
-                </th>
-                <th className="py-3 px-4">Product</th>
-                <th className="py-3 px-4 text-right">Qty</th>
-                <th className="py-3 px-4 text-right">Avg Price</th>
-                <th className="py-3 px-4 text-right">LTP</th>
-                <th className="py-3 px-4 text-right">Unrealized</th>
-                <th className="py-3 px-4 text-right">Realized</th>
-                <th className="py-3 px-4 text-right font-bold">Total P&L</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredData.map((row, idx) => (
-                <motion.tr 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  key={idx} 
-                  className="hover:bg-blue-50/30 transition-colors group"
-                >
-                  <td className="py-3 px-4 text-gray-400 text-xs">{idx + 1}</td>
-                  <td className="py-3 px-4 font-bold text-blue-700 cursor-pointer group-hover:underline" onClick={(e) => handleSymbolClick(e, row.symbol)}>
-                    {row.symbol}
-                  </td>
-                  <td className="py-3 px-4 text-xs"><span className="px-2 py-0.5 rounded bg-gray-100">{row.productType}</span></td>
-                  <td className="py-3 px-4 text-right font-mono">{row.netQty}</td>
-                  <td className="py-3 px-4 text-right font-mono">{row.avgPrice?.toFixed(2)}</td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold">{row.ltp?.toFixed(2)}</td>
-                  <td className={`py-3 px-4 text-right font-mono ${getPnlClass(row.unrealized_profit)}`}>
-                    {row.unrealized_profit?.toFixed(2)}
-                  </td>
-                  <td className={`py-3 px-4 text-right font-mono ${getPnlClass(row.realized_profit)}`}>
-                    {row.realized_profit?.toFixed(2)}
-                  </td>
-                  <td className={`py-3 px-4 text-right font-mono ${getPnlBg(row.calPrf)} ${getPnlClass(row.calPrf)}`}>
-                    {row.calPrf?.toFixed(2)}
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-   
+           <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        
+              {/* Table Header (Desktop Only) */}
+              <div className="hidden md:grid grid-cols-12 bg-gray-50 border-b border-gray-200 px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                <div className="col-span-1">Sr.</div>
+                <div className="col-span-2 cursor-pointer flex items-center gap-1 hover:text-blue-600" onClick={() => handleSort('symbol')}>
+                  Instrument {sortConfig.key === 'symbol' && (sortConfig.direction === 'asc' ? <ChevronUp size={14}/> : <ChevronDown size={14}/>)}
+                </div>
+                <div className="col-span-1">Product</div>
+                <div className="col-span-1 text-right">Qty</div>
+                <div className="col-span-1 text-right">Avg Price</div>
+                <div className="col-span-1 text-right">LTP</div>
+                <div className="col-span-1 text-right">Unrealized</div>
+                <div className="col-span-1 text-right">Realized</div>
+                <div className="col-span-2 text-right">Total P&L</div>
+                <div className="col-span-1 text-right">Action</div>
+              </div>
 
+              {/* Rows Container */}
+              <div className="divide-y divide-gray-100">
+          {filteredData.map((row, idx) => (
+                 <SwipeableRowDesk 
+                      key={row.symbol} 
+                      row={row} 
+                      idx={idx} 
+                      getPnlClass={getPnlClass} 
+                      getPnlBg={getPnlBg} 
+                       onClose={() => handleDeskClosePosition(row)}
+                            onModify={() => handleDeskModifyPosition(row)} isMobile={isMobile}
+                    />
+              ))}
+              </div>
+            </div>
+          
+        </div>
+             { sellPlusSymbol    && (   <SellPlus2Order  isMobile ={  isMobile} sellPlusSymbol= {sellPlusSymbol} symAvgPrice={symbolAvgPrice} boughtQty={swipeQty}  qtySold={positionQty} 
+             setButtonSell={true}  ref={childRef} />
+           )}   
         {/* MOBILE CARD VIEW (Visible below md) */}
         <div className="md:hidden divide-y divide-gray-100">
           <AnimatePresence>
@@ -933,5 +1080,8 @@ const handleModifyPosition = (row) => {
     </>
   
   );
+  //     </div>
+  //  </div>
+  //{/* </div>*/}
 });
 export default PositionsTabs;

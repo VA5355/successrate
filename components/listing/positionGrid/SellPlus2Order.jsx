@@ -1,5 +1,5 @@
 // SellPlus2Order.jsx
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState, useImperativeHandle, forwardRef , useRef  } from 'react';
 import { ToggleLeft, Activity } from 'lucide-react';
 //import { getSensexTickerData  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./streamTicker.actions";
 // ThreeSec HTTP FETCH 
@@ -9,15 +9,16 @@ import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Minus, Plus } from "lucide-react";
-
+import {  Clock, Zap, Shield, Info } from 'lucide-react';
 import './buttonOverride.css'; 
 import './SellPlus2Order.css'; 
 
 
-const SellPlus2Order = ({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold }) => {
+const SellPlus2Order = forwardRef(({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold  ,setButtonSell } , ref) => {
   const dispatch = useDispatch();
+   const buttonRef = useRef(null);
   const hasMounted = useRef(true);
- const [positionQty  ,setPositionQty ] = useState(() => boughtQty -qtySold ) ; //Number(tradeSet.qty);
+ const [positionQty  ,setPositionQty ] = useState(() => boughtQty ) ; //Number(tradeSet.qty);
   const [positionPrice, setPositionPrice ]= useState(symAvgPrice) ;  // Number(tradeSet.price);
   const [positionSymbol, setPositionSymbol ]= useState(sellPlusSymbol) ;  // Number(tradeSet.price);
    const [mobileView, setMobileView ]= useState(isMobile) ;  // boolean;
@@ -25,6 +26,29 @@ const SellPlus2Order = ({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty , 
    const [selectedSymbol, setSelectedSymbol] = useState(null);
  const [ symbolArray,setSymbolArray ] = useState([]);
   const lotSize = 65;
+ 
+  // New Fields
+  const [orderType, setOrderType] = useState('LIMIT'); // Limit or Market
+  const [productMode, setProductMode] = useState('MARGIN'); // Margin or CNC
+  const [isScheduled, setIsScheduled] = useState(false);
+   // Initialize sell button  visibility. true means visible initially.
+  const [isVisible, setIsVisible] = useState((setButtonSell) =>  setButtonSell ? setButtonSell : false );
+  // const boughtQty = 100;
+ // const qtySold = 20;
+
+  // Function to toggle the state value
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+   // 2. Expose a custom function to the parent
+  useImperativeHandle(ref, () => ({
+    triggerClick: () => {
+      console.log("Child button logic triggered!");
+      buttonRef.current.click(); // Manually click the DOM button
+    }
+  }));
+
+
    useEffect (() => {
     if (!hasMounted.current) {
         hasMounted.current = false;
@@ -93,6 +117,7 @@ const SellPlus2Order = ({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty , 
 
                 setPositionPrice (pre => pre = finalValue);
                  console.log(" Sell Plus 2 Position book price qty  "+(finalValue+ " "+netQty))
+                 setIsVisible(true);
               }
 
           });  
@@ -134,11 +159,12 @@ const setSellOrder = () => {
 const dispatchSellSelected = ()=> {
     
     console.log(`Selected: ${selectedSymbol}`); setShowSymbolModal(false); 
-   if(selectedSymbol && (symbolArray.length > 0) && positionPrice > 0 && positionQty > 0 ) {  
+   if(selectedSymbol && (symbolArray.length > 0) && positionPrice > 0 && positionQty > 0  && orderType !==undefined && productMode !==undefined) {  
      // const qtyNum = Number(tradeSet.qty);
     // const priceNum = Number(tradeSet.price);
-       StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol}));
-       dispatch(placeSellOrder({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol}));
+      
+       StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled}));
+       dispatch(placeSellOrder({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled}));
     }
 }
 const handlePositionPriceOff = (gold)=> {
@@ -170,9 +196,9 @@ const handlePositionPrice = (e) => {
   value = Math.max(value, minPrice);
 
   // Round to nearest 0.5 (one decimal)
-  const finalValue = Math.round(value * 2) / 2;
+  //const finalValue = Math.round(value * 2) / 2;
 
-  setPositionPrice(finalValue);
+  setPositionPrice(value);
 };
 /*const handlePositionPrice = (e) => {
      let value = parseFloat(e.target.value) >(symAvgPrice+2) ? parseFloat(e.target.value) :(symAvgPrice+2) || 0;
@@ -213,8 +239,10 @@ const sheet = {
   
     return (
      <>  {/*   onClick={() => {  setShowModal(true); handleToggle(); }}  */}
-    <button id="SELLPLUS2ORDERBUTTONID"  onClick={() => {  setSellOrder(); }}
-     className="bg-brandgreen text-white text-xs px-3 py-1.5 rounded-md hover:bg-red-600 active:scale-95 transition"
+    <button   ref={buttonRef}  id="SELLPLUS2ORDERBUTTONID"  onClick={() => {  setSellOrder(); }} 
+     className={`bg-brandgreen text-white text-xs px-3 py-1.5 rounded-md hover:bg-red-600 active:scale-95 transition ${
+          isVisible ? 'visible' : 'hidden'
+        }`}
     > SELL +2
    {/*   {isStreaming ? (
         <Activity size={5} className=" animate-pulse " />
@@ -225,144 +253,186 @@ const sheet = {
         {isPlaceStreaming ? 'Placing' : 'Place Order'}
       </span>*/}
     </button>
-      <AnimatePresence>
-  {showSymbolModal && (
-    <motion.div
-      variants={backdrop}
-      initial="hidden"
-      animate="visible"
-      exit="hidden"
-      className={`fixed inset-0 bg-black/40 z-50   ${mobileView ? "sm:w-[220px] sm:items-center mobile-modal-sellcard" :"md:items-center"}  flex items-end justify-center`}
-      onClick={() => setShowSymbolModal(false)}
-    >
-      {/* STOP click propagation */}
-      {/*          bg-white w-[220px] sm:w-[120px] 
-          rounded-t-xl sm:rounded-xl
-          p-3 shadow-xl
-          max-h-[80vh] overflow-y-auto
-      */}
-      <motion.div
-        variants={sheet}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        onClick={(e) => e.stopPropagation()}
-        className={` 
-          bg-white    ${mobileView ? "w-[220px] sm:w-[120px] " :"md:w-[320px]"}
-          rounded-t-xl sm:rounded-xl
-          p-3 shadow-xl
-          max-h-[80vh] overflow-y-auto
-         `}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base font-semibold">
-            Select Symbol to Sell
-          </h2>
-          <button onClick={() => setShowSymbolModal(false)}>
-            <X className="ml-4 w-4 h-4 text-gray-500" />
-          </button>
-        </div>
-
-        {/* Symbols */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {symbolArray.map((symbol, idx) => {
-            const selected = selectedSymbol === symbol;
-
-            return (
-              <motion.div
-                key={idx}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setSelectedSymbol(symbol)}
-                className={`
-                  min-w-[220px] rounded-lg border p-2 cursor-pointer
-                   transition
-                  ${selected
-                    ? "border-brandgreen bg-brandgreen/10"
-                    : "border-gray-200"}
-                `}
-              >
-                {/* Symbol */}
-              <div className="font-medium text-xs mb-1 truncate">
-                    {symbol}
+     
+       <AnimatePresence>
+        {showSymbolModal && (
+          <motion.div
+            variants={backdrop}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center"
+            onClick={() => setShowSymbolModal(false)}
+          >
+            <motion.div
+              variants={sheet}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              onClick={(e) => { e.stopPropagation(); setSelectedSymbol(positionSymbol)  } }
+              className="bg-white w-full md:w-[400px] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
+                <div>
+                  <h2 className="text-lg font-bold text-gray-800">Exit Position</h2>
+                  <p className="text-[11px] text-gray-500 uppercase tracking-wider font-semibold">Sell Order Ticket</p>
+                </div>
+                <button 
+                  onClick={() => {  setShowSymbolModal(false);   setIsVisible(false);  } }
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
               </div>
 
-                {/* Qty Slider */}
-                <div className="mb-1">
-                  <label className="text-[10px] text-gray-500">
-                    Qty
-                  </label>
+              <div className="p-5 space-y-5 max-h-[85vh] overflow-y-auto">
+                
+                {/* Symbol Selection - Horizontal Scroll 
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-tight">Select Instrument</label>
+                  <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    {symbolArray.map((symbol) => (
+                      <button
+                        key={symbol}
+                        onClick={() => setSelectedSymbol(symbol)}
+                        className={`px-4 py-2 rounded-xl border-2 text-sm font-bold transition-all whitespace-nowrap
+                          ${selectedSymbol === symbol 
+                            ? "border-red-500 bg-red-50 text-red-600" 
+                            : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200"}`}
+                      >
+                        {symbol}
+                      </button>
+                    ))}
+                  </div>
+                </div>*/}
+
+                {/* Toggle Group: Market/Limit & Product Type */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-tight">Order Type</label>
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                      {['Market', 'Limit'].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setOrderType(t)}
+                          className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${orderType === t ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-tight">   {positionSymbol}</label>
+                  
+                  </div>
+                {/* */}  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-tight">Product</label>
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                      {['MARGIN', 'CNC'].map((p) => (
+                        <button
+                          key={p}
+                          onClick={() => setProductMode(p)}
+                          className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${productMode === p ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400'}`}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quantity Slider */}
+                <div className="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-gray-600 flex items-center gap-1">
+                      <Zap size={14} className="text-orange-400"/> Quantity
+                    </label>
+                    <span className="text-sm font-mono  font-bold text-gray-800">{positionQty}</span>
+                  </div>
                   <input
                     type="range"
                     min="0"
                     step={lotSize}
-                    max={boughtQty - qtySold}
-                    value={selected ? positionQty : 0}
+                    max={boughtQty }
+                    value={positionQty}
                     onChange={(e) => setPositionQty(Number(e.target.value))}
-                    className="w-full h-1 accent-pink-600  mobile-margin-qty"
+                    className="w-full h-1.5 bg-gray-200 rounded-lg mobile-margin-qty appearance-none cursor-pointer accent-red-500"
                   />
-                  <div className={`text-[10px] ${mobileView ? "text-left" :"    text-right"}`}>
-                    {positionQty}
+                  <div className="flex justify-between text-[10px] text-gray-400 font-medium">
+                    <span>0</span>
+                    <span>Max: {boughtQty }</span>
                   </div>
-              </div>
-                  {/* Price Slider */}
-           <div className="mb-1">
-            <label className="text-[10px] text-gray-500">
-              Price
-            </label>
-            <input
-              type="range"
-              min="0"
-              step="2"
-              max={positionPrice * 3}
-              value={selected ? positionPrice : 0}
-              onChange={handlePositionPrice}
-              className="w-full h-1 accent-pink-600  mobile-margin-price"
-            />
-            <div className={`text-[10px] ${mobileView ? "text-left" :"    text-right"}`}>
-              ₹ {positionPrice}
-            </div>
-          </div>
+                </div>
 
-                {/* Sell Button */}
-                {selected && (
-                  <button
-                  disabled={!(positionQty >= lotSize && positionPrice >= 0)}
-                  onClick={dispatchSellSelected}
-                  className={` 
-                    w-full mt-1 flex items-center justify-center gap-1
-                    px-2 py-1.5 rounded-md text-xs font-semibold
-                    transition
-                    ${
-                      positionQty >= lotSize
-                        ? "bg-brandgreen text-white hover:bg-red-600"
-                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    }
-                  `}
+                {/* Price Slider - Disabled if Market */}
+                <div className={`space-y-3 p-4 rounded-xl border transition-all ${orderType === 'Market' ? 'opacity-40 bg-gray-100' : 'bg-gray-50 border-gray-100'}`}>
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-gray-600 flex items-center gap-1">
+                      <Shield size={14} className="text-blue-400"/> Price
+                    </label>
+                    <span className="text-sm font-mono  font-bold text-gray-800">₹ {orderType === 'Market' ? '---' : positionPrice}</span>
+                  </div>
+                  <input
+                    type="range"
+                    disabled={orderType === 'Market'}
+                    min="0"
+                    step="0.05"
+                    max={1000}
+                    value={positionPrice}
+                    onChange={(e) => setPositionPrice(Number(e.target.value))}
+                    className="w-full h-1.5 bg-gray-200 mobile-margin-price rounded-lg appearance-none cursor-pointer accent-red-500"
+                  />
+                </div>
+
+                {/* Scheduled Checkbox / Toggle */}
+                <div 
+                  onClick={() => setIsScheduled(!isScheduled)}
+                  className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl border border-blue-100 cursor-pointer transition-colors hover:bg-blue-50"
                 >
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  Sell
-                </button>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${isScheduled ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}>
+                      <Clock size={18} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-blue-900">Schedule Order</p>
+                      <p className="text-[10px] text-blue-600 font-medium">Execute at market open</p>
+                    </div>
+                  </div>
+                  <div className={`w-10 h-5 rounded-full relative transition-colors ${isScheduled ? 'bg-blue-500' : 'bg-gray-300'}`}>
+                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${isScheduled ? 'left-6' : 'left-1'}`} />
+                  </div>
+                </div>
 
-        {/* Footer */}
-      <div className="mt-3">
-        <button
-          onClick={() => setShowSymbolModal(false)}
-          className="w-full py-1.5 rounded-lg bg-gray-200 text-xs font-semibold"
-        >
-          Cancel
-        </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                {/* Summary Info */}
+                <div className="flex items-start gap-2 text-[11px] text-gray-500 bg-gray-50 p-3 rounded-lg">
+                  <Info size={14} className="mt-0.5 shrink-0" />
+                  <p>Approx. transaction value will be <span className="font-bold text-gray-700">₹ {(positionQty * positionPrice).toLocaleString()}</span>. Charges are applicable as per your plan.</p>
+                </div>
 
+                {/* Final Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => { setShowSymbolModal(false);  setIsVisible(false); } }
+                    className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button     onClick={dispatchSellSelected}
+                    disabled={positionQty <= 0}
+                    className={`flex-[2] py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-lg shadow-red-200 transition-all active:scale-95
+                      ${positionQty > 0 ? "bg-red-500 text-white hover:bg-red-600" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                  >
+                    <CheckCircle size={18} />
+                    Confirm Sell
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
      
    </>
     );
@@ -370,5 +440,5 @@ const sheet = {
 
 
 
-}
+});
 export default SellPlus2Order;
