@@ -14,7 +14,7 @@ import './buttonOverride.css';
 import './SellPlus2Order.css'; 
 
 
-const SellPlus2Order = forwardRef(({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold  ,setButtonSell } , ref) => {
+const SellPlus2Order = forwardRef(({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty ,  qtySold  , setButtonSell } , ref) => {
   const dispatch = useDispatch();
    const buttonRef = useRef(null);
   const hasMounted = useRef(true);
@@ -441,4 +441,7 @@ const sheet = {
 
 
 });
+// Add this line to resolve the ESLint error
+SellPlus2Order.displayName = 'SellPlus2Order';
+
 export default SellPlus2Order;
