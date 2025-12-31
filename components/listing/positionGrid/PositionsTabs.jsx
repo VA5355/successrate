@@ -873,7 +873,7 @@ const handleModifyPosition = (row) => {
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
-              <div className="relative flex flex-col sm:flex-row p-1 bg-gray-100/80 rounded-xl gap-1">
+              <div  key={tab.id} className="relative flex flex-col sm:flex-row p-1 bg-gray-100/80 rounded-xl gap-1">
               <button
                 key={tab.id}
                 onClick={() => {
