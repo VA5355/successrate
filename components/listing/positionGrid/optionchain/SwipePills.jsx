@@ -174,7 +174,7 @@ function SwipePillBase({
   // LIMIT MARGING and Scheduled order buttons 
   const [orderType, setOrderType] = useState("LIMIT"); // LIMIT | MARGIN
 const [scheduled, setScheduled] = useState(false);
-
+    const lotSize = 65;
 
   // Persist units back into the map whenever it changes (so other renders see it)
   useEffect(() => {
