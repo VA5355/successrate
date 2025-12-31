@@ -1255,6 +1255,81 @@ const getSortIndicator = (column) =>
           </button>
         </div>
       )}
+
+
+
+
+      </div>  {/* min-h-screen */}
+             
+{/*<div className="overflow-x-auto w-full">
+  <table className="min-w-full table-auto text-sm border-collapse">
+    <thead className="bg-gray-200 text-gray-700">
+      <tr>
+        <th className="px-4 py-2 text-left">Instrument</th>
+        <th className="px-4 py-2 text-left">Product Type</th>
+        <th className="px-4 py-2 text-left">Quantity</th>
+        <th className="px-4 py-2 text-left">Price</th>
+        <th className="px-4 py-2 text-left">Time</th>
+        <th className="px-4 py-2 text-left">Trade Value</th>
+        <th className="px-4 py-2 text-left">Buy/Sell</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="bg-green-300">
+        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
+        <td className="px-4 py-2">INTRADAY</td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2">248.88</td>
+        <td className="px-4 py-2">13:55:12</td>
+        <td className="px-4 py-2">18666.00</td>
+        <td className="px-4 py-2">BUY</td>
+      </tr>
+      <tr className="bg-green-300">
+        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
+        <td className="px-4 py-2">INTRADAY</td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2">246.38</td>
+        <td className="px-4 py-2">13:53:02</td>
+        <td className="px-4 py-2">18478.50</td>
+        <td className="px-4 py-2">BUY</td>
+      </tr>
+      <tr className="bg-green-300">
+        <td className="px-4 py-2">NIFTY2580725100PE</td>
+        <td className="px-4 py-2">INTRADAY</td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2">382.6</td>
+        <td className="px-4 py-2">13:51:22</td>
+        <td className="px-4 py-2">28695.00</td>
+        <td className="px-4 py-2">SELL</td>
+      </tr>
+      <tr className="bg-red-300">
+        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
+        <td className="px-4 py-2">INTRADAY</td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2">249.9</td>
+        <td className="px-4 py-2">13:50:11</td>
+        <td className="px-4 py-2">18742.50</td>
+        <td className="px-4 py-2">SELL</td>
+      </tr>
+      <tr className="bg-green-300">
+        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
+        <td className="px-4 py-2">INTRADAY</td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2">241.85</td>
+        <td className="px-4 py-2">13:48:33</td>
+        <td className="px-4 py-2">18138.</td>
+        <td className="px-4 py-2">BUY</td>
+      </tr>
+    </tbody>
+  </table>
+</div> */}
+    
+
+     
+
+
+
+
           
 
 
