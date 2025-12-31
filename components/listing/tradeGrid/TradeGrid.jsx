@@ -1,5 +1,15 @@
  
 import React, {Suspense, useEffect , useState,useMemo} from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronDown, 
+
+  RefreshCw, 
+  Layers, 
+  TrendingUp, 
+  Zap 
+} from 'lucide-react';
+import { ToggleLeft, Activity } from 'lucide-react';
 import { CommonConstants } from "@/utils/constants";
 import { StorageUtils } from "@/libs/cache";
 import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
@@ -296,22 +306,26 @@ const getSortIndicator = (column) =>
           };
   return (
     <div className="overflow-x-auto w-full bg-zinc-100">
-        <br/>
-        <br/>
-      <h1 className='text-black font-semibold mb-2 dark:text-white text-lg'>Trade Book</h1>
-      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
-        <div
-             className={
-              isMobile
-                  ? "mb-2 md:flex flex justify-between relative items-center"
-                  : "md:flex flex justify-between relative items-center"
-               }
-          > 
-                 {/* 
-                  <select className="p-2 rounded-lg bg-greylight dark:bg-greydark text-gretdark dark:text-white focus-visible:outline-none">
-                  md:hidden
-                 Alpha-Advantange or Fyers selection */}
-                <select value={platformType} onChange={(e) => {
+       
+        <div className="max-w-7xl mx-auto space-y-4">
+
+           {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Trade Book
+            </h1>
+          </div>
+
+            {/* Broker Selector & Main Actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative group">  {/* { isMobile ? "mb-2 md:flex flex justify-between relative items-center"  : "md:flex flex justify-between relative items-center" } */}
+              <select 
+                value={platformType}
+                onChange={(e) => {
                                     if (e.target.value == '1') {
                                         console.log(" selected " + e.target.value)
                                     } else {
@@ -320,11 +334,27 @@ const getSortIndicator = (column) =>
                                     }
                                     setPlatformType(e.target.value)
                   }}  
-                    className='p-2 focus-visible:outline-none block  rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> {/* dark:text-white */}
-                <option value={1}>Alph-Vantage</option>
-                <option value={2}>Fyers</option>
-               </select>
-             </div>
+                className="appearance-none pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+              >
+                <option value="1">Alpha-Vantage</option>
+                <option value="2">Fyers</option>
+              </select>
+              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+            </div>
+
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
+              <RefreshCw className="w-4 h-4" />
+              
+              <span><FetchPositionButton onFetchComplete={ handleFetchComplete}
+                         sortedData={sortedData} updateSoldQty={fetchPendingOrders} /></span>
+            </button>
+          </div> 
+
+        </div>
+        </div>
+      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
+     
        {/*  CLICK MARKET DATA   TICKER FOR 3 BANKNIFY NIFTY and SENSEX  */}      
    {/*  <div className="hidden md:flex relative items-center">
                    
@@ -436,7 +466,7 @@ const getSortIndicator = (column) =>
       <tr class="bg-green-300">
         <td class="px-4 py-2">NIFTY25JUL24500CE</td>
         <td class="px-4 py-2">INTRADAY</td>
-        <td class="px-4 py-2">75</td>
+        <td class="px-4 py-2">65</td>
         <td class="px-4 py-2">248.88</td>
         <td class="px-4 py-2">13:55:12</td>
         <td class="px-4 py-2">18666.00</td>
@@ -454,7 +484,7 @@ const getSortIndicator = (column) =>
       <tr class="bg-green-300">
         <td class="px-4 py-2">NIFTY2580725100PE</td>
         <td class="px-4 py-2">INTRADAY</td>
-        <td class="px-4 py-2">75</td>
+        <td class="px-4 py-2">65</td>
         <td class="px-4 py-2">382.6</td>
         <td class="px-4 py-2">13:51:22</td>
         <td class="px-4 py-2">28695.00</td>
@@ -463,7 +493,7 @@ const getSortIndicator = (column) =>
       <tr class="bg-red-300">
         <td class="px-4 py-2">NIFTY25JUL24500CE</td>
         <td class="px-4 py-2">INTRADAY</td>
-        <td class="px-4 py-2">75</td>
+        <td class="px-4 py-2">65</td>
         <td class="px-4 py-2">249.9</td>
         <td class="px-4 py-2">13:50:11</td>
         <td class="px-4 py-2">18742.50</td>
@@ -472,10 +502,10 @@ const getSortIndicator = (column) =>
       <tr class="bg-green-300">
         <td class="px-4 py-2">NIFTY25JUL24500CE</td>
         <td class="px-4 py-2">INTRADAY</td>
-        <td class="px-4 py-2">75</td>
+        <td class="px-4 py-2">65</td>
         <td class="px-4 py-2">241.85</td>
         <td class="px-4 py-2">13:48:33</td>
-        <td class="px-4 py-2">18138.75</td>
+        <td class="px-4 py-2">18138.65</td>
         <td class="px-4 py-2">BUY</td>
       </tr>
     </tbody>

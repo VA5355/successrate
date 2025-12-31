@@ -10,6 +10,7 @@ import { useState } from "react";
 
 
  const POSITION_URL  = [   FYERSAPIPOSITIONBOOKURL  ] ;
+ const lotSize = 65;
  const parseLine = (line: string): Record<string, any>  => {
           let parts:any  = line; //split(',');
          // console.log(" line "+JSON.stringify(line));
@@ -44,7 +45,7 @@ import { useState } from "react";
                    avgPrice  = parseFloat(avgPrice).toFixed(2);
                 let  gstBROSTTETC =  (parts['netAvg']!==undefined ?  parts['netAvg']: "");           //11  tradePrice
                  let sym1  = (parts['symbol']!==undefined ? parts['symbol']: "");   
-                 let brkCh = 20*2*(parseFloat(qtyS)/75);
+                 let brkCh = 20*2*(parseFloat(qtyS)/lotSize);
                  let f = parseFloat(avgPrice);
                    let stt:number = ((f* parseFloat(qtyS))* (0.15/100))  ; //f+ (f * (0.1/100)
                  let sttCh = (f *  0.001).toFixed(2);

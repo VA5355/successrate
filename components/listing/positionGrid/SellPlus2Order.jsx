@@ -24,7 +24,7 @@ const SellPlus2Order = ({   isMobile , sellPlusSymbol ,symAvgPrice, boughtQty , 
   const [showSymbolModal, setShowSymbolModal] = useState(false);
    const [selectedSymbol, setSelectedSymbol] = useState(null);
  const [ symbolArray,setSymbolArray ] = useState([]);
-
+  const lotSize = 65;
    useEffect (() => {
     if (!hasMounted.current) {
         hasMounted.current = false;
@@ -295,7 +295,7 @@ const sheet = {
                   <input
                     type="range"
                     min="0"
-                    step="75"
+                    step={lotSize}
                     max={boughtQty - qtySold}
                     value={selected ? positionQty : 0}
                     onChange={(e) => setPositionQty(Number(e.target.value))}
@@ -327,14 +327,14 @@ const sheet = {
                 {/* Sell Button */}
                 {selected && (
                   <button
-                  disabled={!(positionQty >= 75 && positionPrice >= 0)}
+                  disabled={!(positionQty >= lotSize && positionPrice >= 0)}
                   onClick={dispatchSellSelected}
                   className={` 
                     w-full mt-1 flex items-center justify-center gap-1
                     px-2 py-1.5 rounded-md text-xs font-semibold
                     transition
                     ${
-                      positionQty >= 75
+                      positionQty >= lotSize
                         ? "bg-brandgreen text-white hover:bg-red-600"
                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
                     }

@@ -56,14 +56,15 @@ const StockGrid = () => {
             let tickerValue ="";
             console.log( "typeof(symbol)  " + typeof(symbol)+ 
             " symbol  "+symbol); 
-            console.log( "typeof(selected.ticker)  " + typeof(selected.ticker)+ 
-            "selected.ticker "+selected.ticker);   
-            if(typeof(selected.ticker) == 'object'){
+            console.log( "typeof(selected.ticker)  " + (selected !==undefined ? typeof(selected?.ticker ): "")+ 
+            "selected.ticker "+selected?.ticker);   
+            let th =(selected !==undefined ? typeof(selected?.ticker ): undefined) ;
+            if(th == 'object'){
                     if (Array.isArray(selected?.ticker)) {
-            tickerValue = selected.ticker[1]; // ✅ first element
+            tickerValue = selected?.ticker[1]; // ✅ first element
             } 
-            else if (typeof selected?.ticker === "object" && selected?.ticker !== null) {
-            tickerValue = Object.values(selected.ticker)[1] as string; // ✅ first property value
+            else if (typeof th  === "object" && selected?.ticker !== null) {
+            tickerValue = Object.values(selected?.ticker)[1] as string; // ✅ first property value
             }
             console.log( "tickerValue " + tickerValue)
             setTickSym(tickerValue);
@@ -201,6 +202,22 @@ const StockGrid = () => {
                                     <div className="text-sm text-gray-400 italic">
                                     Select a stock to view chart
                                     </div>
+
+
+                                    Show other Active Symbols Card from 
+
+                                     Iterate from the import nifty50 from "../tradeTicker/nifty-50";
+
+                                             http://localhost:3065/api/marketStatus
+                                            from  C:\icici\stock-nse-india\src routes.ts 
+                                           mainRouter.get('/api/mostActive/:indexSymbol', async (req, res) => {
+                                            the above data will give BOTH  GAINER and LOSER 
+                                            sort it and get the exact 
+                                    
+                                            
+
+
+
                                 )}*/} 
                         {selected?.ticker && (    <StockCandleChart
                                 key={selected.ticker}   

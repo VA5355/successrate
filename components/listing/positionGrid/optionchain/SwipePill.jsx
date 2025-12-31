@@ -211,7 +211,7 @@ function ScrollDial({ value, setValue }) {
 ----------------------------------------------------------------------------- */
 function SwipePill({ side, label,ltp, subtitle, onBuy, onSell, className = "" }) {
   const x = useMotionValue(0);
- const [quantity, setQuantity] = useState(x  =>    parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  ); // quantity state
+ const [quantity, setQuantity] = useState(x  =>    parseInt(65 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  ); // quantity state
  const [limitPrice, setLimitPrice] = useState(ltp);
  // Background color changes when dragging
   const bg = useTransform(
@@ -246,10 +246,10 @@ function SwipePill({ side, label,ltp, subtitle, onBuy, onSell, className = "" })
       const threshold = 90; // how far user must drag to trigger action
       if (info.offset.x > threshold) {
         setJustAction("BUY");
-        onBuy?.(parseInt(quantity*75) , roundToNearest5(limitPrice ) );
+        onBuy?.(parseInt(quantity*65) , roundToNearest5(limitPrice ) );
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
-        onSell?.(parseInt(quantity*75), roundToNearest5(limitPrice ));
+        onSell?.(parseInt(quantity*65), roundToNearest5(limitPrice ));
       }
     };
      const screwRotation = useMotionValue(0);
@@ -365,7 +365,7 @@ function SwipePill({ side, label,ltp, subtitle, onBuy, onSell, className = "" })
                 {/*  onSell={(qty) => onAction?.({ side: "CALL", action: "SELL", qty:qty, strike, row })} */}
              <div className="h-[5px] right-[-56px] w-full flex items-center justify-center 
                         bg-grey-400 dark:text-white font-bold text-base">
-                   {parseInt(quantity * 75)}
+                   {parseInt(quantity * 65)}
                </div>
            </div>
            {/* Scroll wheel dial ScrollDial*/}

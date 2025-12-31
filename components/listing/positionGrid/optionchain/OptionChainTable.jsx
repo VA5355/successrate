@@ -52,6 +52,8 @@ import {  Wifi } from "lucide-react";
          tableGlobalExipryMapper.set('26J27', '2026-01-27')
 // --- Mocking External Dependencies for Runnable Demo ---
 
+const lotSize = 65;
+
 // 1. Mock Redux and Actions
 const useDispatchDummy = () => (action) => console.log('Dispatching (Mock):', action.type || action);
 const useSelectorDummy = (selector) => selector({
@@ -837,7 +839,7 @@ function ScrollDial({ value, setValue }) {
 
 function OptionProvider({ children }) {
   const [limitPrice, setLimitPrice] = useState(0);
-const [quantity, setQuantity] = useState(x  =>    parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  );
+const [quantity, setQuantity] = useState(x  =>    parseInt( lotSize* ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  );
 
   const increment = () => setLimitPrice(v => v );
   const decrement = () => setLimitPrice(v => v - 1);
@@ -985,11 +987,11 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
     
           if( optionStrikeQtyMapper.has(idx))  { 
              let y =  optionStrikeQtyMapper.get(idx);
-             return  parseInt(75 * ( parseInt(( y !== null && y !== undefined) ? y : 0 ) ));
+             return  parseInt( lotSize* ( parseInt(( y !== null && y !== undefined) ? y : 0 ) ));
           } 
           else { 
 
-              let y  =   parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ));
+              let y  =   parseInt( lotSize* ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ));
               optionStrikeQtyMapper.set(idx, y);
               return y ;
           }    
@@ -1034,10 +1036,10 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
       const threshold = 90; // how far user must drag to trigger action
       if (info.offset.x > threshold) {
         setJustAction("BUY");
-        onBuy?.(parseInt(quantity*75) , roundToNearest5(limitPrice ) );
+        onBuy?.(parseInt(quantity*lotSize) , roundToNearest5(limitPrice ) );
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
-        onSell?.(parseInt(quantity*75), roundToNearest5(limitPrice ));
+        onSell?.(parseInt(quantity*lotSize), roundToNearest5(limitPrice ));
       }
     };
      const screwRotation = useMotionValue(0);
@@ -1177,7 +1179,7 @@ function SwipeCallPillInternal({ idx , side, label,ltp, subtitle, onBuy, onSell,
                 {/*  onSell={(qty) => onAction?.({ side: "CALL", action: "SELL", qty:qty, strike, row })} */}
              <div className="h-[5px] right-[-56px] w-full flex items-center justify-center 
                         bg-grey-400 dark:text-white font-bold text-base">
-                   {parseInt(quantity * 75)}
+                   {parseInt(quantity * lotSize)}
                </div>
            </div>
            {/* Scroll wheel dial ScrollDial*/}
@@ -1236,17 +1238,17 @@ function SwipePutPillInternal({ idx,  side, label,ltp, subtitle, onBuy, onSell,l
     
           if( optionStrikeQtyMapper.has(idx))  { 
              let y =  optionStrikeQtyMapper.get(idx);
-             return  parseInt(75 * ( parseInt(( y !== null && y !== undefined) ? y : 0 ) ));
+             return  parseInt(lotSize * ( parseInt(( y !== null && y !== undefined) ? y : 0 ) ));
           } 
           else { 
 
-              let y  =   parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ));
+              let y  =   parseInt(lotSize * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ));
               optionStrikeQtyMapper.set(idx, y);
               return y ;
           }    
     
        });
- //useState(x  =>    parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  ); // quantity state
+ //useState(x  =>    parseInt(65 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) ))  ); // quantity state
 const [limitPrice, setLimitPrice] = useState(ltp);
  //const { limitPrice, increment, decrement } = useContext(OptionContext);
  //const { quantity, increase, decrease } = useContext(OptionContext);
@@ -1284,10 +1286,10 @@ const [limitPrice, setLimitPrice] = useState(ltp);
       const threshold = 90; // how far user must drag to trigger action
       if (info.offset.x > threshold) {
         setJustAction("BUY");
-        onBuy?.(parseInt(quantity*75) , roundToNearest5(limitPrice ) );
+        onBuy?.(parseInt(quantity*65) , roundToNearest5(limitPrice ) );
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
-        onSell?.(parseInt(quantity*75), roundToNearest5(limitPrice ));
+        onSell?.(parseInt(quantity*65), roundToNearest5(limitPrice ));
       }
     };*/
     const handleDragEnd = async (_, info) => {
@@ -1295,12 +1297,12 @@ const [limitPrice, setLimitPrice] = useState(ltp);
       if (info.offset.x > threshold) {
        // setLoading(true);
         setJustAction("BUY");
-        await onBuy?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
+        await onBuy?.(parseInt(quantity * lotSize), roundToNearest5(limitPrice));
       //  setLoading(false);
       } else if (info.offset.x < -threshold) {
       //  setLoading(true);
         setJustAction("SELL");
-        await onSell?.(parseInt(quantity * 75), roundToNearest5(limitPrice));
+        await onSell?.(parseInt(quantity * lotSize), roundToNearest5(limitPrice));
        // setLoading(false);
       }
     };
@@ -1327,7 +1329,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
      const [orderStatus, setOrderStatus] = useState("");
        const [visible, setVisible] = useState(false)
   useEffect(() => {
-        // increase(x  =>    parseInt(75 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) )) )
+        // increase(x  =>    parseInt(65 * ( parseInt(( x !== null && x !== undefined) ? x : 0 ) )) )
 
     const timer = setTimeout(() => {
       const sellStatus = StorageUtils._retrieve(CommonConstants.remoteServerGeneralSellErrorBasic);
@@ -1458,7 +1460,7 @@ const [limitPrice, setLimitPrice] = useState(ltp);
 
                   {/* Qty */}
                   <div className="text-xs font-semibold text-center sm:w-[70px]">
-                    {parseInt(quantity * 75)}
+                    {parseInt(quantity * lotSize)}
                   </div>
 
                   {/* Arrows */}
@@ -1972,7 +1974,7 @@ export default function OptionChainTable({positionData}) {
                   return found.symbol;
           }
           if (value === targetValue) {
-            return key;
+            return value;
           }
         }
         throw new Error(`Value "${targetValue}" not found in Map`);
@@ -2010,9 +2012,11 @@ export default function OptionChainTable({positionData}) {
          // this is also a configuration setting for converting yymmdd to fyers specific yyMdd format 
         table.set('251216','25D16')
         table.set('251223','25D23')
-        table.set('251230','25DEC')
-        table.set('260106','26106')
-        table.set('260113','26113')
+        table.set('251230','25DEC')  /// 
+        table.set('260106','26106')   // NIFTY26106 in place
+        table.set('260113','26113')  // 
+         table.set('26J06','26106')  
+          table.set('26J13','26113')  
         console.log(`Selected or slided evt.row.strike : ${JSON.stringify(evt.row.expiry)}`); 
         console.log(`Order type evt.row.orderType : ${JSON.stringify(evt.row.orderType)}  schedueld: ${JSON.stringify(evt.row.scheduled)}`); 
 
@@ -2052,7 +2056,7 @@ export default function OptionChainTable({positionData}) {
            dispatch(modalShow({ title: 'Validate', message: `Quantity: ${sellord.qty} or Price: ${sellord.price} invalid `, } ));
            return;
       }
-      // place order Selected: {"qty":75,"price":"145.85","symbol":"NSE:NIFTY25093025300PE"}
+      // place order Selected: {"qty":65,"price":"145.85","symbol":"NSE:NIFTY25093025300PE"}
       if( evt.action == 'SELL'){
          StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: sellord.qty, 
          price: sellord.price , symbol: sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled   }));
@@ -2235,10 +2239,10 @@ export default function OptionChainTable({positionData}) {
                                               volume,
                                             } 
                           return ( 
-                            <OptionProvider key={key}>
+                            <OptionProvider key={key+idx}>
                                
                                    {/* All components within here, including OptionsTable, can now access the context */}
-                                      <OptionRow   idx={idx} key={key} row={ rowvalue} onAction={handleAction} />
+                                      <OptionRow   idx={idx} key={key+idx} row={ rowvalue} onAction={handleAction} />
                                  
                           </OptionProvider>
                            )  }

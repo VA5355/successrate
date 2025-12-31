@@ -1,10 +1,21 @@
  
 import React, {Suspense, useEffect , useState,useMemo} from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronDown, 
+
+  RefreshCw, 
+  Layers, 
+  TrendingUp, 
+  Zap 
+} from 'lucide-react';
+import { ToggleLeft, Activity } from 'lucide-react';
 import { CommonConstants } from "@/utils/constants";
 import { StorageUtils } from "@/libs/cache";
 import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
 //import React, {useEffect, useState} from 'react'
 import tradeBook from './tradesample.json';
+import IndexCard from '../positionGrid/IndexCard';
 import './tradestyles.css'; // ✅ No 'tradestyles.'
 import {useDispatch, useSelector} from 'react-redux';
 import { getTradeData } from "./tradeGridBook.actions";
@@ -27,7 +38,7 @@ const TradeGridPlotterPDFCSV = ({ tradeDataB   }) => {
 const [exporting, setExporting] = useState(null);     // "pdf" | "csv" | null
 const [exportError, setExportError] = useState(null); // string | null
 
-
+   const tickerMap = useSelector(state => state.ticker.tickerMap);
    const currentPlatform = useSelector((state ) => state.misc.platformType)
    const [parsedData, setParsedData] = useState(() => JSON.parse(StorageUtils._retrieve(CommonConstants.tradeDataCacheKey).data));
    // useState(() => []);//StorageUtils._retrieve(CommonConstants.tradeDataCacheKey).data
@@ -42,6 +53,12 @@ const [exportError, setExportError] = useState(null); // string | null
    const [userLogged , setUserLogged ] = useState(false);
    // CHECK MOBILE OR DESTOP
    const isMobile = useIsMobile();
+   const [colorSENSEXClass, setColorSENSEXClass] = useState("bg-gray-100 text-black");
+            const [colorNIFTYClass, setColorNIFTYClass] = useState("bg-gray-100 text-black");
+          const [colorBankNIFTYClass, setColorBankNIFTYClass] = useState("bg-gray-100 text-black");
+
+
+
   function parseDate(str) {
     // e.g., "14-Jul-2025 09:48:22"
     const [datePart, timePart] = str.split(" ");
@@ -335,15 +352,19 @@ const handleExportCSV = async () => {
   return (
     <div className="overflow-x-auto w-full bg-zinc-100">
         <br/>
-        <br/>
-     {/*   <h1 className='text-black font-semibold mb-2 dark:text-white text-lg'>Trade Book</h1> */}
+        
+          <div className="max-w-7xl mx-auto space-y-4">
 
-        <div className="flex justify-between items-center mb-2">
-            <h1 className="text-black font-semibold dark:text-white text-lg">
-                Trade Book
+           {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Trade Book
             </h1>
-
-            <div className="flex gap-3">
+              <div className="flex gap-3">
                 <button
                 title="Download PDF"
                 onClick={handleExportPDF}
@@ -370,28 +391,18 @@ const handleExportCSV = async () => {
                 )}
                 </button>
             </div>
-        </div>
-          {exportError && (
+          </div>
+                 {exportError && (
                 <div className="text-sm text-red-600 mb-2">
                     {exportError} — please try later
                 </div>
-                )}
-
-
-
-      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
-        <div
-             className={
-              isMobile
-                  ? "mb-2 md:flex flex justify-between relative items-center"
-                  : "md:flex flex justify-between relative items-center"
-               }
-          > 
-                 {/* 
-                  <select className="p-2 rounded-lg bg-greylight dark:bg-greydark text-gretdark dark:text-white focus-visible:outline-none">
-                  md:hidden
-                 Alpha-Advantange or Fyers selection */}
-                <select value={platformType} onChange={(e) => {
+                )}       
+            {/* Broker Selector & Main Actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative group">  {/* { isMobile ? "mb-2 md:flex flex justify-between relative items-center"  : "md:flex flex justify-between relative items-center" } */}
+              <select 
+                value={platformType}
+                onChange={(e) => {
                                     if (e.target.value == '1') {
                                         console.log(" selected " + e.target.value)
                                     } else {
@@ -400,58 +411,47 @@ const handleExportCSV = async () => {
                                     }
                                     setPlatformType(e.target.value)
                   }}  
-                    className='p-2 focus-visible:outline-none block  rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> {/* dark:text-white */}
-                <option value={1}>Alph-Vantage</option>
-                <option value={2}>Fyers</option>
-               </select>
-             </div>
-       {/*  CLICK MARKET DATA   TICKER FOR 3 BANKNIFY NIFTY and SENSEX  */}      
-   
-       {/* Stream Market Data */}
-        <div className="flex flex-col md:flex-row justify-end gap-x-6 ml-auto">
-         {/*  <div className="flex items-center text-sm text-black dark:text-white font-medium">
-            <i className="iconsax mr-2" data-icon="toggle-off-square" />
-            Stream MARKET DATA
-          </div>*/}
-            <StreamToggleButton />
+                className="appearance-none pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+              >
+                <option value="1">Alpha-Vantage</option>
+                <option value="2">Fyers</option>
+              </select>
+              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+            </div>
+           
 
-          <div  id="sensex-status" className="flex gap-x-2 items-center">
-            <div className="flex flex-col items-start gap-y-1">
-            <div className="flex" >
-              <div className="flex justify-start">
-              SENSEX</div>
-               <div className="flex justify-end" ><span id="sensex-time" className="px-4 rounded bg-gray-100">--</span></div> 
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
+              <RefreshCw className="w-4 h-4" />
               
-               </div>
-            
-           <div className="flex justify-start"> 
-            <span id="sensex-symbol" className="px-2 py-1 rounded bg-gray-100">--</span>
-            <span id="sensex-price" className="px-2 py-1 rounded bg-gray-100">--</span>
-             </div>
-             </div>
-          </div >
-
-          <div  id="banknifty-status" className="flex gap-x-2 items-center">
-             <div className="flex flex-col items-start gap-y-1">
-            <div>BANKNIFTY </div>
-            <div className="flex justify-start"> <span id="banknifty-time" className="px-2 py-1 rounded bg-gray-100">--</span>
-            <span id="banknifty-symbol" className="px-2 py-1 rounded bg-gray-100">--</span>
-            <span id="banknifty-price" className="px-2 py-1 rounded bg-gray-100">--</span>
-            </div>
-            </div>
-          </div >
-
-          <div id="nifty-status" className="flex gap-x-2 items-center">
-             <div className="flex flex-col items-start gap-y-1">
-             <div>  NIFTY </div>
-             <div className="flex justify-start"><span id="nifty-time" className="px-2 py-1 rounded bg-gray-100">--</span>
-            <span id="nifty-symbol" className="px-2 py-1 rounded bg-gray-100">--</span>
-            <span id="nifty-price" className="px-2 py-1 rounded bg-gray-100">--</span>
-            </div>
-            </div>
-          </div  >
+              <span></span>
+            </button>
+          </div> 
+        
         </div>
-          <br/>
+                 {/* Stream Market Data */}
+       {/* Real-time Indices Ticker */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <IndexCard  spanId="sensex-price" statusId="sensex-status" 
+            label="SENSEX" 
+            symbol="BSE:SENSEX-INDEX" 
+            data={tickerMap['BSE:SENSEX-INDEX']} 
+            colorClass={`${colorSENSEXClass}`} timeId="sensex-time"
+          />
+          <IndexCard  spanId="banknifty-price" statusId="banknifty-status"
+            label="BANKNIFTY" 
+            symbol="NSE:NIFTYBANK-INDEX" 
+            data={tickerMap['NSE:NIFTYBANK-INDEX']} 
+            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorBankNIFTYClass}`} timeId="banknity-time"
+          />
+          <IndexCard  spanId="nifty-price" statusId="nifty-status"
+            label="NIFTY 50" 
+            symbol="NSE:NIFTY50-INDEX" 
+            data={tickerMap['NSE:NIFTY50-INDEX']} 
+            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorNIFTYClass}`} timeId="nifty-time"
+          />
+        </div>    
+
  
 
      {isMobile ? <MobileView sortedData={sortedData}
@@ -494,6 +494,26 @@ const handleExportCSV = async () => {
        
     </div>
     )}   {/*  MOBILE or DESKTOP VIEW  */}
+
+
+
+
+        </div>
+
+
+     {/*   <h1 className='text-black font-semibold mb-2 dark:text-white text-lg'>Trade Book</h1> */}
+
+    
+    
+
+
+
+      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
+   
+       {/*  CLICK MARKET DATA   TICKER FOR 3 BANKNIFY NIFTY and SENSEX  */}      
+   
+     
+
     </div>
   );
      

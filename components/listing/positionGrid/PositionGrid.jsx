@@ -1,5 +1,14 @@
  
 import React, {Suspense, useEffect , useState,useMemo, useRef } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronDown, 
+
+  RefreshCw, 
+  Layers, 
+  TrendingUp, 
+  Zap 
+} from 'lucide-react';
 import { ToggleLeft, Activity } from 'lucide-react';
 import { CommonConstants } from "@/utils/constants";
 import { StorageUtils } from "@/libs/cache";
@@ -25,6 +34,7 @@ import PlaceOrderButton from './PlaceOrderButton';
 import PositionsTabs from './PositionsTabs';
 import SellPlus2Order from './SellPlus2Order';
 import FetchPositionButton from './FetchPositionButton';
+import IndexCard from './IndexCard';
 import isEqual from 'lodash.isequal';
 //CUSTOME HOOK to DETECT MOBILE 
 //import { useIsMobile } from "./useIsMobile";
@@ -538,6 +548,9 @@ const handleSymbolClickOld = (symbol) => {
         setSymbolAvgPrice(costPrice);
       let rect = event?.target?.getBoundingClientRect() !==undefined ? event?.target?.getBoundingClientRect(): {right :120, top :340} ;
     let tableRect = tableRef.current?.getBoundingClientRect() !==undefined ? tableRef.current.getBoundingClientRect(): {right :20, top :440} ;
+     if(isMobile){
+        tableRect = {right:25, top:650};
+     }
         //  tableRef.current.getBoundingClientRect(); 
     console.log("handleSymbol Click "+JSON.stringify(rect)+ " "+JSON.stringify(tableRect));
     /*setTooltipData({
@@ -1005,22 +1018,27 @@ const getSortIndicator = (column) =>
 
   return (
     <div className=" w-full bg-zinc-100"> {/* overflow-x-auto removed for horizontal scrooll  */}
-        <br/>
-        <br/>
-      <h1 className='text-black font-semibold mb-2 dark:text-white text-lg'>Positions</h1>
-      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
-        <div
-             className={
-              isMobile
-                  ? "mb-2 md:flex flex justify-between relative items-center"
-                  : "md:flex flex justify-between relative items-center"
-               }
-          > 
-                 {/* 
-                  <select className="p-2 rounded-lg bg-greylight dark:bg-greydark text-gretdark dark:text-white focus-visible:outline-none">
-                  md:hidden
-                 Alpha-Advantange or Fyers selection */}
-                <select value={platformType} onChange={(e) => {
+    
+      <div className="p-4 bg-gray-50 dark:bg-slate-950 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-4">
+
+           {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Layers className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Positions
+            </h1>
+          </div>
+
+            {/* Broker Selector & Main Actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative group">  {/* { isMobile ? "mb-2 md:flex flex justify-between relative items-center"  : "md:flex flex justify-between relative items-center" } */}
+              <select 
+                value={platformType}
+                onChange={(e) => {
                                     if (e.target.value == '1') {
                                         console.log(" selected " + e.target.value)
                                     } else {
@@ -1029,11 +1047,26 @@ const getSortIndicator = (column) =>
                                     }
                                     setPlatformType(e.target.value)
                   }}  
-                    className='p-2 focus-visible:outline-none block  rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> {/* dark:text-white */}
-                <option value={1}>Alph-Vantage</option>
-                <option value={2}>Fyers</option>
-               </select>
-             </div>
+                className="appearance-none pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+              >
+                <option value="1">Alpha-Vantage</option>
+                <option value="2">Fyers</option>
+              </select>
+              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+            </div>
+
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
+              <RefreshCw className="w-4 h-4" />
+              
+              <span><FetchPositionButton onFetchComplete={ handleFetchComplete}
+                         sortedData={sortedData} updateSoldQty={fetchPendingOrders} /></span>
+            </button>
+          </div> 
+
+        </div>
+      {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
+      
        {/*  CLICK MARKET DATA   TICKER FOR 3 BANKNIFY NIFTY and SENSEX  */}      
    {/*  <div className="hidden md:flex relative items-center">
                    
@@ -1084,76 +1117,26 @@ const getSortIndicator = (column) =>
              </p>
       </div> */}
        {/* Stream Market Data */}
-        <div className="flex flex-col md:flex-row justify-between  gap-x-6 ml-auto">
-         {/*  <div className="flex items-center text-sm text-black dark:text-white font-medium">
-            <i className="iconsax mr-2" data-icon="toggle-off-square" />
-            Stream MARKET DATAs
-          </div>*/}
-
-           <div className="max-h-[100px] overflow-y-auto  flex justify-start  divide-gray-200">
-           {/*<BuyButton />*/}
-           <div className="flex justify-between  gap-x-4 items-center">
-            <div className="flex-shrink-0"><FetchPositionButton onFetchComplete={ handleFetchComplete}
-                         sortedData={sortedData} updateSoldQty={fetchPendingOrders} /></div>
-
-            <div className="ml-auto"> <StreamToggleButton /></div>
-            {/*colorSENSEXClass={colorSensex} colorBankNIFTYClass={colorBank} colorNIFTYClass={colorNifty} */}
-             <div className="ml-auto"> <FyersEventSourceFeed parsedData={parsedData} onFeed={handleFeedData}   /></div>  {/*  https://fyersmarketfeed.onrender.com/ */}
-           </div>
-          </div>
-           
-           <div className="flex justify-end" ><span id="sensex-time" className="px-4 rounded bg-gray-100">--</span></div> 
-                   
-          <p id="sensex-status" className="flex gap-x-2 items-center">
-            <div className="flex flex-col items-start gap-y-1">
-            <div className="flex" >
-              <div className="flex justify-start">
-              SENSEX</div>
-             {/*  <div className="flex justify-end" ><span id="sensex-time" className="px-4 rounded bg-gray-100">--</span></div> */}
-              
-               </div>
-            
-           <div className="flex justify-start"> 
-           {/* <span id="sensex-symbol" className="px-1 py-1 rounded bg-gray-100">--</span>*/}
-            <span id="sensex-price" className={`px-1 py-1 rounded bg-gray-100 ${colorSENSEXClass}`}>
-               {tickerMap['BSE:SENSEX-INDEX']?.ltp}  </span>
-             </div>
-             </div>
-          </p>
-
-          <p id="banknifty-status" className="flex gap-x-2 items-center">
-             <div className="flex flex-col items-start gap-y-1">
-            <div className="flex" >
-              <div className="flex justify-start"> BANKNIFTY </div>
-              {/*  <div className="flex justify-end" ><span id="banknifty-time" className="px-4 rounded bg-gray-100">--</span></div> 
-                    */}
-               </div>
-            <div className="flex justify-start"> {/*<span id="banknifty-time" className="px-1 py-1 rounded bg-gray-100">--</span>
-            <span id="banknifty-symbol" className="px-1 py-1 rounded bg-gray-100">--</span>*/}
-            <span id="banknifty-price" className={`px-1 py-1 rounded bg-gray-100 ${colorBankNIFTYClass}`}>
-              {tickerMap['NSE:NIFTYBANK-INDEX']?.ltp} 
-               </span>
-            </div>
-            </div>
-          </p>
-
-          <p id="nifty-status" className="flex gap-x-2 items-center">
-             <div className="flex flex-col items-start gap-y-1">
-            <div className="flex" >
-              <div className="flex justify-start">  NIFTY </div>
-               {/*   <div className="flex justify-end" ><span id="nifty-time" className="px-4 rounded bg-gray-100">--</span></div> 
-               */}
-               </div>
-
-             <div className="flex justify-start"> {/*<span id="nifty-time" className="px-1 py-1 rounded bg-gray-100">--</span>
-           <span id="nifty-symbol" className="px-1 py-1 rounded bg-gray-100">--</span>*/}
-            <span id="nifty-price" className={`px-1 py-1 rounded bg-gray-100 ${colorNIFTYClass}`}> 
-                   {tickerMap['NSE:NIFTY50-INDEX']?.ltp} 
-
-            </span>
-            </div>
-            </div>
-          </p>
+       {/* Real-time Indices Ticker */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <IndexCard  spanId="sensex-price" statusId="sensex-status" 
+            label="SENSEX" 
+            symbol="BSE:SENSEX-INDEX" 
+            data={tickerMap['BSE:SENSEX-INDEX']} 
+            colorClass={`${colorSENSEXClass}`} timeId="sensex-time"
+          />
+          <IndexCard  spanId="banknifty-price" statusId="banknifty-status"
+            label="BANKNIFTY" 
+            symbol="NSE:NIFTYBANK-INDEX" 
+            data={tickerMap['NSE:NIFTYBANK-INDEX']} 
+            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorBankNIFTYClass}`} timeId="banknity-time"
+          />
+          <IndexCard  spanId="nifty-price" statusId="nifty-status"
+            label="NIFTY 50" 
+            symbol="NSE:NIFTY50-INDEX" 
+            data={tickerMap['NSE:NIFTY50-INDEX']} 
+            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorNIFTYClass}`} timeId="nifty-time"
+          />
         </div>
           <br/>
           <div className="flex justify-end ">  
@@ -1164,102 +1147,33 @@ const getSortIndicator = (column) =>
                 </div>
             </div>
            </div>
-             <br/>
-{/*<div className="overflow-x-auto w-full">
-  <table className="min-w-full table-auto text-sm border-collapse">
-    <thead className="bg-gray-200 text-gray-700">
-      <tr>
-        <th className="px-4 py-2 text-left">Instrument</th>
-        <th className="px-4 py-2 text-left">Product Type</th>
-        <th className="px-4 py-2 text-left">Quantity</th>
-        <th className="px-4 py-2 text-left">Price</th>
-        <th className="px-4 py-2 text-left">Time</th>
-        <th className="px-4 py-2 text-left">Trade Value</th>
-        <th className="px-4 py-2 text-left">Buy/Sell</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr className="bg-green-300">
-        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
-        <td className="px-4 py-2">INTRADAY</td>
-        <td className="px-4 py-2">75</td>
-        <td className="px-4 py-2">248.88</td>
-        <td className="px-4 py-2">13:55:12</td>
-        <td className="px-4 py-2">18666.00</td>
-        <td className="px-4 py-2">BUY</td>
-      </tr>
-      <tr className="bg-green-300">
-        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
-        <td className="px-4 py-2">INTRADAY</td>
-        <td className="px-4 py-2">75</td>
-        <td className="px-4 py-2">246.38</td>
-        <td className="px-4 py-2">13:53:02</td>
-        <td className="px-4 py-2">18478.50</td>
-        <td className="px-4 py-2">BUY</td>
-      </tr>
-      <tr className="bg-green-300">
-        <td className="px-4 py-2">NIFTY2580725100PE</td>
-        <td className="px-4 py-2">INTRADAY</td>
-        <td className="px-4 py-2">75</td>
-        <td className="px-4 py-2">382.6</td>
-        <td className="px-4 py-2">13:51:22</td>
-        <td className="px-4 py-2">28695.00</td>
-        <td className="px-4 py-2">SELL</td>
-      </tr>
-      <tr className="bg-red-300">
-        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
-        <td className="px-4 py-2">INTRADAY</td>
-        <td className="px-4 py-2">75</td>
-        <td className="px-4 py-2">249.9</td>
-        <td className="px-4 py-2">13:50:11</td>
-        <td className="px-4 py-2">18742.50</td>
-        <td className="px-4 py-2">SELL</td>
-      </tr>
-      <tr className="bg-green-300">
-        <td className="px-4 py-2">NIFTY25JUL24500CE</td>
-        <td className="px-4 py-2">INTRADAY</td>
-        <td className="px-4 py-2">75</td>
-        <td className="px-4 py-2">241.85</td>
-        <td className="px-4 py-2">13:48:33</td>
-        <td className="px-4 py-2">18138.75</td>
-        <td className="px-4 py-2">BUY</td>
-      </tr>
-    </tbody>
-  </table>
-</div> */}
-     <div className="p-1 justify-start mx-auto">   {/* p-4 max-w-3xl  */}
-      {/* text-center mb-6 */}
-      {/*<h4 className="text-2xl font-bold "> 
-        Option Chain 
-      </h4>*/}
+
       
-      {/* ✅ drop in the main option chain component OptionChainTableSideway OptionChainTable <OptionChainSwipeUI /><OptionChainTableSingleUI/>
-     */}
-     <div className="min-h-screen bg-gray-50 p-4">
-      <OptionChainTabs positionData={parsedData} />
-    </div>
-    </div>
+      </div>  {/* max w 7xl */}
 
-     
+       <div className="p-1 justify-start mx-auto">   {/* p-4 max-w-3xl  */}
+          {/* text-center mb-6 */}
+          {/*<h4 className="text-2xl font-bold "> 
+            Option Chain 
+          </h4>*/}
+          
+          {/* ✅ drop in the main option chain component OptionChainTableSideway OptionChainTable <OptionChainSwipeUI /><OptionChainTableSingleUI/>
+        */}
+        <div className="min-h-screen bg-gray-50 pt-[14px]">
+          <OptionChainTabs positionData={parsedData} />
+        </div>
+       </div>
+       <div className="max-w-7xl mx-auto space-y-1"> 
+        <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
+            userLogged={userLogged}
+            handleSort={handleSort}
+            getSortIndicator={getSortIndicator}
+            handleSymbolClick={handleSymbolClick}   tableRef={tableRef}/>
+       
+       </div>
 
 
-
-      <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
-  userLogged={userLogged}
-  handleSort={handleSort}
-  getSortIndicator={getSortIndicator}
-  handleSymbolClick={handleSymbolClick}   tableRef={tableRef}/>
-       {/*  MOBILE or DESKTOP VIEW  */}
-     <div className="max-h-[100px] overflow-y-auto   divide-gray-200">
-           {/*<BuyButton />*/}
-           <div className="flex justify-between items-center">
-            <CancelOrderButtonWithSuspense/>
-               <div className="ml-auto"> <CustomOptionFeed parsedData={parsedData} onFeed={handleCustomFeedData}   /></div>
-            <div className="ml-auto"><PlaceOrderButton /></div>
-           </div>
-      </div>
- 
-    {showOrdersModal && (
+        {showOrdersModal && (
   <>
         {/* Backdrop */}
         <div className="fixed inset-0 bg-black bg-opacity-40 z-40"></div>

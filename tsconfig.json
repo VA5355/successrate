@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["env.d.ts","next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "redux/slices/miscSlice.ts", "redux/slices/stockSlice.ts", "components/company/order/OrderTable.jsx", "components/listing/tradeGrid/tickerWebSocket.actions.js", "components/listing/tradeGrid/useIsMobile.js", "components/listing/tradeGrid/useIsMobile.tst"],
+  "include": ["env.d.ts","next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "redux/slices/miscSlice.ts", "redux/slices/stockSlice.ts", "components/company/order/OrderTable.jsx", "components/listing/tradeGrid/tickerWebSocket.actions.js", "components/listing/tradeGrid/useIsMobile.js", "components/listing/tradeGrid/useIsMobile.tst", "app/VroomSwipeButton.jsx", "components/listing/positionGrid/IndexCard.jsx"],
   "exclude": ["node_modules"]
 }

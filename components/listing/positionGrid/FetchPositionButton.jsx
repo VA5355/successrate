@@ -97,7 +97,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
                 dispatch( savePositionBook(([...redentPositionData.data])));
                 /* for faster rendering */
               
-                 positionData.forEach(row => {
+                 positionData?.forEach(row => {
                   // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
                          //        console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
                                   let sty = row.symbol?.split(":");let custSy= undefined;
@@ -161,6 +161,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
           intervalRef.current = null;
           setIsStreaming(false);
            stopPolling();
+           setShowModal(false);
       }, 1000);
    /*  setThreeSec(threeSecInterval);
         let after45SecClosePoll =   setTimeout (  () => {
@@ -187,11 +188,27 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
     }
   } else {
        console.log("User not Logged in ");
+       setTimeout(() => {
+          
+           setShowModal(false);
+      }, 2000);
        setShowModal(true);
 
     }
    
-
+/* className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
+        isStreaming
+          ? 'bg-primary green hover:bg-green-800 border-green-700'
+          : 'bg-gray-100 border-gray-300 text-gray-600'
+      }`} 
+      
+       {isStreaming ? (
+        <Activity size={20} className=" animate-pulse " />
+      ) : (
+        <ToggleLeft size={20} className="text-gray-500" />
+      )}
+      
+      */
   };
 
   return (
@@ -199,20 +216,12 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
     <button
        type="button"     
      onClick={(e) => handlePositions(e)}
-      className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
-        isStreaming
-          ? 'bg-primary green hover:bg-green-800 border-green-700'
-          : 'bg-gray-100 border-gray-300 text-gray-600'
-      }`}
+     
     >
-      {isStreaming ? (
-        <Activity size={20} className=" animate-pulse " />
-      ) : (
-        <ToggleLeft size={20} className="text-gray-500" />
-      )}
-      <span className="text-sm font-semibold font-medium">
-        {isStreaming ? 'Fetching' : 'Positions'}
-      </span>
+     
+      {/* <span className="text-sm font-semibold font-medium"> */}
+        {isStreaming ? 'Fetching' : 'Refresh Positions'}
+     {/* </span>*/}
     </button>
     {showModal && (
         <>
@@ -229,7 +238,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
                  
                 <button
                   
-                  className="flex-1 bg-brandgreen-600  py-1 rounded-lg hover:bg-green-700 transition"
+                  className="flex-1 bg-green-700 py-1 rounded-lg hover:bg-brandgreen-600 transition"
                 >
                  User Not Logged
                 </button>

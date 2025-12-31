@@ -17,7 +17,7 @@ import "./sidewaysPriceSlider.css";
 
 function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPrice }) {
   const [value, setValue] = useState(min);
-
+   const lotSize = 65;
   return (
     <div className="w-full flex flex-col items-center justify-center py-2">
       {/* Floating Value */}
@@ -160,7 +160,7 @@ function SwipePillBase({
   const x = useMotionValue(0);
 
   // internal state: locked, units (base units), limitPrice
-  // we store 'units' (not multiplied) and show total = units * 75 where needed
+  // we store 'units' (not multiplied) and show total = units * 65 where needed
   const initialUnits = (() => {
     const stored = qtyMap.get(idx);
     // if stored is undefined -> default 0
@@ -208,7 +208,7 @@ const [scheduled, setScheduled] = useState(false);
       if (info.offset.x > threshold) {
         setJustAction("BUY");
         try {
-          await callAction(onBuy, parseInt(units * 75), roundToNearest5(limitPrice) ,
+          await callAction(onBuy, parseInt(units * lotSize), roundToNearest5(limitPrice) ,
               
                 orderType,
                 scheduled
@@ -220,7 +220,7 @@ const [scheduled, setScheduled] = useState(false);
       } else if (info.offset.x < -threshold) {
         setJustAction("SELL");
         try {
-          await callAction(onSell, parseInt(units * 75), roundToNearest5(limitPrice),
+          await callAction(onSell, parseInt(units * lotSize), roundToNearest5(limitPrice),
                
                 orderType,
                 scheduled
@@ -366,7 +366,7 @@ const [scheduled, setScheduled] = useState(false);
                 {/*  onSell={(qty) => onAction?.({ side: "CALL", action: "SELL", qty:qty, strike, row })} */}
              <div className="h-[5px] right-[-56px] w-full flex items-center justify-center 
                         bg-grey-400 dark:text-white font-bold text-base">
-                   {parseInt(units * 75)}
+                   {parseInt(units * lotSize)}
                </div>
           
           {/* Replace with your SidewaysPriceSlider component */}
@@ -380,7 +380,7 @@ const [scheduled, setScheduled] = useState(false);
 
           {/* Qty display */}
           <div className="h-[5px] right-[-56px] w-full flex items-center justify-center font-bold text-base">
-            {parseInt(units * 75)}
+            {parseInt(units * lotSize)}
           </div>
         </div>
 
