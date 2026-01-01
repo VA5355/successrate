@@ -623,12 +623,12 @@ const refreshTrades =  (event ) => {
 
                   <div className="flex justify-between md:justify-end md:items-center md:py-4 md:px-2 py-1">
                     <span className="md:hidden text-slate-400 text-xs">Price</span>
-                    <span className="text-slate-600 font-mono">₹{row.tradePrice.toLocaleString()}</span>
+                    <span className="text-slate-600 font-mono">₹{row.tradePrice?.toLocaleString()}</span>
                   </div>
 
                   <div className="flex justify-between md:justify-end md:items-center md:py-4 md:px-2 py-1">
                     <span className="md:hidden text-slate-400 text-xs">Total Value</span>
-                    <span className="font-bold text-slate-800">₹{row.tradeValue.toLocaleString()}</span>
+                    <span className="font-bold text-slate-800">₹{row.tradeValue?.toLocaleString()}</span>
                   </div>
 
                   <div className="flex justify-between md:justify-center md:items-center md:py-4 md:px-2 py-1">
