@@ -4,6 +4,8 @@ import { ToggleLeft, Activity } from 'lucide-react';
 //import { getSensexTickerData  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./streamTicker.actions";
 // ThreeSec HTTP FETCH 
  import { placeBuyOrder ,placeSellOrder  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./placeBuyOrder.actions";
+
+import { useModal } from '@/providers/ModalProvider';
 import {useDispatch, useSelector} from 'react-redux';
 import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
@@ -25,6 +27,9 @@ const SellPlus2Order = forwardRef(({   isMobile , sellPlusSymbol ,symAvgPrice, b
   const [showSymbolModal, setShowSymbolModal] = useState(false);
    const [selectedSymbol, setSelectedSymbol] = useState(null);
  const [ symbolArray,setSymbolArray ] = useState([]);
+   const isLoading = useSelector((state) => state.loader.isLoading);
+      const { showFramerModal, hideModal } = useModal();
+
   const lotSize = 65;
  
   // New Fields
@@ -162,10 +167,28 @@ const dispatchSellSelected = ()=> {
    if(selectedSymbol && (symbolArray.length > 0) && positionPrice > 0 && positionQty > 0  && orderType !==undefined && productMode !==undefined) {  
      // const qtyNum = Number(tradeSet.qty);
     // const priceNum = Number(tradeSet.price);
-      
+    /*dispatch(
+      openModal({
+        modalType: 'SAMPLE_MODAL',
+        modalProps: {
+          title: 'Process',
+          message: 'Processing ....',
+        },
+      })
+    )*/
+     
+
+        showFramerModal({ 
+               status: 'loading', 
+              message: `Initiating sell order for ${positionQty} ${selectedSymbol}...` 
+            });
+
+
        StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled}));
-       dispatch(placeSellOrder({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled}));
-    }
+       dispatch(placeSellOrder({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled, showFramerModal, hideModal }));
+            
+            
+      }
 }
 const handlePositionPriceOff = (gold)=> {
      let value = parseFloat(gold) >(symAvgPrice+2) ? parseFloat(gold) :(symAvgPrice+2) || 0;

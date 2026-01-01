@@ -6,6 +6,7 @@ import { saveBuyOrderBook } from '@/redux/slices/buyOrderBookSlice';
 import { saveSellOrderBook } from '@/redux/slices/sellOrderBookSlice';  
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { showModal, showError } from '../../common/service/ModalService';
+import { useModal } from '@/providers/ModalProvider';
 import {CommonConstants} from "@/utils/constants"
 import toast from "react-hot-toast"
 import { FYERSAPINSECSV ,FYERSAPITHREESECQUOTE , FYERSAPIORDERBOOKSURL ,  FYERSAPITICKERACCESTOKEN, 
@@ -895,7 +896,17 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
      recentSellledOrder:'recentSellledOrder',
      recentSellledOrderStatus:'recentSellledOrderStatus',
 */
-export const placeSellOrder = (_id, qty, price ,symbol ) => {
+export const placeSellOrder = ( params = {}   ) => {
+
+     // Destructuring with a default value = {} prevents the crash if params is missing
+       const { _id, qty, price ,symbol, showFramerModal, hideModal, } = params;
+        //const { _id, qty, price ,symbol  } = orderData;
+        let spinnerIsAvailable = true;
+       if (showFramerModal ===undefined || hideModal === undefined) {
+          console.error("Modal functions were not passed to placeSellOrder");
+          spinnerIsAvailable = false;
+         }
+       
       // SAMPLE SELLDEFAULT DATA 
        console.log("placeSellOrder: _id  "+JSON.stringify( _id, qty, price, symbol))
       // THIS CAUSE OVERRIDE DEFAULT SAMPLE DATA   
@@ -1046,6 +1057,9 @@ export const placeSellOrder = (_id, qty, price ,symbol ) => {
                                 console.log("sellOrderJSON "+JSON.stringify(sellOrderJSON));
                    
                                 if (sellOrderJSON !==undefined) {
+                                       // Auto-hide success after 3 seconds
+                                      (spinnerIsAvailable ?   setTimeout(hideModal, 300): console.log("Spinner unavailavle to close ") ) ;
+
                                     if (sellOrderJSON["FYERS"] !==undefined){
                                       let sym = sellOrderJSON["FYERS"];
                                        dispatch(showModal({ title: 'Order Status', message: `${sym} sent `, }  ));

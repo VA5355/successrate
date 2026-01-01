@@ -1,6 +1,8 @@
 import React, { useState,  useRef , useEffect ,useMemo} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import { ToggleLeft, Activity } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { orderBookData } from "../positionGrid/orderBook.actions";
@@ -1195,7 +1197,41 @@ const callBackEventSource = (eventOrderData) => {
   return (
     <> 
     <div  className="flex justify-between  gap-x-4 items-center"> 
-          <button id="POLLORDERBOOK"
+           <span  id="POLLORDERBOOK"
+                    onClick={handleOrderBookPoll} className="inline-flex items-center justify-center gap-1.5 text-sm font-medium transition-all duration-200">
+                      <button class="flex items-center gap-2 px-4 py-2.5  bg-brandgreenlight hover:bg-blue-700 text-brandgreen rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
+                        
+                        
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw w-4 h-4" aria-hidden="true">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg><span>
+                           </span></button>
+                 {/*  <AnimatePresence mode="wait">
+                    {isOrderPolling && (
+                      <motion.span
+                        key="loader"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        className="flex items-center justify-center"
+                      >
+                        <Loader2 
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-blue-600 dark:text-blue-400" 
+                          strokeWidth={2.5}
+                        />
+                      </motion.span>
+                    )}
+                  </AnimatePresence> */}
+                  {/*    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                              <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.024-.983a1.125 1.125 0 0 1 0 1.966l-5.603 3.113A1.125 1.125 0 0 1 9 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113Z" clipRule="evenodd" />
+                            </svg> */}
+                    {   (isMobile ?  (<> 
+                                </>) : 
+                      
+                              (<span className="text-sm font-semibold font-medium" > {isOrderPolling ? 'Fetching' : 'Poll Orders'} </span>) ) }  
+             </span>
+
+         {/*  <button id="POLLORDERBOOK"
                     onClick={handleOrderBookPoll}
                     className={` flex items-start justify-start gap-2 px-1 py-2 h-[35px] rounded-lg mx-4 mt-1 font-semibold
                         hover:bg-blue-200 bg-brandgreenlight dark:text-white   ${
@@ -1205,12 +1241,14 @@ const callBackEventSource = (eventOrderData) => {
                     }`}
                     >
                     {isOrderPolling ? (
-                        <Activity size={5} className=" animate-pulse " />
+                        <Activity size={15} className=" animate-pulse " />
                     ) : (
-                        <ToggleLeft size={5} className="text-gray-500" />
+                        <ToggleLeft size={15} className="text-gray-500" />
                     )}  
-                        <span className="text-sm font-semibold font-medium" > {isOrderPolling ? 'Fetching' : 'Poll Orders'} </span>
-                    </button>
+                      {   (isMobile ?  (<> </>) : 
+                      
+                              (<span className="text-sm font-semibold font-medium" > {isOrderPolling ? 'Fetching' : 'Poll Orders'} </span>) ) }  
+                    </button> */}
         <div className="flex justify-end">  
             <div className={`bg-zinc-100 rounded-md ${
           isMobile

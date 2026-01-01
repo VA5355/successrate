@@ -14,6 +14,8 @@ import tickerSlice,{  TickerSliceProps } from './slices/tickerSlice';
 import webSocketSlice,{  WebSocketSliceProps } from './slices/webSocketSlice';
 
 import modalReducer, { createModalMiddleware } from '../components/common/service/ModalService';
+import modalGenReducer from './slices/modalGenSlice';
+import loadingReducer from './slices/loadingSlice';
 
 export interface GlobalState {
     stock: StockSliceProps;
@@ -51,7 +53,9 @@ export const store = configureStore({
         banknifty:tickerBankNiftySlice,
         ticker:tickerSlice,
         websocket: webSocketSlice, // <-- THIS makes state.websocket available
-         modal: modalReducer 
+         modal: modalReducer ,
+         modalpop : modalGenReducer,
+         loader: loadingReducer
 
 	},
         middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(modalMiddleware),
