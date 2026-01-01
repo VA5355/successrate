@@ -571,7 +571,19 @@ const handleSymbolClickOld = (symbol) => {
            console.log("y: rect.top "+rect.top );
           console.log("y: rect.top - srcl "+ (rect.top - srcl)); 
     }
-      setTooltipPos({
+     if(isMobile){
+            setTooltipPos({
+      x: rect.right + 8, // 8px gap from the element
+      y: rect.top - srcl,
+      marginTop:  "4px",
+      marginLeft: "31px" 
+      /* marginTop: "-227px",
+       marginLeft: "53px" */
+    });
+
+     }
+     else { 
+          setTooltipPos({
       x: rect.right + 8, // 8px gap from the element
       y: rect.top - srcl,
       marginTop:  "-44px",
@@ -580,6 +592,8 @@ const handleSymbolClickOld = (symbol) => {
        marginLeft: "53px" */
     });
 
+     }
+  
    
    
 
@@ -1214,10 +1228,10 @@ const getSortIndicator = (column) =>
       </>
     )}
       
-           {/* Tooltip-style dialog */}
+           {/* Tooltip-style dialog bring on top so z-[99..]*/}
       {tooltipData && (
         <div   ref={tooltipRef}
-          className="  z-50 bg-white/90 border border-gray-300 rounded-lg shadow-lg p-2 w-[300px]"
+          className="  inset-0  z-90 bg-white/90 border border-gray-300 rounded-lg shadow-lg p-2 w-[300px]"
           style={{
             top: tooltipPos.y,
             left: tooltipPos.x,
