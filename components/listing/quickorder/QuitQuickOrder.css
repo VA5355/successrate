@@ -1,0 +1,16 @@
+@media (max-width: 420px) {
+  .option-card {
+    min-width: 200px;
+  }
+  .mobile-margin-qty { 
+    margin-left: 10px !important;
+    width: 50% !important;
+  }
+    .mobile-margin-price { 
+    margin-left:5px !important; width: 50% !important;
+  }
+  .mobile-modal-sellcard {
+      top: 320px !important;
+    bottom: 300px !important;
+  }
+}

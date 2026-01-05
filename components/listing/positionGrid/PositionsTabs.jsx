@@ -8,6 +8,10 @@ import { savePositionStreamBook } from '@/redux/slices/positionSlice';
  import   useIsMobile   from "../tradeGrid/useIsMobile";
 import SellPlus2Order from './SellPlus2Order';
 
+
+import { openModal } from '@/redux/slices/modalGenSlice';
+//import ModalManager from '../../../app/error/ModalManger';
+
 import { motion, AnimatePresence  , useMotionValue, useTransform } from 'framer-motion';
 import { XCircle, Edit3 } from "lucide-react";
 import { 
@@ -580,6 +584,16 @@ const callBackPositionFeedAction = (positionsFeed) => {
 } 
  const startStreaming = async  () => { 
     // fetch the already placed order's if they are retrieved from the normal order poll ordres button 
+     /// instead of passing sortedSocketData , et us pass parsedData
+     // sortedSocketData be only passed , as the streaming function on the Live Streams tab click , looks for Fyers Position feed Websocket on 5000 port locally 
+     // once the respective prod render Websockets i.e. 
+     //  at https://dashboard.render.com/web/srv-d2q1qv3e5dus73bis2gg   login using fairvinay@gmail.com  Bench@123_123 
+     //     Positions feed onestocks / Production / fyers-positions-socket-git    https://fyers-positions-socket-git.onrender.com  https://github.com/Fairvinay/fyers-positions-socket-git/tree/master
+    
+     //  at https://dashboard.render.com/web/srv-d2cj973uibrs738i7gig          https://fyersmarketfeed.onrender.com  
+     //     SENSEX BANKNIFTY NIFTY market feed at    onestocks / Production  / fyersmarketfeed  https://github.com/Fairvinay/fyersfeed/tree/master
+     //  at 
+      //    Orders at  onestocks / Production / fyersorders   https://fyersorders.onrender.com   https://github.com/Fairvinay/fyersgeneral-socket-git/tree/master
      alsoUpdateComputedSocketData(sortedSocketData);
      dispatch(startEventSource(false , [],callBackPositionFeedAction));
  
@@ -598,23 +612,39 @@ const handleModifyPosition = (row) => {
 };
 
 
-const handleDeskClosePosition = (row,e) => {
-  console.log("Close position:", row.symbol);
-  let symbol = row.symbol;
-  let netBought = row.netQty;
-  let costPrice = row.avgPrice;
+/**
+ * Updates the state for the SellPlus2Order modal.
+ * We use the functional update pattern or a sequential update to ensure
+ * the modal receives the fresh data from the specific row swiped.
+ */
+const handleDeskClosePosition = (row, e) => {
+  console.log("Close position for:", row.symbol);
 
-     setSellPlusSymbol(symbol);
-        setNetBought(netBought);
-        setSwipeQty(netBought);
-        setSymbolAvgPrice(costPrice);
-        setPositionQty(netBought)
-   // 3. Call the exposed function from the parent
+  // 1. Extract values from the row parameter
+  const { symbol, netQty, avgPrice } = row;
+
+  // 2. Reset the trigger state first (Optional but recommended)
+  // This helps if the user closes a modal and immediately re-opens the same symbol
+  setSellPlusSymbol(null);
+
+  // 3. Update all related states immediately
+  // Since React batches these updates, the modal will see all new values at once
+  setNetBought(netQty);
+  setSwipeQty(netQty);
+  setSymbolAvgPrice(avgPrice);
+  setPositionQty(netQty);
+  
+  // 4. Set the symbol last to trigger the conditional rendering of the modal
+  setSellPlusSymbol(symbol);
+
+  // 5. Trigger the child component reference
+  // We use a small timeout or wait for the next tick if the ref depends 
+  // on the modal being rendered by the new state.
+  setTimeout(() => {
     if (childRef.current) {
       childRef.current.triggerClick();
-    }      
-  // handleSymbolClick(e, row["symbol"], row["avgPrice"], row["netQty"])
-  // fire square-off / close API
+    }
+  }, 0);
 };
 
 const handleDeskModifyPosition = (row) => {
@@ -627,6 +657,22 @@ const handleDeskModifyPosition = (row) => {
   // Helper for Profit/Loss colors
   const getPnlClass = (val) => val >= 0 ? "text-emerald-600 font-semibold" : "text-rose-600 font-semibold";
   const getPnlBg = (val) => val >= 0 ? "bg-emerald-50" : "bg-rose-50";
+
+// Calculate the total P&L dynamically
+const totalNetPnl = React.useMemo(() => {
+  return filteredData.reduce((sum, row) => {
+    // We use parseFloat or Number to ensure math works even if data is stringified
+    // and provide a fallback of 0 if the value is undefined
+    return sum + (Number(row.calPrf) || 0);
+  }, 0);
+}, [filteredData]);
+
+// Determine color based on profit or loss
+const totalPnlClass = totalNetPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
+
+
+
+
 
   const renderNormalFetchTable = (data) => (<> {!isMobile && ( 
      <div className="p-2 md:p-6 bg-gray-50 min-h-screen font-sans">
@@ -682,9 +728,24 @@ const handleDeskModifyPosition = (row) => {
             </div>
           
         </div>
-             { sellPlusSymbol    && (   <SellPlus2Order  isMobile ={  isMobile} sellPlusSymbol= {sellPlusSymbol} symAvgPrice={symbolAvgPrice} boughtQty={swipeQty}  qtySold={positionQty} 
-             setButtonSell={true}  ref={childRef} />
-           )}   
+        {/**
+         * RENDER LOGIC
+         * Added a 'key' prop to the Modal. 
+         * This is the most important part: changing the key forces React to 
+         * unmount the old modal and mount a fresh one with the new row's data.
+         */}
+          {sellPlusSymbol && (
+            <SellPlus2Order
+              key={`${sellPlusSymbol}_${swipeQty}`} // Forces re-mount when symbol or qty changes
+              isMobile={isMobile}
+              sellPlusSymbol={sellPlusSymbol}
+              symAvgPrice={symbolAvgPrice}
+              boughtQty={swipeQty}
+              qtySold={positionQty}
+              setButtonSell={true}
+              ref={childRef}
+            />
+          )}
         {/* MOBILE CARD VIEW (Visible below md) */}
         <div className="md:hidden divide-y divide-gray-100">
           <AnimatePresence>
@@ -749,9 +810,14 @@ const handleDeskModifyPosition = (row) => {
           <div className="flex items-center gap-4">
              <div className="text-right">
                 <div className="text-[10px] opacity-50 uppercase leading-none">Net P&L</div>
-                <div className="text-emerald-400 font-mono font-bold">
+                   <div className={`font-mono font-bold ${totalPnlClass}`}>
+                        {totalNetPnl >= 0 ? '+' : ''}
+                        {totalNetPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                   </div>
+                {/* <div className="text-emerald-400 font-mono font-bold">
                   +4,505.00
                 </div>
+                */}
              </div>
           </div>
         </div>

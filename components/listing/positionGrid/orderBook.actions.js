@@ -431,6 +431,65 @@ export const parseOrderBook = (orderB ) => {
     }
     return orderRecent; 
 }
+export const parseOrderBookFast = (orderB ) => {
+    let orderFirst = undefined;
+    let orderRecent = undefined;
+    let mutlipleOrders = false;
+ let pendingCancelableOrders =[]; 
+    if(  orderB !== null && orderB !== undefined ) {
+        // check orderBook array 
+        let ob =(  orderB.orderBook ?  orderB.orderBook : (orderB["orderBook"] ?   orderB["orderBook"] : null) ) ;
+        if( ob !== null && ob !== undefined ) {
+         //  console.log("ORDER BOOK BUTTON : OrderBook orders exist ");
+            // get FIRST ORDER 
+            if( Array.isArray(ob)  ) {
+                orderFirst = ob[0];
+                mutlipleOrders =true;
+                orderRecent = ob;
+            }
+            else { 
+              orderRecent = [ob];
+            }
+           pendingCancelableOrders =  orderRecent.filter(odSingle => parseInt(odSingle.status) == 6);
+
+         
+        }
+         else{
+             console.log("ORDER BOOK BUTTON :parseOrderBookFast  OrderBook array could  not fetched ");
+          }
+    }
+    else {
+         console.log("ORDER BOOK BUTTON : parseOrderBookFast  OrderBook request either failed or stopped ");
+    }
+    return pendingCancelableOrders; 
+}
+export const orderBookBasicFastFetch  = async (_id) => { 
+
+      try {
+             // FETCH ORDER BOOK DATA only when SUER LOGGED ON 
+ 
+               // IFF Logged in fetch the ORDER BOOK Book 
+         const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
+            
+            let auth_code = res1.data['auth_code'];
+            if (auth_code&& auth_code !== null && auth_code !== undefined) {
+                  const resorderbook = await API.get(FYERSAPIORDERBOOKSURL , {params: { "auth_code" : auth_code }});
+                  const orderData = await resorderbook.data ;
+                          // PARSE and SEGREGATE ORDER BOOK fill recentOrderPlaced
+                  let orderRecent =     parseOrderBook (orderData); 
+
+                 
+            }
+          }
+        }
+       finally {
+            dispatch(disableLoader())
+        }
+       
+  }
+
+ 
 export const orderBookData = (_id ) => {
       // SAMPLE ORDER BOOK DEFAULT DATA 
       // console.log("orderBookData: _id  "+JSON.stringify( _id))

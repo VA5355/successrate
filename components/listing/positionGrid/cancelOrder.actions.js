@@ -496,7 +496,7 @@ export const placeQuickCancelOrder = (_id) => {
                      if(order_id !==null && order_id !== undefined) {  
 
                         const fetchCANCELORDERStatus = async (acctoken) => {
-                      for (let endP = 0 ; endP < CANCEL_URL.length ; endP ++) { 
+                   //   for (let endP = 0 ; endP < CANCEL_URL.length ; endP ++) { 
                        try {
                           const sym = 'NSE:SENSEX-INDEX';
                           const params = new URLSearchParams({
@@ -529,16 +529,17 @@ export const placeQuickCancelOrder = (_id) => {
                               const QUICKORDERSTATUS = document.getElementById(QUICKORDERSTATUS);
                               if(QUICKORDERSTATUS !==null && QUICKORDERSTATUS !== undefined){
                                      QUICKORDERSTATUS.textContent = `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} ` ;
-                                     setTimeout(()=> {
+                                     //disabling the timeout for as of Jan 04 2026 
+                                    /* setTimeout(()=> {
                                          // clear the order status display after 3 seconds
                                            QUICKORDERSTATUS.textContent ='';
-                                     },30000);
+                                     },30000);*/
                               }
                             }
                           catch(ere){
                               console.log("placeQuickCancelOrder: _id error "+order_id+" CANCEL FAILED  "+JSON.stringify(ere))  
                           }
-                        }// FOR LOOP 
+                      //  }// FOR LOOP 
                       }
                      fetchAuthToken().then(async aces_token   => { 
                          await  fetchCANCELORDERStatus(aces_token);

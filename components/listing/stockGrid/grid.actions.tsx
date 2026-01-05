@@ -154,8 +154,11 @@ export const fetchMoreStocks = (_gainers: any, _losers: any, _activelyTraded: an
                     console.log("positions data from cahce ")
                     redentPositionData = dataFromCache2;
                 }
+                if(Array.isArray(positions) ){ 
                 dispatch( savePositionBook(([...positions])));
                 dispatch( savePositionStreamBook(([...positions])));
+            
+                 }
                 StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
            } , 9000);  
              }   

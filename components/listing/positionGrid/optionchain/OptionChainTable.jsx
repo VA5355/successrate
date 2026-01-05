@@ -16,7 +16,7 @@ import { Loader2  } from "lucide-react";
 import { Settings,  TrendingUp, Wallet, Coins } from 'lucide-react';
 import withSpinner from "./withSpinner";
 import {SwipeCallPill , SwipePutPill} from "./SwipePills";
-
+import { useModal } from '@/providers/ModalProvider';
 import { showModal as modalShow, showError } from '../../../common/service/ModalService';
 import "./index.css";
 import "./sidewaysPriceSlider.css";
@@ -1719,6 +1719,7 @@ export default function OptionChainTable({positionData}) {
  // Mock useSelector for demonstration purposes
   //const status = undefined; // Replace with your actual Redux status
   const [showModal, setShowModal] = useState(false);
+    const { showFramerModal, hideModal } = useModal();
     const [showPositionModal, setShowPositionModal] = useState(false);
     //  const [optionStrikes, setOptionStrikes] = useState([]);
   const [currentPositions, setCurrentPositions] = useState([]);
@@ -2060,12 +2061,18 @@ export default function OptionChainTable({positionData}) {
       if( evt.action == 'SELL'){
          StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: sellord.qty, 
          price: sellord.price , symbol: sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled   }));
-        dispatch(placeSellOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled  }));
+         
+        showFramerModal({ 
+               status: 'loading', 
+              message: `Initiating sell order for ${sellord.qty} ${sellord.symbol}...` 
+            });
+
+        dispatch(placeSellOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled , showFramerModal , hideModal }));
      }
       if( evt.action == 'BUY'){
          StorageUtils._save(CommonConstants.recentBuyOrderPlacedExclusive, JSON.stringify({ _id: '' , qty: sellord.qty, 
          price: sellord.price , symbol: sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled  }));
-        dispatch(placeBuyOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled  }));
+        dispatch(placeBuyOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled , showFramerModal , hideModal  }));
      }
      
      

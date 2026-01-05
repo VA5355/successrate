@@ -2,7 +2,7 @@ import React, { useState,  useRef , useEffect ,useMemo} from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import { ToggleLeft, Activity } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+//import { motion, AnimatePresence } from 'framer-motion';
 import {StorageUtils} from "@/libs/cache"
 import {CommonConstants} from "@/utils/constants"
 import { orderBookData } from "../positionGrid/orderBook.actions";
@@ -12,8 +12,34 @@ import { placeCancelOrder , placeQuickCancelOrder ,updateTickerStatusFromCache ,
 import { updateOrderBook } from "@/redux/slices/tickerSlice";
  import   useIsMobile   from "../tradeGrid/useIsMobile";
  import './quickOrderBookstyles.css'; // ✅ No 'quickOrderBookstyles.'
+ import QuitQuickOrder from './QuitQuickOrder';
+ //import { useModal } from '@/providers/ModalProvider';
 
+import { motion, AnimatePresence  , useMotionValue, useTransform } from 'framer-motion';
+import { XCircle, Edit3 } from "lucide-react";
+import { 
+ 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  Info,
+  TrendingUp,
+  TrendingDown,
+  LayoutGrid,
+  List
+} from 'lucide-react';
+import { 
+  ChevronUp, 
+  ChevronDown, 
+ 
+  Settings2, 
+ 
+ 
+  ArrowRightLeft
+} from 'lucide-react';
 
+import { BarChart2, Zap, Layout } from 'lucide-react';
+const SWIPE_CLOSE = 80;   // swipe right
+const SWIPE_MODIFY = -80; // swipe left
 function useOrientation() {
   const [isLandscape, setIsLandscape] = React.useState(
     window.matchMedia("(orientation: landscape)").matches
@@ -28,7 +54,101 @@ function useOrientation() {
 
   return isLandscape;
 }
+const SwipeableRowDesk = ({ row, idx, getPnlClass, getPnlBg , setslideIdx , onClose,
+  onModify,
+  isMobile}) => {
+  const x = useMotionValue(0);
+  let setSwipeCloseValue  = (swipeValueIn) => {  let swipeValue = 0;
+            swipeValue =   swipeValueIn ; //swipeValue < swipeValueIn ?  swipeValueIn: swipeValue;
+        return   swipeValue;
+  }; 
 
+  // Color transformation based on swipe direction (Left = Red/Close, Right = Blue/Modify)
+  const background = useTransform(
+    x,
+    [-100, 0, 100],
+    ["#ef4444", "#ffffff", "#3b82f6"]
+  );
+
+  return (
+    <div className="relative overflow-hidden group bg-gray-100">
+      
+      {/* Background Action Underlays (Visible during swipe) */}
+      <div className="absolute inset-0 flex justify-between   px-1 text-white font-bold">
+        <div className="flex items-center gap-1">
+          <Settings2 size={20} />
+          <span>MODIFY</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span>CLOSE</span>
+          <XCircle size={20} />
+        </div>
+      </div>
+
+      {/* Main Content Card */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -20, right: 20 }}
+        style={{ x }}
+        whileTap={{ cursor: 'grabbing' }}
+         onDragEnd={(_, info) => {
+           setslideIdx(info.offset.x);
+          if (info.offset.x > SWIPE_CLOSE) {
+            onClose();
+           
+          } else if (info.offset.x < SWIPE_MODIFY) {
+            onModify();
+          }
+        }}
+        className="relative z-10 bg-white"
+      >
+        {/* Desktop View (Grid) */}
+        <div className="hidden md:grid grid-cols-6  px-1 py-1 hover:bg-blue-50/40 transition-colors">
+         
+          <div className="col-span-2 font-bold text-blue-600 cursor-pointer hover:underline">{row.symbol}</div>
+          <div className="col-span-1">
+            <span className="  py-0.5 rounded-md bg-gray-100 text-[10px] font-bold text-gray-600">{row.productType}</span>
+          </div>
+          <div className="  text-left font-mono text-sm">{row["qty"]} </div>
+          <div className="  text-left font-mono text-sm">{row["limitPrice"]?.toFixed(2)}</div>
+          <div className="  text-left font-mono text-sm font-semibold">{row["lp"]?.toFixed(2)}</div>
+         
+          {/*<div className="col-span-1 flex justify-end gap-2">
+            <button className="p-1 hover:text-blue-600 text-gray-400"><Settings2 size={16}/></button>
+            <button className="p-1 hover:text-red-600 text-gray-400"><XCircle size={16}/></button>
+          </div>*/}
+        </div>
+
+        {/* Mobile View (Card) */}
+        <div className="md:hidden p-4 border-l-4 border-blue-500 shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-base text-gray-800 tracking-tight">{row.symbol}</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-100 text-[9px] font-bold text-gray-500">{row.productType}</span>
+              </div>
+              <div className="text-[10px] text-gray-400 font-medium mt-0.5 flex items-center gap-1">
+                Qty: <span className="text-gray-700 font-bold">{row.netQty}</span> 
+                <span className="mx-1">•</span> 
+                Avg: <span className="text-gray-700 font-bold">₹{row.avgPrice}</span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">LTP</div>
+              <div className="text-sm font-black text-gray-900 font-mono italic">₹{row.ltp?.toFixed(2)}</div>
+            </div>
+          </div>
+
+        
+          
+          <div className="mt-2 flex justify-center md:hidden">
+            <div className="w-8 h-1 bg-gray-200 rounded-full" /> {/* Drag handle indicator */}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrderPoll,
     
@@ -42,8 +162,16 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
      const isMobile = useIsMobile();
 
      const isMobileLandscape = isMobile && isLandscape;
-
-
+       const [cancelOrder, setCancelOrder] = useState(false);
+              const [sellPlusSymbol, setSellPlusSymbol] = useState(null);
+                 const [netBought, setNetBought] = useState(0);
+                 const [swipeQty, setSwipeQty] = useState(0);
+                 const [symbolAvgPrice, setSymbolAvgPrice] = useState(0);
+                 //setSymbolLTP
+                 const [symbolLTP, setSymbolLTP] = useState(0);
+                  const [positionQty  ,setPositionQty ] = useState(() => netBought ) ; 
+                   const childRef = useRef(null);
+                    // const { showFramerModal, hideModal } = useModal();
      const [parsedData, setParsedData] = useState(() =>{ 
           // JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data); 
             let g = JSON.parse(StorageUtils._retrieve(CommonConstants.quickOrderBookDataCacheKey).data);
@@ -65,6 +193,7 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
           const [sortColumn, setSortColumn] = useState(null); // e.g., "symbol"
           const [sortDirection, setSortDirection] = useState("asc"); // "asc" or "desc"
      const [isOrderPolling, setOrderPolling] = useState(isOrderPoll);
+     const [slide, setSlide] = useState(0);
        const [orderBookPollInt, setOrderGlobalPollInt] = useState(setOrderGlobalPoll);
          let  quickOrderBookFeed   = useSelector((state ) => state.ticker.orderBook);
        const[ computedSocketData , setComputedSocketData] = useState(
@@ -78,6 +207,20 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
           else {
               console.log(`pending orders ${CommonConstants.orderBookOrderDataCacheKey} is not set `);
                 return [];
+          }
+         }
+       );
+       const[ cancelOrderDialogClosed , setCancelOrderDialogClosed] = useState(
+         () => {
+           // console.log("checking pending orders actual with status 6 : fetched by orderBook.action "+JSON.stringify(pendingCancelableOrders));
+             let pOrders =    StorageUtils._retrieve(CommonConstants.cancelOrderDialogClosed)
+            if(pOrders !==null && pOrders !==undefined &&  pOrders['data'] !== ''  && pOrders['data'] !== null && pOrders['data'] !==undefined){      
+                 return pOrders['data'] ;
+       // setComputedSocketData(ordersFeed);
+          }
+          else {
+              console.log(`cancel order dialog  ${CommonConstants.cancelOrderDialogClosed} is not set , default true `);
+                return true;
           }
          }
        );
@@ -206,6 +349,49 @@ export default function QuickOrderTable({ sortedSocketData , sortedDataP,isOrder
 
          
     };
+  // Helper for Profit/Loss colors
+  const getPnlClass = (val) => val >= 0 ? "text-emerald-600 font-semibold" : "text-rose-600 font-semibold";
+  const setSlideValue  = (val) => val >= SWIPE_CLOSE ? setSlide(1) :  ( val <= SWIPE_MODIFY ? setSlide(2 ): setSlide(0));
+  const getPnlBg = (val) => val >= 0 ? "bg-emerald-50" : "bg-rose-50";
+
+const handleDeskClosePosition = (  row,e) => {
+  console.log("Close position:", row.symbol);
+  let symbol = row.symbol;
+  let netBought = row.qty;
+  let costPrice = row.avgPrice;
+      setCancelOrder((oldID ) =>{
+          const randomInt = Math.floor(Math.random() * 1000000);
+          return `${row.id}_${randomInt}`;
+      }); // try generating a new _random int on every swipe this may cause render and show the showModal 
+      setSellPlusSymbol(symbol);
+        setNetBought(netBought);
+        setSwipeQty(netBought);
+        setSymbolAvgPrice(row["limitPrice"]?.toFixed(2));
+        setSymbolLTP(row["lp"]?.toFixed(2))
+        setPositionQty(netBought)
+        
+      if(slide !==undefined  ){
+         if(slide > SWIPE_CLOSE){
+           // show the cancel dialog 
+            StorageUtils._save(CommonConstants.cancelOrderDialogClosed, false);
+             setCancelOrderDialogClosed(false);
+         }
+      }
+   // 3. Call the exposed function from the parent
+    if (childRef.current) {
+     // childRef.current.triggerClick();
+    }      
+  // handleSymbolClick(e, row["symbol"], row["avgPrice"], row["netQty"])
+  // fire square-off / close API
+};
+
+const handleDeskModifyPosition = (  row,e) => {
+  console.log("Modify position:", row.symbol);
+  // open modify / add order panel
+};
+
+
+
 useEffect(() => {    // BAASED ON the POLL ORDER's BUTTON in PARENT POSITION GRID (TOGGLED to TRUE ) this EFFECT wILL TRIGGER 
 
   const res = StorageUtils._retrieve(CommonConstants.fyersToken);
@@ -456,6 +642,7 @@ if((  isOrderPolling ) && userLogged ){
                           dispatch(orderBookData(''));
                          // orderBookOrderDataCacheKeyPoll();
                           fetchOrdersBookDataCacheKey();
+                          setComputedSocketData([]);
 
                         }
                       }
@@ -536,15 +723,33 @@ if((  isOrderPolling ) && userLogged ){
     dispatch(startEventSource(false , [],callBackOrderFeedAction));
 }, []);
 
+ useEffect(() => {
+   // dispatch(startEventSource(false , [],callBackOrderFeedAction));
+   console.log("Cancel Order or SwipeDeskRow triggered ");
+}, [cancelOrder]);
+
 useEffect(() => {
    if(parsedData !==undefined && parsedData !== null && Array.isArray(parsedData) && parsedData.length > 0){
      alsoUpdateComputedSocketData(parsedData);
+       StorageUtils._save(CommonConstants.cancelOrderDialogClosed, false);
+
    }
    if(sortedDataP  !==undefined && sortedDataP !== null && Array.isArray(sortedDataP) && sortedDataP.length > 0){
      alsoUpdateComputedSocketData(sortedDataP);
+       StorageUtils._save(CommonConstants.cancelOrderDialogClosed, false);
    }
     
-}, []);
+}, []); 
+// computedSocketData
+/*useEffect(() => {
+   if(parsedData !==undefined && parsedData !== null && Array.isArray(parsedData)  ){
+     alsoUpdateComputedSocketData(parsedData);
+   }
+   if(sortedDataP  !==undefined && sortedDataP !== null && Array.isArray(sortedDataP)  ){
+     alsoUpdateComputedSocketData(sortedDataP);
+   }
+    
+}, [computedSocketData]); */
 
 
 const getSortIndicator = (column) =>
@@ -562,9 +767,72 @@ const handleCancel = async (orderId) => {
       if(orderData !==undefined && orderData !== undefined){
       StorageUtils._save(CommonConstants.quickOrderCancellOrderPlaced, orderData);
       console.log("Quick Order Book Cancel Order "+JSON.stringify(orderData))
+      let selectedSymbol = orderData['description']
+
+       /* showFramerModal({ 
+               status: 'loading', 
+              message: `Cancelling ${orderId} ${selectedSymbol}...` 
+            });
+            */
         await dispatch(placeQuickCancelOrder(orderId));
           //await dispatch(quickOrderBookData());
           fetchOrdersBookDataCacheKey()
+        //   setTimeout(hideModal, 300)
+          //setTimeout(() => { hideModal }, 300);
+       }
+       else{
+         console.log("Quick Order Book single order parse failed ");
+       }
+    }
+    else{
+       console.log("Quick Order Book Cancel Order not selected  " )
+    }
+     
+}
+const handleCancelQuick = async (orderId) => {
+      let orderActualtoDel =   parsedData.filter(ords => parseInt(ords.id) == parseInt(orderId));
+
+
+    if(orderActualtoDel !==null && orderActualtoDel !==undefined){
+      // SET the ORDER to DELETE in the StorageUtils._retrieve(CommonConstants.recentOrderPlaced);recentOrderPlaced
+       // quickOrderCancellOrderPlaced:'quickOrderCancellOrderPlaced',
+      // 
+       let orderData= undefined;
+        if(Array.isArray(orderActualtoDel) && orderActualtoDel.length > 0){
+               orderData= orderActualtoDel[0];
+        }
+      if(orderData !==undefined && orderData !== undefined){
+      StorageUtils._save(CommonConstants.quickOrderCancellOrderPlaced, orderData);
+      console.log("Quick Order Book Cancel Order "+JSON.stringify(orderData))
+      let selectedSymbol = orderData['description']
+
+       /* showFramerModal({ 
+               status: 'loading', 
+              message: `Cancelling ${orderId} ${selectedSymbol}...` 
+            });
+            */
+        await dispatch(placeQuickCancelOrder(orderId));
+          //await dispatch(quickOrderBookData());
+          fetchOrdersBookDataCacheKey()
+          // filter the orderid from 
+          // filter the orderid from computedSocketData
+          // after the refersh of normal order update the streaming tab  quick orders also 
+         setTimeout( (orderId) =>  { 
+            let orderDelId =  orderId;
+                if(Array.isArray(parsedData ) && !parsedData.some(od => {parseInt(od.id) == parseInt(orderDelId) })) {
+                      if(Array.isArray(computedSocketData) ) { 
+                         setComputedSocketData( parsedData);
+                      } 
+                }
+        
+         },2000)
+          //  computedSocketData
+         //   const storedOrderBook1 = StorageUtils._retrieve(CommonConstants.orderBookOrderDataCacheKey)
+       //   let actualOrderBook1 = parseStoreUtilsOrder(storedOrderBook1) ;
+                            //  filteredData = actualOrderBook;
+          //                  alsoUpdateComputedSocketData(actualOrderBook1);
+        //   setTimeout(hideModal, 300)
+          //setTimeout(() => { hideModal }, 300);
        }
        else{
          console.log("Quick Order Book single order parse failed ");
@@ -741,6 +1009,14 @@ const alsoUpdateComputedSocketData = (normalParsedData)=> {
     if(normalParsedData !==null && normalParsedData !==undefined && Array.isArray(normalParsedData)){
         console.log("Quick Order Table : ORDER FEED ACTION pending orders before subscribeing to EVENT STREAM ");
        console.log(JSON.stringify(normalParsedData));
+      /* causing much logs due to useEffect dependny on computedSocketData */
+       if(normalParsedData.length ==0 &&   computedSocketData !==undefined && Array.isArray(computedSocketData) && computedSocketData.length ==0 ){
+           setComputedSocketData([]); // let user refresh or poll the order again 
+           // clear the local storage 
+            StorageUtils._save(CommonConstants.orderBookOrderDataCacheKey,[]);
+            //
+            StorageUtils._save(CommonConstants.quickOrderCancellOrderPlaced,[]);
+       } 
        if(computedSocketData !==undefined && Array.isArray(computedSocketData) && computedSocketData.length ==0 ){
          setComputedSocketData((oldBook) =>    [
                         ...oldBook.filter(
@@ -1325,40 +1601,16 @@ const callBackEventSource = (eventOrderData) => {
 
                      <div  id ="quickOrders1"  className="max-h-[200px] overflow-y-auto divide-y divide-gray-200 text-[11px] leading-[1.1rem]">
                       {computedSocketData.map((row, index) => (
-                        <div id ="quickOrdersRow1"
-                             key={index}
-                          className={`grid grid-cols-[minmax(140px,1fr)_repeat(4,minmax(50px,auto))] text-gray-800 transition
-                            ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                            hover:bg-blue-100
-                            ${(row.side === -1 || row.side === "-1") ? "order-row-sell bg-red-400" : "order-row-buy bg-green-400"}`}
-                        >
-                          <div id="quickOrdersSymbol" className="py-[1px] px-1 text-base font-bold truncate">
-                            {row["symbol"]}
-                          </div>
-                          <div className="py-[1px] px-1 text-base font-bold truncate">
-                            <button
-                              className="w-1 h-1 text-black-600 hover:bg-blue-200"
-                              onClick={(e) => {
-                                if (e.target === e.currentTarget) {
-                                 if (e.target === e.currentTarget) {
-                                   handleCancel(row.id);
-                               }
-                                }
-                              }}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                          <div id="quickOrdersQty" className="py-[1px] px-1 text-base font-bold">
-                              {row["qty"]}
-                          </div>
-                          <div  id="quickOrdersLimitPrice" className="py-[1px] px-1 text-base font-bold">
-                            {row["limitPrice"]}
-                          </div>
-                          <div id={ `quickOrdersStreamedLTP_${row["symbol"]}`}   className="py-[1px] px-1 text-base font-bold">
-                           
-                          </div>
-                        </div>
+                          <SwipeableRowDesk    key={row.symbol} 
+                                row={row} 
+                                idx={index} 
+                                getPnlClass={getPnlClass} 
+                                getPnlBg={getPnlBg} 
+                                setslideIdx = {setSlideValue}
+                                onClose={() => handleDeskClosePosition(row)}
+                                      onModify={() => handleDeskModifyPosition(row)} isMobile={isMobile} 
+                            />
+                      
                       ))}
                     </div>
                     </>
@@ -1413,6 +1665,11 @@ const callBackEventSource = (eventOrderData) => {
         </div>
      </div>
 
+                 {( slide ===1 || slide ===2 )  && (   <QuitQuickOrder   key={`${sellPlusSymbol}_${swipeQty}`} // Forces re-mount when symbol or qty changes
+                 
+                     isMobile ={  isMobile} cancelOrder={cancelOrder} cancelledIn={cancelOrderDialogClosed} showModalDialog={(sellPlusSymbol !==undefined) &&(  slide ===1 || slide ===2)  } sellPlusSymbol= {sellPlusSymbol} symAvgPrice={symbolAvgPrice} symbolLTPin={symbolLTP} boughtQty={swipeQty}  qtySold={positionQty} 
+                           setButtonSell={true} handleCancel={handleCancelQuick}  ref={childRef} />
+                         )}  
 
 
 

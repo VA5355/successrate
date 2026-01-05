@@ -330,6 +330,7 @@ export const CommonConstants = {
      quickOrderCancellOrderPlaced:'quickOrderCancellOrderPlaced',
      quickOrderCancelledOrderStatus:'quickOrderCancelledOrderStatus',
      generalCancelOrderStatus:'generalCancelOrderStatus',
+     cancelOrderDialogClosed :'cancelOrderDialogClosed',
 
      tickerOrdersSocketCacheKey:'tickerOrdersSocketCacheKey',
      tickerPositionsSocketCacheKey:'tickerPositionsSocketCacheKey',
