@@ -5,8 +5,8 @@ import { ToggleLeft, Activity } from 'lucide-react';
 // ThreeSec HTTP FETCH 
  import { placeBuyOrder ,placeSellOrder  ,updateTickerStatusFromCache ,stopSensexTickerData } from "../positionGrid/placeBuyOrder.actions";
  import { placeCancelOrder , placeQuickCancelOrder  } from "../positionGrid/cancelOrder.actions";
- import { openModal } from '@/redux/slices/modalGenSlice';
-import ModalManager from '../../../app/error/ModalManger';
+// import { openModal } from '@/redux/slices/modalGenSlice';
+//import ModalManager from '../../../app/error/ModalManger';
 import { useModal } from '@/providers/ModalProvider';
 import {useDispatch, useSelector} from 'react-redux';
 import {StorageUtils} from "@/libs/cache";
@@ -421,7 +421,7 @@ const sheet = {
           </motion.div>
         )}
       </AnimatePresence>
-      <ModalManager/>
+     // <ModalManager/>
    </>
     );
 
