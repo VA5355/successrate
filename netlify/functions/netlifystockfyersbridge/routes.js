@@ -5,6 +5,7 @@ const  queue =  require('./tokenQueue.js');
 const  alphaTimeSeries =  require('./alphaadvantage-candle-series.js');
 const  alphaT =  require('./alphaTimeSeries.js');
 const router  = express.Router()
+var fs  = require('fs');
 var path = require('path');
 var ejs = require('ejs');
 var fyersV3= require("fyers-api-v3");
@@ -22,6 +23,7 @@ var secret_key = "KOA61TZLP4"; 		 // "MGY8LRIY0M"; // PROD
 //var redirectUrl  = "https://192.168.1.8:56322/fyersauthcodeverify"
 var redirectUrl  = "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 //var redirectUrl  = "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
+var BASEREF  = "http://successrate.netlify.app"
 var fyers= new fyersModel({"path":"./","enableLogging":true})
 fyers.setAppId(client_id)
 
@@ -405,6 +407,74 @@ router.get('/fyersgetaccess', async function (req,res) {
 // PROCEED ACCESS button click , is handled by this EVENT HANDLER 
 // just return the auth code , to the Next js login page
 
+// PROCEED NSE CSV file access using function  
+// just return the csv text 
+
+router.get('/fyersgetnsecsv', async function (req,res) {
+// PROCEED NSE CSV file access using function  
+// just return the csv text 
+
+try {
+    /*const response = await fetch(
+        BASEREF +  "/NSE_CM.csv"
+    );*/
+	 // Netlify exposes public folder at site root
+    const filePath = path.join(process.cwd(), "public", "NSE_CM.csv");
+
+    const csvText = fs.readFileSync(filePath, "utf-8");
+
+
+    if (csvText === undefined) {
+       console.log("FETCH https://successrate.netlify.app/NSE_CM.csv   not okay ");
+		  setCORSHeaders( res )
+		res.send("{ data: error }" );
+    }
+
+    //const csvText = await response.text();
+
+    let csvRes =  {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "text/csv",
+		  "Cache-Control": "public, max-age=300"
+      },
+      body: csvText
+    };
+
+	 setCORSHeaders( res );
+	 res.send( JSON.stringify( csvRes));
+
+
+
+
+  } catch (error) {
+    let ret =  {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify({
+        error: "CSV fetch failed",
+        message: error.message
+      })
+    };
+		console.log(error)
+						//let wd1 = `NSE:${symbol}-EQ`;
+						//let ret = {  "symbol": wd1 , "status" : " Input error "+JSON.stringify(err) };
+						 setCORSHeaders( res );
+						res.send( JSON.stringify( ret));
+
+
+
+
+
+
+
+
+  }
+
+});
 router.get('/fyersgetaccessauthcode', async function (req,res) {
 
 	let s = ''

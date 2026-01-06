@@ -29,7 +29,8 @@ export const EquityReduxProvider = ({children}: { children: React.ReactNode }) =
   const [localMatches, setLocalMatches] = useState<any[]>([]);
   const [csvData, setCsvData] = useState<typeof bestMacthes>( );
  // const CSV_URL = 'https://drive.google.com/uc?export=download&id=1UjjQcDHiRIPxbzZOTZaWrLQjKtVzZjp_';
-  const CSV_URL  = [   FYERSAPINSECSV +'/NSE_CM.csv' ] ; //'http://localhost:8888/NSE_CM.csv' ,
+  //const CSV_URL  = [   FYERSAPINSECSV +'/NSE_CM.csv' ] ; //'http://localhost:8888/NSE_CM.csv' ,
+  const CSV_URL  = [   FYERSAPINSECSV ] ; //'http://localhost:8888/NSE_CM.csv' ,
   const dispatch = useDispatch();
 
  // // Example usage
