@@ -448,7 +448,17 @@ export const parseNetlifyError = (erroObj) => {
     }
     return parsedError;
 }
-export const placeBuyOrder = (_id, qty, price ,symbol ) => {
+export const placeBuyOrder = (params = {}   ) => {
+
+
+    // Destructuring with a default value = {} prevents the crash if params is missing
+       const { _id, qty, price ,symbol, showFramerModal, hideModal, } = params;
+        //const { _id, qty, price ,symbol  } = orderData;
+        let spinnerIsAvailable = true;
+       if (showFramerModal ===undefined || hideModal === undefined) {
+          console.error("Modal functions were not passed to placeBuyOrder");
+          spinnerIsAvailable = false;
+         }
       // SAMPLE BUY DEFAULT DATA 
        console.log("placeBuyOrder: _id  "+JSON.stringify( _id, qty, price, symbol))
       // THIS CAUSE OVERRIDE DEFAULT SAMPLE DATA   
@@ -605,6 +615,12 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
 
                     const fetchData = createAsyncThunk('data/fetch', async (_, { rejectWithValue }) => {
                           try {
+
+                             // 1. Immediately trigger the spinner
+                                showFramerModal({ 
+                                  status: 'loading', 
+                                  message: 'Placing order...' 
+                                });
                                const res = await API.get(FYERSAPIBUYORDER , {params: { "auth_code" : auth_code, "id" : _id,
                                        "symbol":sym1 ,  qty:qty, ltp:price,  price: price,  qty:qty  ,orderType:orderType   , scheduled:scheduled }});  //   "access_token" : acctoken ,
                               // Axios auto-parses JSON
@@ -613,6 +629,15 @@ export const placeBuyOrder = (_id, qty, price ,symbol ) => {
                                let resJSON = responseData;
                             // Safe parsing SUCCESS CASE 
                                 console.log("buyOrderJSON "+JSON.stringify(buyOrderJSON));
+
+                              /*  showModal({ 
+                                    status: 'success', 
+                                    message: `Order for ${qty} shares of ${symbol} placed at market.` 
+                                  });*/
+                                  
+                                  // Auto-hide success after 3 seconds
+                                   // Auto-hide success after 3 seconds
+                                      (spinnerIsAvailable ?   setTimeout(hideModal, 300): console.log("Spinner unavailavle to close ") ) ;
                                
                                 if (buyOrderJSON !==undefined) {
                                    if (buyOrderJSON["FYERS"] !==undefined){
@@ -1055,11 +1080,11 @@ export const placeSellOrder = ( params = {}   ) => {
                                let resJSON = responseData;
                             // Safe parsing SUCCESS CASE 
                                 console.log("sellOrderJSON "+JSON.stringify(sellOrderJSON));
-                   
-                                if (sellOrderJSON !==undefined) {
-                                       // Auto-hide success after 3 seconds
+                       // Auto-hide success after 3 seconds
                                       (spinnerIsAvailable ?   setTimeout(hideModal, 300): console.log("Spinner unavailavle to close ") ) ;
 
+                                if (sellOrderJSON !==undefined) {
+                                   
                                     if (sellOrderJSON["FYERS"] !==undefined){
                                       let sym = sellOrderJSON["FYERS"];
                                        dispatch(showModal({ title: 'Order Status', message: `${sym} sent `, }  ));
