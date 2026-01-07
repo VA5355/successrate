@@ -33,7 +33,7 @@ const GridCards = () => {
     <div className="grid w-1/1 gap-4 mx-auto grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 2xl:grid-cols-1 justify-center"> 
     {/*min-h-screen bg-slate-50 p-2 flex items-center justify-center */}
       {/* 3-Column Grid Container  flex items-start justify-normal*/}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl w-full ml-24 mobile-margin-car">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-7xl w-full ml-24 z-[30] mobile-margin-car">
         {cards.map((card, index) => (
           <motion.div
             key={index}
@@ -91,7 +91,7 @@ const GridCards = () => {
           </motion.div>
         ))}
       </div>
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-2 max-w-7xl w-full ml-24 mobile-margin-car">  
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-2 max-w-7xl w-full ml-24  mobile-margin-car">  
           <MarketStatusSlider />
          </div>
     </div>

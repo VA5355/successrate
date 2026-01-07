@@ -70,17 +70,26 @@ export default function MarketStatusSlider() {
   }, []);
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full z-[20]">
       {/* Title */}
       <h3 className="text-sm font-semibold text-zinc-700 mb-2 px-2">
         Market Status
       </h3>
 
-      {/* Slider */}
+      {/* Slider flex gap-3 px-2 overflow-x-auto no-scrollbar*/}
       <motion.div
-        className="flex gap-3 px-2 overflow-x-auto no-scrollbar"
-        drag="x"
-        dragConstraints={{ left: -300, right: 0 }}
+        className="  flex flex-col
+      md:flex-row
+      gap-3 px-2
+      overflow-y-auto md:overflow-x-auto
+      no-scrollbar
+      max-h-[420px] md:max-h-none"
+       drag={window.innerWidth < 768 ? "y" : "x"}
+       dragConstraints={
+        window.innerWidth < 768
+            ? { top: -300, bottom: 0 }
+            : { left: -400, right: 0 }
+        }
       >
         {markets.length === 0 && (
           <FallbackCard error={error} />
@@ -90,7 +99,7 @@ export default function MarketStatusSlider() {
           <motion.div
             key={`${m.market}-${idx}`}
             whileTap={{ scale: 0.97 }}
-            className="min-w-[220px] max-w-[220px] bg-white rounded-xl border shadow-sm p-3"
+            className=" w-full  md:min-w-[220px] md:max-w-[220px] bg-white rounded-xl border shadow-sm p-3"
           >
             {/* Header */}
             <div className="flex items-center justify-between">
