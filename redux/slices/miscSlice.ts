@@ -11,7 +11,7 @@ export interface MiscSliceProps {
 const initialState:MiscSliceProps = {
     loader: false,
     isDarkMode: false,
-    tab: "Top Gainers",
+    tab: "Educate",
     recentSearches: [],
     showSubscribePopup: false,
     platformType: "alpha-vantage"

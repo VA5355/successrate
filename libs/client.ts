@@ -41,7 +41,7 @@ const FYERSAPIPOSITIONSRENDER = 'https://fyers-positions-socket-git.onrender.com
 const FYERSAPIMARKETCUSTOMFEED = 'https://fyersmarketfeed.onrender.com/stream' // ?accessToken=
 const FYERSAPITICKERACCESTOKEN = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersaccesstoken'
 const FYERSAPITICKERURLCLOSE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/close'
-const FYERSAPINSECSV = 'https://successrate.netlify.app';
+const FYERSAPINSECSV = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersgetnsecsv';
 
 export { API , FYERSAPI ,FYERSAPILOGINURL , FYERSAPINSECSV , FYERSAPITRADEBOOKURL ,FYERSAPIHOLDINGSURL ,
   FYERSAPICANCELORDER,FYERSAPIBUYORDER,FYERSAPISELLORDER

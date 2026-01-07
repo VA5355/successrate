@@ -12,10 +12,12 @@ import tickerBankNiftySlice, { TickerBankNiftySliceProps } from './slices/ticker
 import tickerNiftySlice, { TickerNiftySliceProps } from './slices/tickerNiftySlice';
 import tickerSlice,{  TickerSliceProps } from './slices/tickerSlice';
 import webSocketSlice,{  WebSocketSliceProps } from './slices/webSocketSlice';
+import marketSlice,{  MarketSliceProps } from './slices/marketSlice';
 
 import modalReducer, { createModalMiddleware } from '../components/common/service/ModalService';
 import modalGenReducer from './slices/modalGenSlice';
 import loadingReducer from './slices/loadingSlice';
+import marketReducer from './slices/marketSlice';
 
 export interface GlobalState {
     stock: StockSliceProps;
@@ -30,7 +32,8 @@ export interface GlobalState {
      sensex:TickerSensexSliceProps ,
      banknifty:TickerBankNiftySliceProps ,
      ticker: TickerSliceProps,
-     websocket:WebSocketSliceProps
+     websocket:WebSocketSliceProps,
+     market:MarketSliceProps
 }
 const modalMiddleware = createModalMiddleware({
         mapRejectedToModal: (action:any) => ({
@@ -55,7 +58,8 @@ export const store = configureStore({
         websocket: webSocketSlice, // <-- THIS makes state.websocket available
          modal: modalReducer ,
          modalpop : modalGenReducer,
-         loader: loadingReducer
+         loader: loadingReducer,
+         market: marketReducer
 
 	},
         middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(modalMiddleware),
