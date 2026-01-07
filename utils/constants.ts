@@ -153,7 +153,7 @@ const  defaultIndicesData =
 JSON.stringify([ 'BSE:SENSEX-INDEX' , 'NSE:NIFTY50-INDEX' ,'NSE:NIFTYBANK-INDEX'  ]);
 const  defaultTickerData =  JSON.parse(defaultIndicesData);
 
-const  otherPositionData = 
+const  otherPositionDataOld = 
 JSON.stringify([
     {'netQty': 1, 
     'qty': 1, 
@@ -186,6 +186,7 @@ JSON.stringify([
     "exchange": 10,
     }
   ] );
+  const  otherPositionData = JSON.stringify([] );
 const  otherObjPositionData =  JSON.parse(otherPositionData);
 const  otherOrderBookData = 
 JSON.stringify([

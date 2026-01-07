@@ -19,6 +19,7 @@ import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 import { CommonConstants } from '@/utils/constants';
 import StockCandleChart from "@/components/charts/StockCandleChart";
 import GridCards from '@/app/GridCards';
+import './grid.css';
 
 const StockGrid = () => {
     const gainers = useSelector((state: GlobalState) => state.stock.gainers)
@@ -177,9 +178,9 @@ const StockGrid = () => {
                 className={handleCustomGridCols(tab)}>
                 {
                     tab === "Top Gainers" ? gainers.map((item: any , index: number ) => {
-                        return  ( <> </>) 
+                        return  ( <span key={`${index}-gainers`} className="forKeyAndDisplay"> </span>) 
                     }) : tab === "Top Losers" ? losers.map((item: any , index: number ) => {
-                        return (<> </>)
+                        return (<span key={`${index}-losers`} className="forKeyAndDisplay"> </span>)
                     }) :  tab === "Top Traders" ?   (  
                         
                          <TradeGridPlotterPDFCSV tradeDataB={tradeData} />

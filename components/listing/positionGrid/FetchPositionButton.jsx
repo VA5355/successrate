@@ -1,5 +1,5 @@
 // FetchPositionButton.jsx
-import React, { useState ,  useRef} from 'react';
+import React, { useState ,  useRef, useEffect} from 'react';
 import { ToggleLeft, Activity } from 'lucide-react';
 //import { getSensexTickerData  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./streamTicker.actions";
 // ThreeSec HTTP FETCH 
@@ -14,7 +14,8 @@ import { savePositionBook } from '@/redux/slices/positionSlice';
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';
 
 const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => {
-  const [isStreaming, setIsStreaming] = useState(false);
+   const [isStreaming, setIsStreaming] = useState(false);
+  const streamingRef = useRef(false);
   const [threeSec , setThreeSec] = useState(0);
    const [showModal, setShowModal] = useState(false);
    const intervalRef = useRef(null);
@@ -36,6 +37,14 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
           }
       }
  }
+ useEffect(() => {
+  if (!isStreaming) return;
+
+  startPolling();
+
+  return stopPolling;
+}, [isStreaming]);
+
  const stopPolling = () => {
   if (intervalRef.current) {
     clearInterval(intervalRef.current);
@@ -47,21 +56,99 @@ const FetchPositionButton = ({ onFetchComplete, sortedData ,updateSoldQty }) => 
   }
   setIsStreaming(false);
 };
+const startPolling = () => {
+  intervalRef.current = setInterval(() => {
+    dispatch(getPositionData(""));
+     refershPositions();
+  }, 3000); // every 3 sec
 
+  timeoutRef.current = setTimeout(() => {
+    stopPolling();
+       setShowModal(false);
+  }, 10000); // stop after 10 sec
+};
 
+const refershPositions = () => {
+       let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
+               const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
+               if( redentPositionData !== null && redentPositionData !==undefined  &&  Array.isArray(redentPositionData.data )){
+                       console.log(" GRID aCTIONS recenPositions  "+JSON.stringify(redentPositionData.data))
+       
+               }else {
+                   console.log("positions data from cahce ")
+                   redentPositionData = dataFromCache2;
+               }
+               // first set the default marketIndiceFeed Data 
+                StorageUtils._save(CommonConstants.marketFeedDataCacheKey, CommonConstants.sampleObjTickerTDataVersion1);
+
+                dispatch( savePositionBook(([...redentPositionData.data])));
+                /* for faster rendering */
+              
+                 positionData?.forEach(row => {
+                  // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                         //        console.log(`FetchPostionButton data.forEach: row   ${JSON.stringify(row)}  `);
+                                  let sty = row.symbol?.split(":");let custSy= undefined;
+                                  if(Array.isArray(sty)){
+                                    custSy = sty[1];
+                                  } 
+                                  if(custSy !==undefined){
+                                    // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                    // console.log(` symbol.split(":")  ${JSON.stringify(custSy)}  `);
+                                   let posLtpRow  = document.getElementById(`streamedLTP_${custSy}_${row.productType}`);
+                                   let posUnrealisedRow  =  document.getElementById(`streamedUnrealized_${custSy}_${row["productType"]}`);
+                                   if(posLtpRow !==null && posLtpRow !== undefined){ 
+                                      posLtpRow.textContent = row.ltp;
+                                      // COMMENTED PURPOSELY to reduce CONSOLE LOGS 
+                                      //console.log(` streamedLTP_${custSy}_${row.productType}  updating ${ row.ltp}  `);
+                                    }
+                                    if(posUnrealisedRow !==null && posUnrealisedRow !== undefined){ 
+                                      let actUnreal = (( parseInt(row.netQty) *  row.ltp ) -  parseInt(row.buyVal)) ;
+                                      posUnrealisedRow.textContent = actUnreal;
+                                     // COMMENTED PURPOSELY to reduce CONSOLE LOGS    
+                                     // console.log(` streamedUnrealized_${custSy}_${row["productType"]}  updating ${actUnreal}  `);
+                                    }
+                                   }
+                               })
+
+                dispatch( savePositionStreamBook(([...redentPositionData.data])));
+
+               // hope fully the above save Positionbook will include inte new symbols into
+               // the 
+                if(positionData !== undefined && Array.isArray(positionData)){
+                   onFetchComplete(positionData);
+                     StorageUtils._save(CommonConstants.positionDataCacheKey,positionData)
+                       StorageUtils._save(CommonConstants.fetchPositions, true)
+                }
+                else {   onFetchComplete([...redentPositionData.data]); }
+               
+                // passing the callback function
+                setSoldQtyForEachPosition( redentPositionData.data , updateSoldQty );
+               
+               
+                //setPositionOneFetch(prev => prev+1);
+                
+               // FETCH the ORDER BOOK DATA ALSO ONCE 
+                 dispatch(orderBookData(''));
+   
+}
   const handlePositions = (e) => {
      console.log("Fetch Position enter ");
       e?.preventDefault();
      e?.stopPropagation();
 const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
   if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
+    console.log(" token as stored "+JSON.stringify(res1));
+
     let auth_code = res1.data['auth_code'];
-    if (auth_code&& auth_code !== null && auth_code !== undefined) {
+    if (auth_code && auth_code !== null && auth_code !== undefined) {
         console.log("User is Authorized ");
         // fetchTradeBook();
-        if (isStreaming) return; // 🛑 prevent re-entry
+       // if (isStreaming) return; // 🛑 prevent re-entry
+      if (streamingRef.current) return;
+
           //   setIsStreaming((prev) => !prev);
-          setIsStreaming(true);
+       streamingRef.current = true;
+         setIsStreaming(true);
     // Optionally, trigger your stream start/stop logic here
     if (!isStreaming) {
       console.log("Fetch Position started");
@@ -72,15 +159,15 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
 */
 
 
-      if (!intervalRef.current) {
-          intervalRef.current = setInterval(() => {
+    //  if (!intervalRef.current) {
+         // intervalRef.current = setInterval(() => {
              // make or dispatch action to the streamTicker.actions.js
              //TRIIGER the position and order Book Fetch  
 
              // FETHE POSITION BOOK DATA 
-            dispatch(getPositionData(''));
+       //     dispatch(getPositionData(''));
            // WE have to place this in a time out as the get Position make take time to fetch 
-             setTimeout( () => {
+       //      setTimeout( () => {
                 // FETH The recentTRades from storage if above call succeeded data will be there
                let redentPositionData =  StorageUtils._retrieve(CommonConstants.recentPositionsKey)
                const dataFromCache2 = StorageUtils._retrieve(CommonConstants.positionDataCacheKey)
@@ -127,42 +214,48 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
 
                // hope fully the above save Positionbook will include inte new symbols into
                // the 
-                onFetchComplete([...redentPositionData.data]);
+                if(positionData !== undefined && Array.isArray(positionData)){
+                   onFetchComplete(positionData);
+                     StorageUtils._save(CommonConstants.positionDataCacheKey,positionData)
+                       StorageUtils._save(CommonConstants.fetchPositions, true)
+                }
+                else {   onFetchComplete([...redentPositionData.data]); }
+               
                 // passing the callback function
                 setSoldQtyForEachPosition( redentPositionData.data , updateSoldQty );
-                 StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
+               //  StorageUtils._save(CommonConstants.positionDataCacheKey, [redentPositionData.data])
                
                 //setPositionOneFetch(prev => prev+1);
-                  StorageUtils._save(CommonConstants.fetchPositions, true)
+              //    StorageUtils._save(CommonConstants.fetchPositions, true)
                // FETCH the ORDER BOOK DATA ALSO ONCE 
                  dispatch(orderBookData(''));
 
 
-           } , 5000);             
+          // } , 5000);             
              
       //  dispatch(getSensexTickerData('BSE:SENSEX-INDEX'));
       // IF ABOVE UPDATE's with LIVE DATA the BELLOW CACHE WILL PICK IT 
       // SO THE TICKERCHIP should be able to get the DATA from later on 
       //   dispatch(updateTickerStatusFromCache('BSE:SENSEX-INDEX'));
 
-           }, 1000);
+       //    }, 1000);
 
            let threeSecInterval =  intervalRef.current;
 
 
-       }
+     //  }
       //START THE THREE SEC INTEVAL 
      /*let threeSecInterval =   setInterval (  () => {
         
 
        },3000);*/
-        timeoutRef.current = setTimeout(() => {
+     /*   timeoutRef.current = setTimeout(() => {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
           setIsStreaming(false);
            stopPolling();
            setShowModal(false);
-      }, 1000);
+      }, 1000); */
    /*  setThreeSec(threeSecInterval);
         let after45SecClosePoll =   setTimeout (  () => {
              clearInterval(threeSecInterval)
@@ -214,7 +307,7 @@ const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
   return (
     <>  
     <button
-       type="button"     
+       type="button"    disabled={isStreaming}     className={isStreaming ? "opacity-60 cursor-not-allowed" : ""}
      onClick={(e) => handlePositions(e)}
      
     >

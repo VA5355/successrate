@@ -2058,14 +2058,16 @@ export default function OptionChainTable({positionData}) {
            return;
       }
       // place order Selected: {"qty":65,"price":"145.85","symbol":"NSE:NIFTY25093025300PE"}
+       showFramerModal({ 
+               status: 'loading', 
+              message: `Initiating order for ${sellord.qty} ${sellord.symbol}...` 
+            }); 
+            
       if( evt.action == 'SELL'){
          StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: sellord.qty, 
          price: sellord.price , symbol: sellord.symbol, orderType : sellord.orderType , scheduled: sellord.scheduled   }));
          
-        showFramerModal({ 
-               status: 'loading', 
-              message: `Initiating sell order for ${sellord.qty} ${sellord.symbol}...` 
-            });
+      
 
         dispatch(placeSellOrder({ _id: '' , qty: sellord.qty, price: sellord.price , symbol:sellord.symbol , orderType : sellord.orderType , scheduled: sellord.scheduled , showFramerModal , hideModal }));
      }

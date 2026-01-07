@@ -304,10 +304,7 @@ export const getPositionData = (_id: string | string[]) => {
                             else {
                                 console.log("parseed  result is null ")
                             }
-                               return positionRow;
-                            });
-                           } //  lines not null not undefined 
-                           if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
+                                if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
                            {  
                              console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
                              console.log("bestMacthes 5 record " + JSON.stringify(bestMacthes1["bestMatches"].slice(0, 5)));
@@ -322,6 +319,14 @@ export const getPositionData = (_id: string | string[]) => {
                               // DISABLE the LOAD MORE BELLOW as we have to show the BUY and SELL BUTTON 
                               dispatch(disableLoader())
                             } 
+
+
+
+
+                               return positionRow;
+                            });
+                           } //  lines not null not undefined 
+                         
                          }  // POSITION JSON is not NULL and UNDEFINED 
                          else {
                             console.error("Company View POSITION BOOK NOT READ PROPERLY }:" );

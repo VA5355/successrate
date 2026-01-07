@@ -1737,7 +1737,7 @@ router.get('/fyerscancelorder', async function (req,res) {
 					console.log("FYERS Cancel Order  no reach ..  ")
 					 setCORSHeaders( res )
 					 const combined = {
-						FYERS: "FYERS Cancel Order  CALL NO REACH",
+						FYERS:  `FYERS cancel_order ${order_id} could not fetch`,
 						error: err  // assuming `err` is an object
 					};
 					const result = JSON.stringify(combined);

@@ -72,8 +72,9 @@ const QuitQuickOrder = forwardRef(({   isMobile , sellPlusSymbol , cancelOrder ,
     
     setShowSymbolModal((old) => old = !old);
        // setTimeout( () => { setIsVisible(false); } , 1200)
-
-     console.log("Quit Quick  Order  2 RESET ");
+      setCancelOrderId((old) => old = old.split("_")[0]);
+     console.log(`Quit Quick  Order cancelOrder ${cancelOrder}  showModalDialog: ${showModalDialog}`);
+       console.log(`Quit Quick  Order cancelOrderId  ${cancelOrderId}  `);
     // setIsPlaceStreaming((prev) => !prev);
 
  } , [cancelOrder]);
@@ -86,7 +87,7 @@ const QuitQuickOrder = forwardRef(({   isMobile , sellPlusSymbol , cancelOrder ,
         return; // skip on mount
     }
     
-    
+          console.log(`Quit Quick  Order cancelOrderId  ${cancelOrderId}  `);
        // setTimeout( () => { setIsVisible(false); } , 1200)
 
      console.log("Quit Quick  Order  2 RESET ");
@@ -239,7 +240,7 @@ const sheet = {
     </button>
      
        <AnimatePresence>
-        {showSymbolModal   && (
+        {(showSymbolModal && cancelOrder)   && (
           <motion.div
             variants={backdrop}
             initial="hidden"

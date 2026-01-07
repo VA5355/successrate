@@ -811,7 +811,7 @@ const handleCancelQuick = async (orderId) => {
               message: `Cancelling ${orderId} ${selectedSymbol}...` 
             });
             */
-        await dispatch(placeQuickCancelOrder(orderId));
+        await dispatch(placeQuickCancelOrder({ orderId} ));
           //await dispatch(quickOrderBookData());
           fetchOrdersBookDataCacheKey()
           // filter the orderid from 

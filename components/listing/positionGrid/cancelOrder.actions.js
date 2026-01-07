@@ -3,7 +3,8 @@ import {API} from "@/libs/client"
 import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
 import {saveCompanyData} from "@/redux/slices/stockSlice"
 import { saveCancelOrderBook } from '@/redux/slices/orderBookSlice';  
-
+//import { useModal } from '@/providers/ModalProvider';
+import { showModal as modalShow, showError } from '../../common/service/ModalService';
 import {CommonConstants} from "@/utils/constants"
 import toast from "react-hot-toast"
 import { FYERSAPINSECSV ,FYERSAPITHREESECQUOTE , FYERSAPIORDERBOOKSURL ,  FYERSAPITICKERACCESTOKEN, 
@@ -446,7 +447,15 @@ export const parseNetlifyError = (erroObj) => {
     return parsedError;
 }
 
-export const placeQuickCancelOrder = (_id) => { 
+export const placeQuickCancelOrder = (params = {} ) => { 
+
+      const {  orderId ,  showFramerModal, hideModal, } = params; 
+          let spinnerIsAvailable = true;
+          let _id = orderId;
+       if (showFramerModal ===undefined || hideModal === undefined) {
+          console.error("Modal functions were not passed to placeQuickCancelOrder");
+          spinnerIsAvailable = false;
+         }
     console.log("placeQuickCancelOrder: _id  "+JSON.stringify( _id))
      return async (dispatch) => {
        try { // FETCH CANCEL DATA only when SUER LOGGED ON 
@@ -523,21 +532,29 @@ export const placeQuickCancelOrder = (_id) => {
                            //   }
                            }
                                 console.log("Unable to CANCEL ORDER  please check  "+order_id  );
-                             StorageUtils._save(CommonConstants.generalCancelOrderStatus, `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} `);
+                            // StorageUtils._save(CommonConstants.generalCancelOrderStatus, `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} `);
                               // AT PRESENT addressing direcrly the QuickOrderTable QUICKORDERSTATUS div
                               // we need to MOVE it OUTSIDE the action 
-                              const QUICKORDERSTATUS = document.getElementById(QUICKORDERSTATUS);
-                              if(QUICKORDERSTATUS !==null && QUICKORDERSTATUS !== undefined){
-                                     QUICKORDERSTATUS.textContent = `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} ` ;
+                            //  const QUICKORDERSTATUS = document.getElementById(QUICKORDERSTATUS);
+                           //   if(QUICKORDERSTATUS !==null && QUICKORDERSTATUS !== undefined){
+                           //          QUICKORDERSTATUS.textContent = `Unable to CANCEL ORDER  please check  ${order_id} ${resJSON?.error} ` ;
                                      //disabling the timeout for as of Jan 04 2026 
                                     /* setTimeout(()=> {
                                          // clear the order status display after 3 seconds
                                            QUICKORDERSTATUS.textContent ='';
                                      },30000);*/
-                              }
+                            //  } 
                             }
                           catch(ere){
                               console.log("placeQuickCancelOrder: _id error "+order_id+" CANCEL FAILED  "+JSON.stringify(ere))  
+                                 dispatch(modalShow({ title: 'Cancel Status', message: `CANCEL: ${order_id} FAILED: `, } ));
+                              if(spinnerIsAvailable ){
+                               showFramerModal({ 
+                                  status: 'status', 
+                                  message: 'Cancel '+order_id+' failed' 
+                                });
+                              }
+                                  (spinnerIsAvailable ?   setTimeout(hideModal, 300): console.log("Spinner unavailavle to close ") ) ;
                           }
                       //  }// FOR LOOP 
                       }
