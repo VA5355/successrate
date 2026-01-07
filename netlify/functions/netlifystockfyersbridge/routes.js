@@ -24,6 +24,7 @@ var secret_key = "KOA61TZLP4"; 		 // "MGY8LRIY0M"; // PROD
 var redirectUrl  = "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 //var redirectUrl  = "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 var BASEREF  = "http://successrate.netlify.app"
+var MARKETSTATUS  ="https://scraper-api-eyiz.onrender.com"
 var fyers= new fyersModel({"path":"./","enableLogging":true})
 fyers.setAppId(client_id)
 
@@ -404,8 +405,68 @@ router.get('/fyersgetaccess', async function (req,res) {
 	}
 
 });
-// PROCEED ACCESS button click , is handled by this EVENT HANDLER 
-// just return the auth code , to the Next js login page
+
+
+// PROCEED market status 
+// just return status from the http://192.168.1.6:3065
+
+router.get('/fyersgetmarketstatus', async function (req,res) {
+// PROCEED market status 
+// just return status from the http://192.168.1.6:3065
+
+try {
+     
+	const response = await fetch(
+        MARKETSTATUS +  "/"
+    );
+   
+
+
+    if (response === undefined) {
+       console.log("FETCH http://192.168.1.6:3065  not okay ");
+		  setCORSHeaders( res )
+		res.send("{ data: error }" );
+    }
+
+     const marketStatusJson = await response.json();
+
+    let marketStatusRes =  {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+		  "Cache-Control": "public, max-age=300"
+      },
+      body: marketStatusJson
+    };
+
+	 setCORSHeaders( res );
+	 res.send( JSON.stringify( marketStatusRes));
+
+
+
+
+  } catch (error) {
+    let ret =  {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify({
+        error: "Market Status Fetch Failed ",
+        message: error.message
+      })
+    };
+		console.log(error)
+						//let wd1 = `NSE:${symbol}-EQ`;
+						//let ret = {  "symbol": wd1 , "status" : " Input error "+JSON.stringify(err) };
+						 setCORSHeaders( res );
+						res.send( JSON.stringify( ret));
+
+ 
+  }
+
+});
 
 // PROCEED NSE CSV file access using function  
 // just return the csv text 

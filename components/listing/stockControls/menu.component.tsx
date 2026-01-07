@@ -13,10 +13,10 @@ import { CommonConstants } from '@/utils/constants';
 import { AnyNode } from 'postcss';
 
 const arr = [
-    {key: 1, title: "Top Gainers"},
-    {key: 2, title: "Top Losers"},
-    {key: 3, title: "Top Traders"},
-    {key: 4, title: "Positions"},
+    {key: 1, title: "Educate"},
+    {key: 2, title: "Observe"},
+    {key: 3, title: "Trade"},
+    {key: 4, title: "Position"},
 ]
 const sortMapper = [
     {key: 1, title: "Sort by percentage"},
@@ -84,7 +84,7 @@ const Menu = () => {
         newWindow?.focus();
       };
     const sortByPercentage = () => {
-        if (tab === "Top Gainers") {
+        if (tab === "Educate") {
             const sortedData = [...gainers].sort((a: any, b: any) => {
 
                 return parseFloat(b.change_percentage) - parseFloat(a.change_percentage)
@@ -103,7 +103,7 @@ const Menu = () => {
         }
     }
     const sortByPrice = () => {
-        if (tab === "Top Gainers") {
+        if (tab === "Educate") {
             const sortedData = [...gainers].sort((a: any, b: any) => {
                 return parseFloat(b.change_amount) - parseFloat(a.change_amount)
             })
@@ -236,7 +236,7 @@ const Menu = () => {
                     })
                 }
                 <div
-                    className={`hidden md:block toggle-line ${tab === "Top Losers" ? 'move-line' : tab === 'Top Traders' ? 'move-line2' :  tab === 'Positions' ? 'move-line3' :  tab === 'Most Actively Traded' ? 'move-2next' : ''}`}></div>
+                    className={`hidden md:block toggle-line ${tab === "Observe" ? 'move-line' : tab === 'Top Traders' ? 'move-line2' :  tab === 'Positions' ? 'move-line3' :  tab === 'Most Actively Traded' ? 'move-2next' : ''}`}></div>
             </div>
             <div className='hidden md:flex flex-wrap items-center justify-between'>
                 {

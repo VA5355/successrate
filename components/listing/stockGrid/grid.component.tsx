@@ -136,14 +136,14 @@ const StockGrid = () => {
         let cls= `grid w-11/12 gap-4 mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-5 justify-between`;
         let  trdCls = `grid w-11/12 gap-4 mx-auto grid-cols-1 justify-between`;
         let clsUse = cls;
-         if((seletab === "Top Gainers") || (seletab === "Top Losers") )
+         if((seletab === "Educate") || (seletab === "Observe") )
          {  clsUse = cls;
 
-         } else if ((seletab === "Top Traders")) {   
+         } else if ((seletab === "Trade")) {   
             console.log("TOP Traders clicked ");
             clsUse = trdCls;
          }
-         else if((seletab === "Positions")){
+         else if((seletab === "Position")){
             console.log("Positions clicked ")
               clsUse = trdCls;
             handleFirstFetchPositions();
@@ -173,18 +173,18 @@ const StockGrid = () => {
         <div> {/* sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-5  */}
             {/*<StockCard key={item.symbol} stock={item}/>*/} {/* <StockCard key={item.symbol ?? index} stock={item}/> */}
 
-            {  ( ( tab === "Top Gainers") || (tab === "Top Losers" )  ?  <GridCards   /> : <></>) } 
+            {  ( ( tab === "Educate") || (tab === "Observe" )  ?  <GridCards   /> : <></>) } 
             <div
                 className={handleCustomGridCols(tab)}>
                 {
-                    tab === "Top Gainers" ? gainers.map((item: any , index: number ) => {
+                    tab === "Educate" ? gainers.map((item: any , index: number ) => {
                         return  ( <span key={`${index}-gainers`} className="forKeyAndDisplay"> </span>) 
-                    }) : tab === "Top Losers" ? losers.map((item: any , index: number ) => {
+                    }) : tab === "Observe" ? losers.map((item: any , index: number ) => {
                         return (<span key={`${index}-losers`} className="forKeyAndDisplay"> </span>)
-                    }) :  tab === "Top Traders" ?   (  
+                    }) :  tab === "Trade" ?   (  
                         
                          <TradeGridPlotterPDFCSV tradeDataB={tradeData} />
-                     ) :  tab === "Positions" ?   (  
+                     ) :  tab === "Position" ?   (  
                           <PositionGrid positionDataB={positionData} /> 
 
                      ):    <>    </> 
@@ -193,7 +193,7 @@ const StockGrid = () => {
 
             </div>
               {
-                    tab === "Top Gainers" ? (  
+                    tab === "Educate" ? (  
                     <div className="space-y-6 px-6 pt-[10px] ml-[88px]">
                                 {/* Other content selected?.ticker
 
@@ -234,7 +234,7 @@ const StockGrid = () => {
 
 
                           
-                     ) : tab === "Top Losers" ? (  
+                     ) : tab === "Observe" ? (  
                            <>    </> 
                      ) :    <>    </> 
                 }

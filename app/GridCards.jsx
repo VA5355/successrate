@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Star, ArrowUpRight } from 'lucide-react';
 import PositionSwipeHint from '@/app/PositionSwipeHint';
+ 
+import MarketStatusSlider from '@/app/MarketStatusSlider';
 import  './GridCards.css'
 const GridCards = () => {
   const cards = [
@@ -21,7 +23,7 @@ const GridCards = () => {
       icon: <Star className="w-6 h-6 text-blue-500" />,
     },
      {
-      title: "Elite Trades",
+      title: "Position Swipe",
       desc: "Exclusive access to platinum tier features and priority golden-glove reporting support.",
       icon: <Star className="w-6 h-6 text-blue-500" />,
     },
@@ -89,6 +91,9 @@ const GridCards = () => {
           </motion.div>
         ))}
       </div>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-2 max-w-7xl w-full ml-24 mobile-margin-car">  
+          <MarketStatusSlider />
+         </div>
     </div>
   );
 };
