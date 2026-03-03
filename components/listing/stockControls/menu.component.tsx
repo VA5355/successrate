@@ -272,11 +272,21 @@ const Menu = () => {
                   <select className="p-2 rounded-lg bg-greylight dark:bg-greydark text-gretdark dark:text-white focus-visible:outline-none">
                   md:hidden
                  Alpha-Advantange or Fyers selection */}
-                <select value={platformType} onChange={(e) => {
+              
+             </div>
+
+                  <select value={platformType} onChange={(e) => {
                                     if (e.target.value == '1') {
                                         console.log(" selected " + e.target.value)
-                                    } else {
+                                    } else if (e.target.value == '2') {
                                         logByPlatform()
+                                        console.log(" selected " + e.target.value)
+                                    } else if (e.target.value == '3') {
+                                        logByUpstoxPlatform()
+                                        console.log(" selected " + e.target.value)
+                                    }
+                                    else if (e.target.value == '4') {
+                                        logByIciciDirectPlatform(e.target.value)
                                         console.log(" selected " + e.target.value)
                                     }
                                     setPlatformType(e.target.value)
@@ -284,8 +294,10 @@ const Menu = () => {
                     className='p-2 focus-visible:outline-none block  rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> {/* dark:text-white */}
                 <option value={1}>Alph-Vantage</option>
                 <option value={2}>Fyers</option>
+                <option value={3}>Upstox</option>
+                 <option value={4}>Icicidirect</option>
                </select>
-             </div>
+           
 
 
         </div>
