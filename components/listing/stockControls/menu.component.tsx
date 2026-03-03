@@ -281,13 +281,6 @@ const Menu = () => {
                                     } else if (e.target.value == '2') {
                                         logByPlatform()
                                         console.log(" selected " + e.target.value)
-                                    } else if (e.target.value == '3') {
-                                        logByUpstoxPlatform()
-                                        console.log(" selected " + e.target.value)
-                                    }
-                                    else if (e.target.value == '4') {
-                                        logByIciciDirectPlatform(e.target.value)
-                                        console.log(" selected " + e.target.value)
                                     }
                                     setPlatformType(e.target.value)
                   }}  
