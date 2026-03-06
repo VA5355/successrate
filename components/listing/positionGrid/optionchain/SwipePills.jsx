@@ -17,6 +17,14 @@ import "./sidewaysPriceSlider.css";
 
 function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPrice }) {
   const [value, setValue] = useState(min);
+    // 🔹 Sync state when LTP changes
+ /* 
+    this does change the slide price , and not cause Too many re-render error 
+    we keep it commented because if user goes to change this may interfere 
+     rather show the ltp more BOLD 
+  useEffect(() => {
+    setValue(min);
+  }, [min]); */
    const lotSize = 65;
   return (
     <div className="w-full flex flex-col items-center justify-center py-2">
@@ -348,7 +356,7 @@ const [scheduled, setScheduled] = useState(false);
         <div>
           <div className="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
             <span>{label}</span>
-            <span>{ltp}</span>
+           <span className="px-2 rounded-full bg-green-400 text-white text-sm font-semibold shadow-md">{ltp}</span>
           </div>
           <div className="text-[11px] text-zinc-600">{subtitle}</div>
         </div>

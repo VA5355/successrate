@@ -22,6 +22,7 @@ import "./index.css";
 import "./sidewaysPriceSlider.css";
 import expirySymbols from "./OptionChainExpirySymbols";
 import expiryMonthSymbols from "./OptionChainMonthEndSymbols";
+import TickStore from "./tickStore";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
 import {  Wifi } from "lucide-react";
@@ -30,7 +31,7 @@ import {  Wifi } from "lucide-react";
 // Fyers Custom Format Exipry Table Mapper 
  const tableGlobalExipryMapper = new Map();
              // this is also a configuration setting for converting yymmdd to fyers specific yyMdd format 
-             tableGlobalExipryMapper.set('251216','25D16')
+            /* tableGlobalExipryMapper.set('251216','25D16')
              tableGlobalExipryMapper.set('251223','25D23')
              tableGlobalExipryMapper.set('251230','25DEC')
              tableGlobalExipryMapper.set('260106','26J06')
@@ -46,10 +47,28 @@ import {  Wifi } from "lucide-react";
               tableGlobalExipryMapper.set('25D16', '2025-12-16')
              tableGlobalExipryMapper.set('25D23','2025-12-23')
              tableGlobalExipryMapper.set('25D30','2025-12-30') // convert to 25DEC while sending to netlify function 
-             tableGlobalExipryMapper.set('26J06','2026-01-06')
-             tableGlobalExipryMapper.set('26J13', '2026-01-13')
-       tableGlobalExipryMapper.set('26J20', '2026-01-20')
-         tableGlobalExipryMapper.set('26J27', '2026-01-27')
+             */
+             tableGlobalExipryMapper.set('26M10','2026-03-10')
+             tableGlobalExipryMapper.set('26M17', '2026-03-17')
+                tableGlobalExipryMapper.set('26M24','2026-03-24')
+             tableGlobalExipryMapper.set('26M31', '2026-03-31')
+              tableGlobalExipryMapper.set('26A07','2026-04-07')
+             tableGlobalExipryMapper.set('26A14', '2026-04-14')
+             tableGlobalExipryMapper.set('26A21','2026-04-21')
+             tableGlobalExipryMapper.set('26A28', '2026-04-28')
+                    tableGlobalExipryMapper.set('2026-03-10','26M10')
+             tableGlobalExipryMapper.set('2026-03-17','26M17' )
+                tableGlobalExipryMapper.set('2026-03-24','26M24')
+             tableGlobalExipryMapper.set('2026-03-31','26M31' )
+              tableGlobalExipryMapper.set('2026-04-07','26A07')
+             tableGlobalExipryMapper.set('2026-04-14','26A14' )
+             tableGlobalExipryMapper.set('2026-04-21','26A21')
+             tableGlobalExipryMapper.set('2026-04-28','26A28' )
+
+
+
+
+      
 // --- Mocking External Dependencies for Runnable Demo ---
 
 const lotSize = 65;
@@ -379,21 +398,27 @@ function useWebSocketStreamDummy(expiryDate) {
 
 // --- Mock Data ---
 const mockExpiryDates = [  //this is a configuration setting to be set every change in month for exipry data 
-    '2025-12-16', 
-    '2025-12-23', 
-    '2025-12-30', // Default selected
-    '2026-01-06', 
-    '2026-01-13'
+    '2026-03-10', 
+    '2026-03-17', 
+    '2026-03-24', // Default selected
+    '2026-03-31', 
+    '2026-04-07',
+    '2026-04-14',
+    '2026-04-21',
+    '2026-04-28' 
+
 ];
 
-const spot = "25,250.00"; // Current NIFTY/Index Spot Price
+
+
+const spot = "24,450.00"; // Current NIFTY/Index Spot Price
 
 // Example structure for a strike row
 const mockStrikes = [ // this alsos is a configuration setting for change in every month 
-    { expiry: '2025-12-16', strike: "25900", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
-    { expiry: '2025-12-23', strike: "26000", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
-    { expiry: '2025-12-30', strike: "26100", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
-    { expiry: '2026-01-06', strike: "26200", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
+   { expiry: '2026-03-10', strike: "25900", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
+    { expiry: '2026-03-17', strike: "26000", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
+    { expiry: '2026-03-24', strike: "26100", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
+    { expiry: '2026-03-31', strike: "26200", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
 ];
 
 
@@ -428,11 +453,10 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
       }
     }, []); 
    const generateSymbolsForExpiry = (exr) =>{ // NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
-         let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
-                    'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
-                'NIFTY25D2325600CE' , 'NIFTY25D2325600PE','NIFTY25D2325700CE' , 'NIFTY25D2325700PE' ,
-                'NIFTY25D2325800CE' , 'NIFTY25D2325800PE','NIFTY25D2325900CE' , 'NIFTY25D2325900PE'];
-           
+let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY26M1024700CE', 'NIFTY26M1024700PE' , 'NIFTY26M1024800CE', 'NIFTY26M1024800PE', 
+                    'NIFTY26M1724700PE' , 'NIFTY26M1724700CE','NIFTY26M1724800CE' , 'NIFTY26M1724800PE',
+                'NIFTY26M2424700CE' , 'NIFTY26M2424700PE','NIFTY26M2424800CE' , 'NIFTY26M2424800PE' ,
+                'NIFTY26A0724700CE' , 'NIFTY26A0724700PE','NIFTY26A0724800CE' , 'NIFTY26A0724800PE'];
             const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
             console.log(formatted);
           /* to send symbols like this 
@@ -453,6 +477,8 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
               console.log("Active Expiry Dates "+JSON.stringify(activeExpiryDates))
             // CHECK seleceted date is active or not 
              let isActive =   activeExpiryDates.findIndex ( actDate => actDate === exr );
+              console.log("Expiry Searched for  "+JSON.stringify(exr))   
+		 console.log(" in  tableGlobalExipryMapper  "+JSON.stringify(tableGlobalExipryMapper))  
             const fyersExpiry = tableGlobalExipryMapper.get(exr);
             let fitSymbols = [];
                console.log("selected expiry  : "+JSON.stringify(exr)) ;  
@@ -536,7 +562,8 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
 
      // 2. Generate the new set of symbols based on the newExpiry
            const newSymbols = generateSymbolsForExpiry(newExpiry); // This function needs to exist
-    
+             console.log(`New Expiry selected ${newExpiry} `);
+    		// dispatch(modalShow({ title: 'Exipry', message: `New Expiry selected ${newExpiry} `, } ));
             // 3. Send the new subscription request to the server!
             // This calls the sendSubscriptionRequest function exposed by the Context.
             if (Array.isArray(newSymbols) && newSymbols.length >0 ) {
@@ -1520,10 +1547,10 @@ const [limitPrice, setLimitPrice] = useState(ltp);
 //const spot = "25,250.00";
 const strikes =  [  // this is a configuraton setting for every change in month of expiry 
 
-  { name: "NIFTY25D2326100CE", strike: "26100", call: { ltp: "247.65", bid: "247.1", ask: "248.5" }, put: { ltp: "68.65", bid: "68.45", ask: "69.1" } },
-  { name: "NIFTY25D2326200CE", strike: "26200", call: { ltp: "326.45", bid: "325.35", ask: "327.1" }, put: { ltp: "46.8", bid: "46.65", ask: "47.2" } },
-  { name: "NIFTY25D2326300CE", strike: "26300", call: { ltp: "180.7", bid: "180.3", ask: "181.5" }, put: { ltp: "101.05", bid: "100.8", ask: "101.6" } },
-  { name: "NIFTY25D2326000PE", strike: "26000", call: { ltp: "400.10", bid: "399.50", ask: "400.80" }, put: { ltp: "35.20", bid: "35.10", ask: "35.50" } },
+ { name: "NIFTY26M1024700CE", strike: "24700", call: { ltp: "247.65", bid: "247.1", ask: "248.5" }, put: { ltp: "68.65", bid: "68.45", ask: "69.1" } },
+  { name: "NIFTY25M1024650CE", strike: "24650", call: { ltp: "326.45", bid: "325.35", ask: "327.1" }, put: { ltp: "46.8", bid: "46.65", ask: "47.2" } },
+  { name: "NIFTY25M1024600CE", strike: "24600", call: { ltp: "180.7", bid: "180.3", ask: "181.5" }, put: { ltp: "101.05", bid: "100.8", ask: "101.6" } },
+  { name: "NIFTY25M1024550PE", strike: "24550", call: { ltp: "400.10", bid: "399.50", ask: "400.80" }, put: { ltp: "35.20", bid: "35.10", ask: "35.50" } },
 ];
 
 
@@ -1743,7 +1770,8 @@ export default function OptionChainTable({positionData}) {
   
   // State for the selected expiry date
     const [selectedExpiry, setSelectedExpiry] = useState(mockExpiryDates[0]); // Default to the second date
-
+     const printed = new Set();	 
+     const store = new TickStore(); 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
     const generateSymbolsForExpiry = (exr) =>{// NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
@@ -2016,8 +2044,10 @@ export default function OptionChainTable({positionData}) {
         table.set('251230','25DEC')  /// 
         table.set('260106','26106')   // NIFTY26106 in place
         table.set('260113','26113')  // 
-         table.set('26J06','26106')  
-          table.set('26J13','26113')  
+        table.set('26M10','26310')  
+          table.set('26M17','26317') 
+	  table.set('26M24','26324')  
+          table.set('26M31','26331') 
         console.log(`Selected or slided evt.row.strike : ${JSON.stringify(evt.row.expiry)}`); 
         console.log(`Order type evt.row.orderType : ${JSON.stringify(evt.row.orderType)}  schedueld: ${JSON.stringify(evt.row.scheduled)}`); 
 
@@ -2201,7 +2231,14 @@ export default function OptionChainTable({positionData}) {
                                  Array.from(strikeMap.entries())?.map(([key, value] , idx) => { 
                                 
                                  let rawRow= value ; // value[1]; //tradeRow[1];
-                            //   console.log(`iterating map JSX:  ${idx} + ${key} ${JSON.stringify(rawRow)}`)
+                             if (printed.has(key))  { 
+                                     rawRow=  store.upsert(row);
+                             } 
+                              printed.add(key);
+                                
+			  //console.log(`  JSX:  ${rawRow.id} + ${key}   ` );	
+                          //    console.log("typeof rawRow " + typeof rawRow); // Expected output: "object"
+                           // console.log(`iterating map JSX:  ${idx} + ${key} ${JSON.stringify(rawRow)} `)
                              // destructure only the fields you need
                             // iterating map JSX:  11 + NIFTY25D3026100CE {"strike":"NIFTY25D3026100CE","id":"694458134","timestamp":"2025-12-27T09:29:15.653Z",
                             // "ltp":"146.15","bid":"0","ask":"147.89","volume":"0","name":"NIFTY25D3026100CE","expiry":"25D30","type":"CE","strikeNumber":"26100CE"}
@@ -2212,6 +2249,8 @@ export default function OptionChainTable({positionData}) {
                               if (!Array.isArray(rawRow) ) { 
                                     if( name    !== 'NIFTY-50'   &&  ltp   !== undefined ){
                                        nifty50  = ( cur => cur !== ltp ? ltp : cur );
+                          /* (spot > spotSort ? spotSort  : spot ) causes Error: Too many re-renders. React limits the number of renders to prevent an infinite loop. */              
+                                     
                                     }
                               }
                                if (Array.isArray(rawRow) ) {   
