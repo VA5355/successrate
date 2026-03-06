@@ -23,6 +23,7 @@ import "./sidewaysPriceSlider.css";
 import expirySymbols from "./OptionChainExpirySymbols";
 import expiryMonthSymbols from "./OptionChainMonthEndSymbols";
 import TickStore from "./tickStore";
+import SpotIndex  from "./spotIndex";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
 import {  Wifi } from "lucide-react";
@@ -2171,7 +2172,10 @@ export default function OptionChainTable({positionData}) {
                                   <TrendingUp className="w-6 h-6 text-indigo-600" /> NIFTY  
                               </h1>
                               <p className="text-sm text-zinc-500 mt-1">
-                                  Current Spot Price: <span className="font-semibold text-indigo-600">₹{spot}</span>
+                                  Current Spot Price: <span className="font-semibold text-indigo-600">
+                                    <SpotIndex/>
+                                    
+                                   {/**  ₹{spot > nifty50 ?  nifty50: spot} */} </span>
                               </p>
                               <p className={`text-xs mt-1 font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
                                   Status: {isConnected ? 'Streaming Live' : 'Connecting...'}
