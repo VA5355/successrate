@@ -67,21 +67,22 @@ export default function SpotIndex() {
         )}
 
         {markets.map((m, idx) => (
-          <motion.div
+           <> 
+          {/* <motion.div
             key={`${m.market}-${idx}`}
             whileTap={{ scale: 0.97 }}
             className=" w-full  md:min-w-[220px] md:max-w-[220px] bg-white rounded-xl border shadow-sm p-3"
           >
-             {/* Body */}
-            <div className="mt-3 space-y-1 text-xs text-zinc-600">
-              {m.index && (
+             Body 
+            <div className="mt-3 space-y-1 text-xs text-zinc-600">*/}
+              {m.index && idx ==0 && (
                 <div className="font-medium text-zinc-800">
-                  {m.index}
+                  {m.last} &nbsp; pts: {Math.round(m.variation)} &nbsp; {m.percentChange} %
                 </div>
               )}
  
-            </div>
-          </motion.div>
+           {/* </div> 
+          </motion.div>*/}  </>
         ))}
       </motion.div>
 

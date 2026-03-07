@@ -93,8 +93,8 @@ const GlobalSpinnerUI = ({ isOpen, status, message, decoratorTag, onRetry, onClo
                 {status === 'error' && 'Action Failed'}
                 {status === 'success' && 'Success'}
               </h2>
-                {/** {`p-3 rounded ${decoratorTag}`} */}
-              <p className={`mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400  ${decoratorTag}`}>
+                {/** {`p-3 rounded ${decoratorTag}`}  text-xs leading-relaxed text-slate-500 dark:text-slate-400  */}
+              <p className={`mt-1  ${decoratorTag}`}>
                  <strong>  {message} </strong>
               </p>
 
