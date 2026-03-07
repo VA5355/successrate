@@ -2012,6 +2012,12 @@ export default function OptionChainTable({positionData}) {
     // Action log
     const [log, setLog] = useState([]);
     const handleAction = (evt) => {
+
+      // CHECK USER LOGGED IN 
+      const res1 = StorageUtils._retrieve(CommonConstants.fyersToken);
+        if (res1.isValid && res1.data !== null &&  res1.data !== undefined) {
+
+
       setLog((prev) => [
         { time: new Date().toLocaleTimeString(), ...evt },
         ...prev,
@@ -2120,6 +2126,16 @@ export default function OptionChainTable({positionData}) {
 
 
       console.log("Trade Executed:", evt);
+    }
+    else {
+       // Show Time out User Loging Required 
+         console.log("User not Logged in ");
+       setTimeout(() => {
+          
+           setShowModal(false);
+      }, 2000);
+       setShowModal(true);
+    }
     };
   
 
@@ -2143,7 +2159,7 @@ export default function OptionChainTable({positionData}) {
                   
                   className="flex-1 bg-brandgreen-600  py-1 rounded-lg hover:bg-green-700 transition"
                 >
-                 {status}
+                 {status ?? "User Not Logged In "}
                 </button>
  
               </div>
