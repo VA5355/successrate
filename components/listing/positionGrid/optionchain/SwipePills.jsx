@@ -14,9 +14,16 @@ import {StorageUtils} from "@/libs/cache";
 import {CommonConstants} from "@/utils/constants";
 import {  AnimatePresence} from "framer-motion";
 import "./sidewaysPriceSlider.css";
-
+ import   useIsMobile   from "../../tradeGrid/useIsMobile";
 function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPrice }) {
   const [value, setValue] = useState(min);
+   const isMobile = useIsMobile();
+  const strikPDesktopClass= "px-2 rounded-full bg-green-600 text-white text-sm font-semibold shadow-md"; // bg-indigo-600
+  const strikePMobileClass = "px-1 rounded-full bg-green-600 text-white text-sm  shadow-md"; // bg-indigo-200
+  const horiZontalSlideDesk= "w-full h-2 appearance-none cursor-pointer rounded-full"+
+                     "bg-gradient-to-r from-green-500 via-purple-500 to-pink-500";    //  from-indigo-500
+  const horiZontalSlideMobile= "sm:w-4/5 h-1 appearance-none cursor-pointer rounded-full"+
+                     "bg-gradient-to-r from-green-600 via-purple-200 to-pink-200";  // from-indigo-200
     // 🔹 Sync state when LTP changes
  /* 
     this does change the slide price , and not cause Too many re-render error 
@@ -27,23 +34,24 @@ function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPri
   }, [min]); */
    const lotSize = 65;
   return (
-    <div className="w-full flex flex-col items-center justify-center py-2">
-      {/* Floating Value */}
+       
+    <div className="flex flex-col items-center justify-center py-2">
+      {/* Floating Value w-full */}
       <motion.div
         key={value}
-        className="mb-2"
+        className={isMobile ? "mb-1":"mb-2"}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
         id="strikePrice"
       >
-        <span className="px-2 rounded-full bg-indigo-600 text-white text-sm font-semibold shadow-md">
+        <span className={ isMobile ? strikePMobileClass : strikPDesktopClass }>
           {value}
         </span>
       </motion.div>
 
-      {/* Horizontal Slider */}
-      <div className="relative w-40 flex items-center">
+      {/* Horizontal Slider w-40*/}
+      <div className="relative  flex items-center">
         <motion.input
           type="range"
           min={min}
@@ -54,8 +62,7 @@ function SidewaysPriceSlider({ idx, min = 100, max = 500, step = 0.5, onLimitPri
             setValue(Number(e.target.value));
             onLimitPrice(Number(e.target.value));
           }}
-          className="w-full h-2 appearance-none cursor-pointer rounded-full
-                     bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+          className={ isMobile ? horiZontalSlideMobile : horiZontalSlideDesk }
           whileTap={{ scale: 1.05 }}
         />
       </div>
@@ -166,6 +173,7 @@ function SwipePillBase({
 }) {
   // motion value for dragging
   const x = useMotionValue(0);
+    const isMobile = useIsMobile();
 
   // internal state: locked, units (base units), limitPrice
   // we store 'units' (not multiplied) and show total = units * 65 where needed
@@ -174,8 +182,18 @@ function SwipePillBase({
     // if stored is undefined -> default 0
     return stored !== undefined ? Number(stored) || 0 : 0;
   })();
+ 
+  const  mobileAlign = "relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-0 py-2 shadow-sm min-w-[220px] max-w-[340px] sm:w-4/5";
+    const  desktopAlign = "relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm min-w-[220px] max-w-[640px] w-full";
+ 
+  const dAlign ="absolute top-1 right-2 z-30  flex items-center gap-1  pt-[-2px]     scale-[0.9] sm:scale-100 ";
+  const mAlign ="   absolute -top-2 right-2 z-30   flex items-center gap-1  pt-[-2px]   scale-[0.9] sm:scale-100   ";
+  const mLimitAlign = "   absolute -top-2 right-2 z-30   flex items-center gap-1  pt-[-2px]   scale-[0.9] sm:scale-100  ";
+  const dLimitAlign = "absolute top-1 right-2 z-30 flex items-center gap-1  pt-[-2px]      scale-[0.9] sm:scale-100 ";
 
-  const [locked, setLocked] = useState(false);
+  const mQtySet = "relative  z-10 top-1/2 -translate-y-1/2";
+  const dQtySet = "absolute right-[-44px] z-10 top-1/2 -translate-y-1/2";
+    const [locked, setLocked] = useState(false);
   const [units, setUnits] = useState(initialUnits);
   const [limitPrice, setLimitPrice] = useState(ltp ?? 0);
 
@@ -268,7 +286,7 @@ const [scheduled, setScheduled] = useState(false);
   // Render
   // Note: wrapper is relative so spinner overlay absolute will match pill exactly
   return (
-    <div className={`relative flex items-center rounded-2xl p-2 transition ${className}`}>
+    <div className={`relative flex items-center rounded-2xl p-0 transition ${className}`}>
       {/* Lock button - doesn't get re-created by spinner */}
       <button  id="optionLock"
         onClick={() => setLocked((s) => !s)}
@@ -298,14 +316,10 @@ const [scheduled, setScheduled] = useState(false);
         whileTap={{ scale: 0.98 }}
         onDragEnd={handleDragEnd}
         style={{ x, background: bg }}
-        className="relative z-10 grid grid-cols-[1fr_auto] items-center rounded-2xl border border-zinc-300 px-3 py-2 shadow-sm min-w-[220px] max-w-[640px] w-full"
+        className= {isMobile ? mobileAlign : desktopAlign}
       >
 
-            <div className="
-              absolute top-1 right-2 z-30
-              flex items-center gap-1  pt-[-2px]
-              scale-[0.9] sm:scale-100
-            ">
+            <div className={isMobile ? mLimitAlign : dLimitAlign} >
               {/* Limit / Margin Toggle */}
               <div className="flex rounded-full bg-zinc-100 p-0.5 shadow-inner">
                 <button
@@ -356,23 +370,25 @@ const [scheduled, setScheduled] = useState(false);
         <div>
           <div className="flex justify-between items-center text-[13px] font-semibold leading-5 tracking-tight">
             <span>{label}</span>
-           <span className="px-2 rounded-full bg-green-400 text-white text-sm font-semibold shadow-md">{ltp}</span>
+           <span className=" font-semibold shadow-md">{ltp}</span>
           </div>
           <div className="text-[11px] text-zinc-600">{subtitle}</div>
         </div>
 
-        <div className="flex items-center gap-2 text-[10px]">
-          <span
+        <div className="flex items-center text-[10px]">
+          {isMobile ? <></> : (<span
             className={`px-2 py-0.5 rounded-full ${
               side === "CALL" ? "bg-emerald-600/10 text-emerald-700" : "bg-blue-600/10 text-blue-700"
             }`}
           >
             {side}
-          </span>
+          </span>)}
+          
              {/*parseInt(Math.round(parseFloat(  )))    parseInt(Math.round(parseFloat(  )))*3     */}
  <SidewaysPriceSlider  idx={idx}    min={ltp} max={  600   } step={0.5}  onLimitPrice  ={ onLimit } />
                 {/*  onSell={(qty) => onAction?.({ side: "CALL", action: "SELL", qty:qty, strike, row })} */}
-             <div className="h-[5px] right-[-56px] w-full flex items-center justify-center 
+                {/* right-[-56px]  w-full*/}
+             <div className="h-[5px]  flex items-center justify-center 
                         bg-grey-400 dark:text-white font-bold text-base">
                    {parseInt(units * lotSize)}
                </div>
@@ -386,15 +402,11 @@ const [scheduled, setScheduled] = useState(false);
             </div>
           </div>
 
-          {/* Qty display */}
-          <div className="h-[5px] right-[-56px] w-full flex items-center justify-center font-bold text-base">
+          {/* Qty display right-[-56px]*/}
+          <div className="h-[5px]  w-full flex items-center justify-center font-bold text-base">
             {parseInt(units * lotSize)}
           </div>
-        </div>
-
-        {/* Scroll wheel dial (replace with your ScrollArrows component) */}
-        <div className="absolute right-[-44px] z-10 top-1/2 -translate-y-1/2">
-          {/* A simple up/down control to adjust units */}
+                    {/* A simple up/down control to adjust units */}
           <div id="chevronUpDownBtn" className="flex flex-col gap-1 items-center">
             <button
               onClick={() => setUnits((q) => Math.max(0, q + 1))}
@@ -408,6 +420,13 @@ const [scheduled, setScheduled] = useState(false);
               ▼
             </button>
           </div>
+        </div>
+
+        {/* Scroll wheel dial (replace with your ScrollArrows component) 
+          absolute right-[-14px] z-10 top-1/2 -translate-y-1/2 for mobile 
+        */}
+        <div className= {isMobile ? mQtySet : dQtySet}>
+ 
         </div>
 
         {/* Action toast */}

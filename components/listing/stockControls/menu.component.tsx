@@ -218,10 +218,10 @@ const Menu = () => {
                
             }}
                     className='p-2 focus-visible:outline-none block md:hidden rounded-lg bg-greylight dark:bg-greydark text-gretdark dark:text-white '>
-                <option>Top Gainers</option>
-                <option>Top Losers</option>
-                <option>Top Trades</option>
-                 <option>Positions</option>
+                <option value={'Educate'}>Educate</option>
+                <option value={'Observe'}> Observe</option>
+                <option value={'Trade'}>Trade</option>
+                 <option value={'Position'} >Position</option>
             </select>
 
 
@@ -253,7 +253,7 @@ const Menu = () => {
                     })
                 }
             </div>
-            <select value={sortType} onChange={(e) => {
+            {/*  <select value={sortType} onChange={(e) => {
                 if (e.target.value == '1') {
                     sortByPercentage()
                 } else {
@@ -261,10 +261,10 @@ const Menu = () => {
                 }
                 setSortType(e.target.value)
             }}  
-                    className='p-2 focus-visible:outline-none block md:hidden rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> {/* dark:text-white */}
+                    className='p-2 focus-visible:outline-none block md:hidden rounded-lg bg-greylight dark:bg-greydark text-gretdark  dark:active:text-green-700  '> 
                 <option value={1}>Sort by Percentage</option>
                 <option value={2}>Sort by Price</option>
-            </select>
+            </select>*/} {/* dark:text-white */}
         
 
             <div className="hidden md:flex relative items-center">
