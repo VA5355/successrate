@@ -3,6 +3,7 @@ import {API} from "@/libs/client"
 import {disableLoader, enableLoader} from "@/redux/slices/miscSlice"
 import {saveCompanyData} from "@/redux/slices/stockSlice"
 import { saveQuoteBook } from '@/redux/slices/ceQuoteSlice';  
+import { showModal, showError } from '../../common/service/ModalService';
 
 import {CommonConstants} from "@/utils/constants"
 import toast from "react-hot-toast"
@@ -355,7 +356,18 @@ export const stopSensexTickerData =   (symb ) => {
     
     }
 } 
-export const getSensexTickerData = (_id ) => {
+export const getSensexTickerData = (params = {} ) => {
+  
+    // Destructuring with a default value = {} prevents the crash if params is missing
+       const { _id,   showFramerModal, hideModal, } = params;
+        //const { _id, qty, price ,symbol  } = orderData;
+        let spinnerIsAvailable = true;
+       if (showFramerModal ===undefined || hideModal === undefined) {
+          console.error("Modal functions were not passed to getSensexTickerData");
+          spinnerIsAvailable = false;
+         }
+
+   
       // SAMPLE TICKER DEFAULT DATA 
        console.log("getSensexTickerData: _id  "+JSON.stringify( _id))
       // THIS CAUSE OVERRIDE DEFAULT SAMPLE DATA   
@@ -440,7 +452,8 @@ export const getSensexTickerData = (_id ) => {
                             ticker:sym,
                             access_token: acctoken
                             });
-                        
+                           // Auto-hide success after 3 seconds
+                         (spinnerIsAvailable ?   setTimeout(hideModal, 900): console.log("Spinner unavailavle to close ") ) ;   
                       //   const res = await API.get(FYERSAPITICKERACCESTOKEN , {params: { "auth_code" : auth_code }});
                      //    const res = await API.get(FYERSAPITHREESECQUOTE , {params: { "auth_code" : auth_code ,"symbol":'SENSEX-INDEX'}});
                          const res = await API.get(FYERSAPITHREESECQUOTE , {params: { "access_token" : acctoken ,"symbol":'SENSEX-INDEX'}});
@@ -588,6 +601,19 @@ export const getSensexTickerData = (_id ) => {
     }  // AUTH CODE CHECL 
     else { 
           console.log("User not logged  ")
+          // SINCE USER NOT LOGGED IN  
+          // no dispatch in useModal i.e. ModalProvider based dialog  MODAL 
+          // dispatch(showModal({ title: 'Order Status', message: `${sym} sent `,payload:{ modalType:'info'} }  ));
+           // 1. Immediately trigger the user not logged in  spinner
+                                showFramerModal({ 
+                                  status: 'Status ', 
+                                  message: ' User seems not logged in ...' ,
+                                  decoratorTag : "font-semibold text-blue-800" 
+                                });
+              // Auto-hide success after 3 seconds
+             (spinnerIsAvailable ?   setTimeout(hideModal, 900): console.log("Spinner unavailavle to close ") ) ;                    
+
+
     }
  } // TRY 
     finally {

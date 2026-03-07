@@ -238,7 +238,7 @@ const Menu = () => {
                 <div
                     className={`hidden md:block toggle-line ${tab === "Observe" ? 'move-line' : tab === 'Top Traders' ? 'move-line2' :  tab === 'Positions' ? 'move-line3' :  tab === 'Most Actively Traded' ? 'move-2next' : ''}`}></div>
             </div>
-            <div className='hidden md:flex flex-wrap items-center justify-between'>
+           {/* <div className='hidden md:flex flex-wrap items-center justify-between'>
                 {
                     sortMapper.map(item => {
                         return <Chip key={item.key} isSelected={sortType === String(item.key)} text={item.title}
@@ -252,7 +252,7 @@ const Menu = () => {
                                      }}/>
                     })
                 }
-            </div>
+            </div>*/} 
             {/*  <select value={sortType} onChange={(e) => {
                 if (e.target.value == '1') {
                     sortByPercentage()

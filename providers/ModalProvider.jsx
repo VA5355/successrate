@@ -23,11 +23,12 @@ export const ModalProvider = ({ children }) => {
     isOpen: false,
     status: 'loading', // 'loading' | 'error' | 'success'
     message: '',
+    decoratorTag: '',
     onRetry: null,
   });
 
-  const showFramerModal = useCallback(({ status = 'loading', message = '', onRetry = null }) => {
-    setModal({ isOpen: true, status, message, onRetry });
+  const showFramerModal = useCallback(({ status = 'loading', message = '', decoratorTag='', onRetry = null }) => {
+    setModal({ isOpen: true, status, message, decoratorTag , onRetry });
   }, []);
 
   const hideModal = useCallback(() => {
@@ -43,7 +44,7 @@ export const ModalProvider = ({ children }) => {
 };
 
 // --- 2. REUSABLE UI COMPONENT (Mobile Responsive) ---
-const GlobalSpinnerUI = ({ isOpen, status, message, onRetry, onClose }) => {
+const GlobalSpinnerUI = ({ isOpen, status, message, decoratorTag, onRetry, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -92,8 +93,8 @@ const GlobalSpinnerUI = ({ isOpen, status, message, onRetry, onClose }) => {
                 {status === 'error' && 'Action Failed'}
                 {status === 'success' && 'Success'}
               </h2>
-
-              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                {/** {`p-3 rounded ${decoratorTag}`} */}
+              <p className={`mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400  ${decoratorTag}`}>
                  <strong>  {message} </strong>
               </p>
 
