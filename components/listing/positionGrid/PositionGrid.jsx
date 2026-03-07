@@ -1076,6 +1076,11 @@ const getSortIndicator = (column) =>
               <span><FetchPositionButton onFetchComplete={ handleFetchComplete}
                          sortedData={sortedData} updateSoldQty={fetchPendingOrders} /></span>
             </button>
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all active:scale-95">
+              <RefreshCw className="w-4 h-4" />
+              
+              <span> <StreamToggleButton /></span>
+            </button>
           </div> 
 
         </div>

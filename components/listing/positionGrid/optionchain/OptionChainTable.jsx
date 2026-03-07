@@ -2130,11 +2130,15 @@ export default function OptionChainTable({positionData}) {
     else {
        // Show Time out User Loging Required 
          console.log("User not Logged in ");
+          showFramerModal({ 
+               status: 'Verify', 
+              message: `User not Logged in ...` 
+            }); 
        setTimeout(() => {
-          
-           setShowModal(false);
+            hideModal();
+          // setShowModal(false);
       }, 2000);
-       setShowModal(true);
+      /// setShowModal(true);
     }
     };
   
