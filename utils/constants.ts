@@ -397,7 +397,7 @@ export const CommonConstants = {
 
      BREEZE_SECRET_KEY:"005@303Vgc26vI5153QD6^73672145~h",
 
-      TRADE_LOGIN_URL:"https://api.icicidirect.com/apiuser/login?api_key="
+      TRADE_LOGIN_URL:"https://api.icicidirect.com/apiuser/login?api_key=",
 
        niftySPOTINDEX : 'niftySPOTINDEX'
     }
