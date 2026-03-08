@@ -1,5 +1,6 @@
 "use client";
-
+ import { StorageUtils } from '@/libs/cache';
+      import { CommonConstants } from '@/utils/constants';
 import { motion } from "framer-motion";
 import {
   TrendingUp,
@@ -33,6 +34,17 @@ export default function SpotIndex() {
       .then((data) => {
         if (alive && data?.marketState) {
           setMarkets(data.marketState);
+          markets.map((m, idx) => {
+               if(m.index && idx ==0  ) {
+                  let spot = m.last;
+                  let pts = m.variation; 
+                  let percent =  m.percentChange;
+                    // set the SPOT in the localStorage 
+                    StorageUtils._save(CommonConstants.niftySPOTINDEX,  {  spot , pts ,  percent } );
+
+               }
+          });
+        
         }
       })
       .catch((err  ) => {

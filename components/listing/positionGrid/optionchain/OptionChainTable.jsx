@@ -21,9 +21,11 @@ import { showModal as modalShow, showError } from '../../../common/service/Modal
 import "./index.css";
 import "./sidewaysPriceSlider.css";
 import expirySymbols from "./OptionChainExpirySymbols";
+import { generated , generatedApril, generateSymbolsApril , getHighestId , baseSpot, extractExpiries , strikeMapper} from "./optionStikeGenerator";
 import expiryMonthSymbols from "./OptionChainMonthEndSymbols";
 import TickStore from "./tickStore";
 import SpotIndex  from "./spotIndex";
+import  { fetchNiftySpot }  from "./spotFyersIndex";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
  
 import {  Wifi } from "lucide-react";
@@ -454,10 +456,65 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
       }
     }, []); 
    const generateSymbolsForExpiry = (exr) =>{ // NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
-let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY26M1024700CE', 'NIFTY26M1024700PE' , 'NIFTY26M1024800CE', 'NIFTY26M1024800PE', 
+
+          let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY26M1024700CE', 'NIFTY26M1024700PE' , 'NIFTY26M1024800CE', 'NIFTY26M1024800PE', 
                     'NIFTY26M1724700PE' , 'NIFTY26M1724700CE','NIFTY26M1724800CE' , 'NIFTY26M1724800PE',
                 'NIFTY26M2424700CE' , 'NIFTY26M2424700PE','NIFTY26M2424800CE' , 'NIFTY26M2424800PE' ,
                 'NIFTY26A0724700CE' , 'NIFTY26A0724700PE','NIFTY26A0724800CE' , 'NIFTY26A0724800PE'];
+         const expiries = extractExpiries(symbols);
+         // get Spot from the Spot or the StorageUtils saved earlier in cache 
+         let indexNiftySpot = baseSpot;
+          if (spot !==undefined) {
+               console.log("Nifty Spot from  artilery feed  ");
+                    console.log("Current spot  "+spot);
+                      indexNiftySpot = spot;
+          }
+          else { 
+               let recentSPOT  =  StorageUtils._retrieve(CommonConstants.niftySPOTINDEX)
+             if (recentSPOT.isValid && recentSPOT.data !== null &&  recentSPOT.data !== undefined) {
+                 /*
+                    let spot = m.last;
+                  let pts = m.variation; 
+                  let percent =  m.percentChange; 
+                   */
+                    let niftySPOT = recentSPOT.data['spot'];
+                if (niftySPOT&& niftySPOT !== null && niftySPOT !== undefined) {
+                    console.log("Nifty Spot from Cache  ");
+                    console.log("Cache spot  "+niftySPOT);
+                      indexNiftySpot = niftySPOT;
+                  }
+              }
+              else {
+                let recentTickerToken =  StorageUtils._retrieve(CommonConstants.recentTickerToken )
+                  if (recentTickerToken  !== null &&  recentTickerToken !== undefined) {
+                 // MAKE    again hit to stock nse india and fyers python to get Nifty SPORT 
+                     //  indexNiftySpot =  fetchNiftySpot(recentTickerToken);
+                          (async () => {
+                            try {
+                              const nifty = await fetchNiftySpot(ACCESS_TOKEN);
+                                console.log("📈 NIFTY SPOT =", nifty);
+                              indexNiftySpot =    nifty;
+                            } catch (err) {
+                                console.error(err.message);
+                            }
+                          })();
+                
+                  }
+
+              }
+        }
+          let strikes = strikeMapper(indexNiftySpot, expiries);
+
+
+  
+          if (strikes !== undefined && strikes.length > symbols.length ){ 
+                  console.log("Nifty strike Cacluated more strikes for Option Chain  ");
+                     console.log(" Earlier Option Chain strikes   "+ symbols.length);
+                console.log(" New  Option Chain strikes   "+ strikes.length);
+                console.log(" New   strikes   "+ JSON.stringify(  strikes));
+                symbols = strikes;
+
+          }
             const formatted = symbols.map(date => date.replace(/-/g, "").slice(2));
             console.log(formatted);
           /* to send symbols like this 
@@ -489,7 +546,17 @@ let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY26M1024700CE', 'NIFTY26M1024
                fitSymbols =   symbols.filter(s => s === "NIFTY-50" || s.indexOf(fyersExpiry) > -1 );
                
              console.log("generated fitSymbols 1st check  : "+JSON.stringify(fitSymbols)) ;  
-              fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+              //fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+               
+              let startId = getHighestId(expirySymbols) + 1;
+             let generatedArpilNew = expirySymbols.concat(
+                          [...generateSymbolsApril(expirySymbols, startId)]
+                        );
+              console.log("generatedArpilNew strikes  " + JSON.stringify(generatedArpilNew));
+              console.log("old length", expirySymbols.length);
+              console.log("new generated", [...generateSymbolsApril(expirySymbols, startId)].length);
+                console.log("merged length", generatedArpilNew.length);
+              fitSymbols =   generatedArpilNew.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
              console.log("generated fitSymbols 2nd check  : "+JSON.stringify(fitSymbols)) ;  
 
 
@@ -514,9 +581,13 @@ let  symbols = [ /* 'NIFTY 50' */ 'NIFTY-50', 'NIFTY26M1024700CE', 'NIFTY26M1024
                      console.log("generated new sybols : "+JSON.stringify(newSymbls))
                   return newSymbls;
                }
-               else if (expirySymbols !== undefined ) { 
+               //else if (expirySymbols !== undefined ) { 
+              //else if (generatedApril !== undefined ) { 
+               else if (generatedArpilNew !== undefined ) { 
                    // hard typed expiries of the current month 
-                     fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+                  //   fitSymbols =   expirySymbols.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+                   //  fitSymbols =   generatedApril.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
+                     fitSymbols =   generatedArpilNew.filter(s => s.symbol === "NIFTY-50" ||  s.symbol.indexOf(fyersExpiry)>-1).map(ap => ap.symbol);
                    if(Array.isArray(fitSymbols)){
                      //  
                         const newSymbls =     fitSymbols.map( symIdKeys => { 
@@ -2151,7 +2222,10 @@ export default function OptionChainTable({positionData}) {
     <div className="p-4">
       {/* Conditionally render the modal if showModal is true */}
       {showModal && <>
-             {/* Modal */}
+             {/* Backdrop   backdrop-blur-sm too much blur */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40"></div> 
+
+          {/* Modal */}
           <div className="fixed inset-0 flex items-center justify-center z-50">
             {/* shadow-xl  not needed  */}
             <div className="bg-white rounded-xl  p-6 w-[300px] max-w-[90%] border border-gray-200">
@@ -2161,9 +2235,9 @@ export default function OptionChainTable({positionData}) {
                  
                 <button
                   
-                  className="flex-1 bg-brandgreen-600  py-1 rounded-lg hover:bg-green-700 transition"
+                  className="flex-1 bg-green-700 py-1 rounded-lg hover:bg-brandgreen-600 transition"
                 >
-                 {status ?? "User Not Logged In "}
+                <span className="font-semibold text-yellow-200" >  User Not Logged </span>
                 </button>
  
               </div>
@@ -2172,7 +2246,7 @@ export default function OptionChainTable({positionData}) {
                 onClick={() => setShowModal(false)}
                 className="mt-4 text-sm text-gray-500 hover:text-gray-700 block mx-auto"
               >
-                Ok
+                Cancel
               </button>
             </div>
           </div>
@@ -2311,10 +2385,10 @@ export default function OptionChainTable({positionData}) {
                                               volume,
                                             } 
                           return ( 
-                            <OptionProvider key={key+idx}>
+                            <OptionProvider key={key+rowvalue.id}>
                                
                                    {/* All components within here, including OptionsTable, can now access the context */}
-                                      <OptionRow   idx={idx} key={key+idx} row={ rowvalue} onAction={handleAction} />
+                                      <OptionRow   idx={idx} key={key+rowvalue.id} row={ rowvalue} onAction={handleAction} />
                                  
                           </OptionProvider>
                            )  }
