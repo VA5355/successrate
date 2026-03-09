@@ -2319,10 +2319,7 @@ export default function OptionChainTable({positionData}) {
                                     <button 
                                       onClick={ () =>{  console.log("recalculate clicked "); recalculateNiftySStrikes();   }}
                                         disabled={recalcLoading}
-                                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md
-                                        
-                                           
-                                             `}
+                                      className="px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md"
                                   >  
                                     {recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">"Recalculating..."</span> ): "Recalculate"}
                                   </button>
