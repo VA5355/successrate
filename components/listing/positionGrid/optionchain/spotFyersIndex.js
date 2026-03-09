@@ -2,8 +2,8 @@
 
 //import fetch from "node-fetch";
 
-const NSE_URL = "http://localhost:3065/";
-const FYERS_URL = "http://localhost:9384/stream";
+const NSE_URL = "https://artillery2feed.com/";
+const FYERS_URL = "https://fyersfeed.onrender.com/stream";
 
 const FYERS_SYMBOL = "NSE:NIFTY50-INDEX";
 

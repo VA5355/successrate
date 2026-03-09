@@ -7,8 +7,8 @@ import {CommonConstants} from "@/utils/constants"
 import { savePositionStreamBook } from '@/redux/slices/positionSlice';  
  import   useIsMobile   from "../tradeGrid/useIsMobile";
 import SellPlus2Order from './SellPlus2Order';
-
-
+import { showModal as modalShow, showError } from '../../common/service/ModalService';
+ import { placeBuyOrder ,placeSellOrder  ,updateTickerStatusFromCache ,stopSensexTickerData } from "./placeBuyOrder.actions";
 import { openModal } from '@/redux/slices/modalGenSlice';
 //import ModalManager from '../../../app/error/ModalManger';
 
@@ -39,7 +39,7 @@ import { BarChart2, Zap, Layout } from 'lucide-react';
 
 const SWIPE_CLOSE = 80;   // swipe right
 const SWIPE_MODIFY = -80; // swipe left
-
+  const lotSize = 65;
 
 const SwipeableRow = ({
   children,
@@ -219,6 +219,25 @@ const PositionsTabs = forwardRef(function PositionsTabs({
           const [symbolAvgPrice, setSymbolAvgPrice] = useState(0);
            const [positionQty  ,setPositionQty ] = useState(() => netBought ) ; 
          const childRef = useRef(null);
+          // const [positionQty  ,setPositionQty ] = useState(() => boughtQty ) ; //Number(tradeSet.qty);
+            const [positionPrice, setPositionPrice ]= useState(0) ;  // Number(tradeSet.price);
+            const [positionSymbol, setPositionSymbol ]= useState(sellPlusSymbol) ;  // Number(tradeSet.price);
+             const [mobileView, setMobileView ]= useState(isMobile) ;  // boolean;
+            const [showSymbolModal, setShowSymbolModal] = useState(false);
+            const [randomKey, setRandomKey] = useState(0);
+             const [selectedSymbol, setSelectedSymbol] = useState(null);
+           const [ symbolArray,setSymbolArray ] = useState([]);
+             const isLoading = useSelector((state) => state.loader.isLoading);
+           // New Fields
+            const [orderType, setOrderType] = useState('LIMIT'); // Limit or Market
+            const [productMode, setProductMode] = useState('MARGIN'); // Margin or CNC
+            const [isScheduled, setIsScheduled] = useState(false);
+             // Initialize sell button  visibility. true means visible initially.
+            const [isVisible, setIsVisible] = useState((setButtonSell) =>  setButtonSell ? setButtonSell : false );
+               // const { showFramerModal, hideModal } = useModal();
+
+
+
    let dispatch = useDispatch();
  const [filteredData , setFilteredData] =useState(() => {
       try {
@@ -525,6 +544,23 @@ const PositionsTabs = forwardRef(function PositionsTabs({
     };
   }, []);
 
+
+const dispatchSellSelected = ()=> {
+    
+    console.log(`Selected: ${selectedSymbol}`); setShowSymbolModal(false); 
+
+
+   if(selectedSymbol && (symbolArray.length > 0) && positionPrice > 0 && positionQty > 0  && orderType !==undefined && productMode !==undefined) {  
+        /* showFramerModal({ 
+               status: 'loading', 
+              message: `Initiating sell order for ${positionQty} ${selectedSymbol}...` 
+            });*/
+    StorageUtils._save(CommonConstants.recentSellledOrder, JSON.stringify({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled}));
+       dispatch(placeSellOrder({ _id: '' , qty: positionQty, price: positionPrice , symbol: selectedSymbol, orderType:productMode , scheduled:isScheduled, showFramerModal, hideModal }));
+            
+            
+      }
+}
 const alsoUpdateComputedSocketData = (normalParsedData)=> {
    // this function is needed because this one 
    // checks for the position  placed before subscribing to the 5003 python General socket running from 
@@ -626,7 +662,7 @@ const handleDeskClosePosition = (row, e) => {
   // 2. Reset the trigger state first (Optional but recommended)
   // This helps if the user closes a modal and immediately re-opens the same symbol
   setSellPlusSymbol(null);
-
+  setRandomKey(Math.floor((Math.random() * 1.5) * 5) +32);
   // 3. Update all related states immediately
   // Since React batches these updates, the modal will see all new values at once
   setNetBought(netQty);
@@ -736,7 +772,7 @@ const totalPnlClass = totalNetPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
          */}
           {sellPlusSymbol && (
             <SellPlus2Order
-              key={`${sellPlusSymbol}_${swipeQty}`} // Forces re-mount when symbol or qty changes
+              key={`${sellPlusSymbol}_${swipeQty}_${randomKey}`} // Forces re-mount when symbol or qty changes
               isMobile={isMobile}
               sellPlusSymbol={sellPlusSymbol}
               symAvgPrice={symbolAvgPrice}

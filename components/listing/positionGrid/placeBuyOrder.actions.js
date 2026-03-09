@@ -1087,7 +1087,7 @@ export const placeSellOrder = ( params = {}   ) => {
                                    
                                     if (sellOrderJSON["FYERS"] !==undefined){
                                       let sym = sellOrderJSON["FYERS"];
-                                       dispatch(showModal({ title: 'Order Status', message: `${sym} sent `, }  ));
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} sent `,payload:{ modalType:'info'} }  ));
                                        return;
                                    }
                                       const orderSellData = sellOrderJSON ;         // Full object with n, v, s
@@ -1153,7 +1153,7 @@ export const placeSellOrder = ( params = {}   ) => {
                                               };
                                               let  utcDate = new Date();
                                       let istTime =   new Intl.DateTimeFormat('en-GB', options).format(utcDate);
-                                       dispatch(showModal({ title: 'Order Status', message: `${sym} ${istTime} sent `, }  ));
+                                       dispatch(showModal({ title: 'Order Status', message: `${sym} ${istTime} sent `, payload:{ modalType:''}}  ));
                                      // return rejectWithValue({ message: `Order ${sym} ${orderid} ${istTime} sent ` })       
 
 
@@ -1181,7 +1181,7 @@ export const placeSellOrder = ( params = {}   ) => {
                                       */
                                      if (typeof id !== "undefined" && typeof s !== "undefined" ) {
                                         order_id = id;
-                                       dispatch(showModal({ title: 'Order Status', message: `${message} ${istTime} sent `, }  ));
+                                       dispatch(showModal({ title: 'Order Status', message: `${message} ${istTime} sent `, payload:{ modalType:''} }  ));
                                        return;
                                      }
 

@@ -1,5 +1,5 @@
  
-import React, {Suspense, useEffect , useState,useMemo, useRef } from "react";
+import React, {Suspense, useEffect , useState,useMemo, useRef} from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, 
@@ -81,6 +81,8 @@ const PositionGrid = ({   positionDataB   }) => {
       const streamOrderBook = useSelector(state => state.ticker.orderBook);
    const currentPlatform = useSelector((state ) => state.misc.platformType)
    const [streamOrderData, setStreamOrderData] = useState();
+   const containerRef = useRef(null)
+   const [indexCards , setIndexCards] = useState([]);
    const [parsedData, setParsedData] = useState(() =>  
      {  try {             // recentPositionnsKey is updated by the grid.action fetchMoreStocks function on click of Load More.
         let g = JSON.parse(StorageUtils._retrieve(CommonConstants.recentPositionsKey).data);
@@ -141,6 +143,35 @@ const PositionGrid = ({   positionDataB   }) => {
        const [colorSENSEXClass, setColorSENSEXClass] = useState("bg-gray-100 text-black");
            const [colorNIFTYClass, setColorNIFTYClass] = useState("bg-gray-100 text-black");
          const [colorBankNIFTYClass, setColorBankNIFTYClass] = useState("bg-gray-100 text-black");
+       const ActiveIndex = "NIFTY" | "SENSEX" | "BANKNIFTY";
+           const INDEX = {
+          NIFTY: "NIFTY",
+          SENSEX: "SENSEX",
+          BANKNIFTY: "BANKNIFTY",
+        };
+
+        const [activeIndex, setActiveIndex] = useState(INDEX.NIFTY);
+
+     // const [activeIndex, setActiveIndex] = useState<ActiveIndex>("NIFTY");
+      const isActive = (key ) => { console.log("isActive "+activeIndex);
+    
+    activeIndex === key; } 
+        const flipVariants = { 
+              initial: {
+                rotateY: 90,
+                opacity: 0,
+              },
+              animate: {
+                rotateY: 0,
+                opacity: 1,
+                transition: { duration: 0.45, ease: "easeOut" },
+              },
+              exit: {
+                rotateY: -90,
+                opacity: 0,
+                transition: { duration: 0.35 },
+              },
+}         ;
 
 
    const [data, setData] = useState(positionDataB);
@@ -171,7 +202,19 @@ const PositionGrid = ({   positionDataB   }) => {
     // INITIALIZE the META DATA like INDICES CONSTANTS IN LOCALSTORAGE
  // SET the default INDICES 
         StorageUtils._save(CommonConstants.marketFeedDataCacheKey, CommonConstants.sampleObjTickerTDataVersion1);
-
+    if (containerRef.current) {
+      // Find all 'p' tags within this component's rendered output [id^="-status"]
+      const pTags = containerRef.current.querySelectorAll("[id$='-status']");
+      console.log(`Found ${pTags.length} <IndexCard> elements:`, pTags);
+      
+      // You can iterate over them and perform actions if necessary
+      pTags.forEach(tag => {
+        if(tag.id === "nifty-status")
+         { tag.style.backgroundColor = 'rgba(37, 227, 252, 0.29)';
+         }
+      });
+      setIndexCards(pTags);
+    }
 
   },[]);
 
@@ -1027,11 +1070,88 @@ const getSortIndicator = (column) =>
    } // AUTH CODE 
   }
 };
+const positionsByIndex = useMemo(() => {
+  switch (activeIndex) {
+    case "SENSEX":
+      return {
+        sortedData: sortedData.filter(d => d.symbol?.includes("SENSEX")),
+        parsedData: parsedData.filter(d => d.symbol?.includes("SENSEX")),
+      };
+
+    case "BANKNIFTY":
+      return {
+        sortedData: sortedData.filter(d => d.symbol?.includes("BANKNIFTY")),
+        parsedData: parsedData.filter(d => d.symbol?.includes("BANKNIFTY")),
+      };
+
+    case "NIFTY":
+    default:
+      return {
+        sortedData: sortedData.filter(d => d.symbol?.includes("NIFTY")),
+        parsedData: parsedData.filter(d => d.symbol?.includes("NIFTY")),
+      };
+  }
+}, [activeIndex, sortedData, parsedData]);
+const handleIndexActive = (e) => {
+
+    // Accessing standard attributes
+    console.log('Button Value:', e.target.value); 
+    console.log('Button ID:', e.target.id);
+    let clickedID = e.target.id;
+
+    // Accessing a custom data attribute
+    const customAttr = e.target.getAttribute('label');
+    // Find the closest ancestor (or the element itself) with an 'id' attribute
+      const elementWithId = e.target.closest('[id]');
+       switch(customAttr){
+           case "SENSEX":   clickedID = 'sensex-status'; break;
+            case "BANKNIFTY": clickedID = 'banknifty-status'; break;
+              case "NIFTY":     clickedID = 'nifty-status';break;
+              default :  clickedID = 'nifty-status';break;
+     }
+      if (elementWithId) {
+        const foundId = elementWithId.id;
+        console.log('Found ID:', foundId);
+        clickedID = foundId;
+        // You can also access other attributes or data attributes
+        // const customData = elementWithId.getAttribute('data-custom-attr');
+      } else {
+        console.log('No element with an ID found in the hierarchy.');
+      }
+         switch(clickedID){
+           case 'sensex-status':  
+                                setActiveIndex(INDEX.SENSEX);
+                                 console.log('ACTIVE INDEX '+ activeIndex);
+                                break;
+            case  'banknifty-status':
+                             setActiveIndex(INDEX.BANKNIFTY);
+                               console.log('ACTIVE INDEX '+ activeIndex);
+                           break;
+              case 'nifty-status':   
+                          setActiveIndex(INDEX.NIFTY);
+                           console.log('ACTIVE INDEX '+ activeIndex);
+                                           break;
+              
+     }  
+
+   
+    console.log('Lable Attribute:', customAttr);
+     indexCards.forEach( idC => {
+
+          if(idC.id=== clickedID ) {
+            idC.style.backgroundColor ='rgba(37, 227, 252, 0.29)';
+          }
+          else {
+             idC.style.backgroundColor ='rgb(255 255 255 / var(--tw-bg-opacity, 1))';
+          }
+     })
+
+}
    
 
 
   return (
-    <div className=" w-full bg-zinc-100"> {/* overflow-x-auto removed for horizontal scrooll  */}
+    <div ref={containerRef} className=" w-full bg-zinc-100"> {/* overflow-x-auto removed for horizontal scrooll  */}
     
       <div className="p-4 bg-gray-50 dark:bg-slate-950 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-4">
@@ -1142,19 +1262,25 @@ const getSortIndicator = (column) =>
             label="SENSEX" 
             symbol="BSE:SENSEX-INDEX" 
             data={tickerMap['BSE:SENSEX-INDEX']} 
-            colorClass={`${colorSENSEXClass}`} timeId="sensex-time"
+             onClickIn={handleIndexActive}
+             isActiveIn = {isActive}
+             timeId="sensex-time"
           />
           <IndexCard  spanId="banknifty-price" statusId="banknifty-status"
             label="BANKNIFTY" 
             symbol="NSE:NIFTYBANK-INDEX" 
             data={tickerMap['NSE:NIFTYBANK-INDEX']} 
-            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorBankNIFTYClass}`} timeId="banknity-time"
+             onClickIn={handleIndexActive}
+             isActiveIn = {isActive}
+            timeId="banknity-time"
           />
           <IndexCard  spanId="nifty-price" statusId="nifty-status"
             label="NIFTY 50" 
             symbol="NSE:NIFTY50-INDEX" 
             data={tickerMap['NSE:NIFTY50-INDEX']} 
-            colorClass={`px-1 py-1 rounded bg-gray-100 ${colorNIFTYClass}`} timeId="nifty-time"
+               onClickIn={handleIndexActive}
+             isActiveIn = {isActive}
+            timeId="nifty-time"
           />
         </div>
           <br/>
@@ -1177,18 +1303,46 @@ const getSortIndicator = (column) =>
           </h4>*/}
           
           {/* ✅ drop in the main option chain component OptionChainTableSideway OptionChainTable <OptionChainSwipeUI /><OptionChainTableSingleUI/>
-        */}
-        <div className="min-h-screen bg-gray-50 pt-[14px]">
-          <OptionChainTabs positionData={parsedData} />
+        */} {/*  min-h-screen*/}
+        <div className=" bg-gray-50 pt-[14px] mb-4">
+
+          <OptionChainTabs positionData={parsedData} activeIndexIn={activeIndex} />
         </div>
        </div>
-       <div className="max-w-7xl mx-auto space-y-1"> 
-        <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
+       <div className="max-w-7xl mx-auto space-y-1  "> 
+         <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}   // 👈 KEY TRIGGERS FLIP
+            variants={flipVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="origin-center backface-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-zinc-700">
+              <TrendingUp className="w-4 h-4 text-emerald-500" />
+              {activeIndex} Positions
+            </div>
+
+            <PositionsTabs
+                    sortedData={positionsByIndex.sortedData}
+                    paredData={positionsByIndex.parsedData}
+                    sortedSocketData={positionsByIndex.parsedData}
+                    userLogged={userLogged}
+                    handleSort={handleSort}
+                    getSortIndicator={getSortIndicator}
+                    handleSymbolClick={handleSymbolClick}
+                    tableRef={tableRef}
+                  />
+                </motion.div>
+        </AnimatePresence>
+ {/* <PositionsTabs   sortedData={sortedData} paredData={parsedData}  sortedSocketData={parsedData}
             userLogged={userLogged}
             handleSort={handleSort}
             getSortIndicator={getSortIndicator}
             handleSymbolClick={handleSymbolClick}   tableRef={tableRef}/>
-       
+              */}
        </div>
 
 

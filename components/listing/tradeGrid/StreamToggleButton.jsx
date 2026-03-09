@@ -56,19 +56,12 @@ const StreamToggleButton = () => {
   };
 
   return (
-    <button
+  
+    <button   type="button"    
       onClick={handleToggle}
-      className={`flex items-center gap-2 px-3 py-2  rounded-md  shadow-sm  border transition duration-200 ${
-        isStreaming
-          ? 'bg-primary green hover:bg-green-800 border-green-700'
-          : 'bg-gray-100 border-gray-300 text-gray-600'
-      }`}
+    
     >
-      {isStreaming ? (
-        <Activity size={20} className=" animate-pulse " />
-      ) : (
-        <ToggleLeft size={20} className="text-gray-500" />
-      )}
+      
       <span className="text-sm font-semibold font-medium">
         {isStreaming ? 'Streaming ON' : 'Stream MARKET DATA'}
       </span>
