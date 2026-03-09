@@ -557,8 +557,8 @@ export const getIndicesTickerData = (_id ) => {
                             ticker:sym,
                             access_token: acctoken
                             });
-                        //  GET FROM https://fyersmarketfeed.onrender.com/ 
-                        //FYERSAPIMARKETFEEDRENDER = 'https://fyersmarketfeed.onrender.com/stream' // ?accessToken=
+                        //  GET FROM https://fyersfeed.onrender.com/ 
+                        //FYERSAPIMARKETFEEDRENDER = 'https://fyersfeed.onrender.com/stream' // ?accessToken=
                       //   const res = await API.get(FYERSAPITICKERACCESTOKEN , {params: { "auth_code" : auth_code }});
                      //    const res = await API.get(FYERSAPITHREESECQUOTE , {params: { "auth_code" : auth_code ,"symbol":'SENSEX-INDEX'}});
                          const res = await API.get(FYERSAPIMARKETFEEDRENDER , {params: { "accessToken" : acctoken ,"symbol":'SENSEX-INDEX'}});
