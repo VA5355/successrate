@@ -239,6 +239,39 @@ const expirySymbols = [
   { id: "302480022", symbol: "NIFTY26J2726400PE", k: 95 },
  // MARCH SERIES 
   // Mar 10	
+  { id: "302549989", symbol: "NIFTY26M1023100CE", k: 44 },
+  { id: "302549990", symbol: "NIFTY26M1023100PE", k: 11 },
+  { id: "302549991", symbol: "NIFTY26M1023200CE", k: 44 },
+  { id: "302549992", symbol: "NIFTY26M1023200PE", k: 11 },
+  { id: "302549993", symbol: "NIFTY26M1023300CE", k: 44 },
+  { id: "302549994", symbol: "NIFTY26M1023300PE", k: 11 },
+    { id: "302549995", symbol: "NIFTY26M1023400CE", k: 44 },
+  { id: "302549996", symbol: "NIFTY26M1023400PE", k: 11 },
+
+
+  { id: "302549997", symbol: "NIFTY26M1023500PE", k: 90 },
+  { id: "302549998", symbol: "NIFTY26M1023500CE", k: 95 },
+
+
+{ id: "302549999", symbol: "NIFTY26M1023600CE", k: 12 },
+  { id: "302550000", symbol: "NIFTY26M1023600PE", k: 18 },
+
+     { id: "302550001", symbol: "NIFTY26M1023700CE", k: 13 },
+  { id: "302550002", symbol: "NIFTY26M1023700PE", k: 23 },
+     { id: "302550003", symbol: "NIFTY26M1023800CE", k: 15 },
+  { id: "302550004", symbol: "NIFTY26M1023800PE", k: 21 },
+   { id: "302550005", symbol: "NIFTY26M1023900CE", k: 44 },
+  { id: "302550006", symbol: "NIFTY26M1023900PE", k: 11 },
+
+   { id: "302550007", symbol: "NIFTY26M1024100CE", k: 54 },
+  { id: "302550008", symbol: "NIFTY26M1024100PE", k: 62 },
+
+   { id: "302530007", symbol: "NIFTY26M1024200CE", k: 54 },
+  { id: "302530008", symbol: "NIFTY26M1024200PE", k: 62 },
+
+    { id: "302550009", symbol: "NIFTY26M1024300CE", k: 44 },
+  { id: "302550010", symbol: "NIFTY26M1024300PE", k: 11 },
+
    { id: "402449999", symbol: "NIFTY26M1024400CE", k: 12 },
   { id: "402450000", symbol: "NIFTY26M1024400PE", k: 18 },
 
@@ -268,6 +301,43 @@ const expirySymbols = [
   { id: "402450021", symbol: "NIFTY26M1026400CE", k: 90 },
   { id: "402450022", symbol: "NIFTY26M1026400PE", k: 95 },
  // 17
+
+   { id: "302550011", symbol: "NIFTY26M1723100CE", k: 44 },
+  { id: "302550012", symbol: "NIFTY26M1723100PE", k: 11 },
+  { id: "302550013", symbol: "NIFTY26M1723200CE", k: 44 },
+  { id: "302550014", symbol: "NIFTY26M1723200PE", k: 11 },
+  { id: "302550015", symbol: "NIFTY26M1723300CE", k: 44 },
+  { id: "302550016", symbol: "NIFTY26M1723300PE", k: 11 },
+    { id: "302550017", symbol: "NIFTY26M1723400CE", k: 44 },
+  { id: "302550018", symbol: "NIFTY26M1723400PE", k: 11 },
+
+
+  { id: "302550019", symbol: "NIFTY26M1723500PE", k: 90 },
+  { id: "302550020", symbol: "NIFTY26M1723500CE", k: 95 },
+
+
+{ id: "302550021", symbol: "NIFTY26M1723600CE", k: 12 },
+  { id: "302550022", symbol: "NIFTY26M1723600PE", k: 18 },
+
+     { id: "302550023", symbol: "NIFTY26M1723700CE", k: 13 },
+  { id: "302550024", symbol: "NIFTY26M1723700PE", k: 23 },
+     { id: "302550025", symbol: "NIFTY26M1723800CE", k: 15 },
+  { id: "302550026", symbol: "NIFTY26M1723800PE", k: 21 },
+   { id: "302550027", symbol: "NIFTY26M1723900CE", k: 44 },
+  { id: "302550028", symbol: "NIFTY26M1723900PE", k: 11 },
+
+   { id: "302550029", symbol: "NIFTY26M1724100CE", k: 54 },
+  { id: "302550030", symbol: "NIFTY26M1724100PE", k: 62 },
+
+   { id: "302530029", symbol: "NIFTY26M1724200CE", k: 54 },
+  { id: "302530030", symbol: "NIFTY26M1724200PE", k: 62 },
+
+    { id: "302550031", symbol: "NIFTY26M1724300CE", k: 44 },
+  { id: "302550032", symbol: "NIFTY26M1724300PE", k: 11 },
+
+
+
+
  { id: "402459999", symbol: "NIFTY26M1724400CE", k: 12 },
   { id: "402460000", symbol: "NIFTY26M1724400PE", k: 18 },
 
@@ -297,6 +367,40 @@ const expirySymbols = [
   { id: "402460021", symbol: "NIFTY26M1726400CE", k: 90 },
   { id: "402460022", symbol: "NIFTY26M1726400PE", k: 95 },
 //24
+
+ { id: "302550033", symbol: "NIFTY26M2423100CE", k: 44 },
+  { id: "302550034", symbol: "NIFTY26M2423100PE", k: 11 },
+  { id: "302550035", symbol: "NIFTY26M2423200CE", k: 44 },
+  { id: "302550036", symbol: "NIFTY26M2423200PE", k: 11 },
+  { id: "302550037", symbol: "NIFTY26M2423300CE", k: 44 },
+  { id: "302550038", symbol: "NIFTY26M2423300PE", k: 11 },
+    { id: "302550039", symbol: "NIFTY26M2423400CE", k: 44 },
+  { id: "302550040", symbol: "NIFTY26M2423400PE", k: 11 },
+
+
+  { id: "302550041", symbol: "NIFTY26M2423500PE", k: 90 },
+  { id: "302550042", symbol: "NIFTY26M2423500CE", k: 95 },
+
+
+{ id: "302550043", symbol: "NIFTY26M2423600CE", k: 12 },
+  { id: "302550044", symbol: "NIFTY26M2423600PE", k: 18 },
+
+     { id: "302550045", symbol: "NIFTY26M2423700CE", k: 13 },
+  { id: "302550046", symbol: "NIFTY26M2423700PE", k: 23 },
+     { id: "302550047", symbol: "NIFTY26M2423800CE", k: 15 },
+  { id: "302550048", symbol: "NIFTY26M2423800PE", k: 21 },
+   { id: "302550049", symbol: "NIFTY26M2423900CE", k: 44 },
+  { id: "302550050", symbol: "NIFTY26M2423900PE", k: 11 },
+
+   { id: "302550051", symbol: "NIFTY26M2424100CE", k: 54 },
+  { id: "302550052", symbol: "NIFTY26M2424100PE", k: 62 },
+     { id: "302530051", symbol: "NIFTY26M2424200CE", k: 54 },
+  { id: "302530052", symbol: "NIFTY26M2424200PE", k: 62 },
+
+    { id: "302550053", symbol: "NIFTY26M2424300CE", k: 44 },
+  { id: "302550054", symbol: "NIFTY26M2424300PE", k: 11 },
+
+
     { id: "402469999", symbol: "NIFTY26M2424400CE", k: 12 },
   { id: "402470000", symbol: "NIFTY26M2424400PE", k: 18 },
 //--
@@ -329,6 +433,41 @@ const expirySymbols = [
   { id: "402470022", symbol: "NIFTY26M2426400PE", k: 95 },
 
   //31
+
+   { id: "302550055", symbol: "NIFTY26M3123100CE", k: 44 },
+  { id: "302550056", symbol: "NIFTY26M3123100PE", k: 11 },
+  { id: "302550057", symbol: "NIFTY26M3123200CE", k: 44 },
+  { id: "302550058", symbol: "NIFTY26M3123200PE", k: 11 },
+  { id: "302550059", symbol: "NIFTY26M3123300CE", k: 44 },
+  { id: "302550060", symbol: "NIFTY26M3123300PE", k: 11 },
+    { id: "302550061", symbol: "NIFTY26M3123400CE", k: 44 },
+  { id: "302550062", symbol: "NIFTY26M3123400PE", k: 11 },
+
+
+  { id: "302550063", symbol: "NIFTY26M3123500PE", k: 90 },
+  { id: "302550064", symbol: "NIFTY26M3123500CE", k: 95 },
+
+
+{ id: "302550065", symbol: "NIFTY26M3123600CE", k: 12 },
+  { id: "302550066", symbol: "NIFTY26M3123600PE", k: 18 },
+
+     { id: "302550067", symbol: "NIFTY26M3123700CE", k: 13 },
+  { id: "302550068", symbol: "NIFTY26M3123700PE", k: 23 },
+     { id: "302550069", symbol: "NIFTY26M3123800CE", k: 15 },
+  { id: "302550070", symbol: "NIFTY26M3123800PE", k: 21 },
+   { id: "302550071", symbol: "NIFTY26M3123900CE", k: 44 },
+  { id: "302550072", symbol: "NIFTY26M3123900PE", k: 11 },
+
+   { id: "302550073", symbol: "NIFTY26M3124100CE", k: 54 },
+  { id: "302550074", symbol: "NIFTY26M3124100PE", k: 62 },
+     { id: "302550075", symbol: "NIFTY26M3124200CE", k: 54 },
+  { id: "302550076", symbol: "NIFTY26M3124200PE", k: 62 },
+
+    { id: "302550077", symbol: "NIFTY26M3124300CE", k: 44 },
+  { id: "302550078", symbol: "NIFTY26M3124300PE", k: 11 },
+
+
+
       { id: "402479999", symbol: "NIFTY26M3124400CE", k: 12 },
   { id: "402480000", symbol: "NIFTY26M3124400PE", k: 18 },
 
