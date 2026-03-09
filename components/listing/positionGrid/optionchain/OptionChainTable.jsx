@@ -1846,6 +1846,7 @@ export default function OptionChainTable({positionData}) {
      const store = new TickStore(); 
     // Use the mock hook to simulate data streaming
     const { isConnected, strikeData } = useWebSocketStreamDummy(selectedExpiry);
+    const [recalcLoading, setRecalcLoading] = useState(false);
     const generateSymbolsForExpiry = (exr) =>{// NotE the artilery needs NITFY-50 symbol for mock trades , while true-data needs NIFTY 50
          let  symbols = [ /* 'NIFTY 50' */ ,'NIFTY-50', 'NIFTY25D1625600CE', 'NIFTY25D1625600PE' , 'NIFTY25D1625700CE', 'NIFTY25D1625700PE', 
                     'NIFTY25D1625800PE' , 'NIFTY25D1625800CE','NIFTY25D1625900CE' , 'NIFTY25D1625900PE',
@@ -2082,6 +2083,46 @@ export default function OptionChainTable({positionData}) {
     }
     // Action log
     const [log, setLog] = useState([]);
+
+    const recalculateNiftySStrikes =(evt) => { 
+     
+     
+        try {
+
+          setRecalcLoading(true);
+       const MARKETSTATUS_RECALCULATE =  "https://192.168.1.3:8888/.netlify/functions/netlifystockfyersbridge/api/fyersniftyoptionrecalculate";
+     // ONCE SPOT available trigger recalculate the Option Chain Strikes 
+                         // this is Node JS program only  we have not deployed the stocknse-india-new.mjs to   https://scraper-api-eyiz.onrender.com
+                         // also  https://scraper-api-eyiz.onrender.com is running as  a docker type script application not the mock-wss
+                         // this SIMILAR to MARKET STATUS in netlifystockfyersbridge/route.js /fyersgetmarketstatus
+       fetch(MARKETSTATUS_RECALCULATE, { cache: "no-store" })
+          .then(async (r) =>  {
+            if (!r.ok) throw new Error("Recalcuate  NFTY OPTION STRIKES API down");
+            let mData = await r.json();
+            let total_array_expiries = JSON.parse(JSON.stringify(mData));
+              StorageUtils._save(CommonConstants.NIFTYOPTIONSTRIKES,  {  total_array_expiries } );
+                console.log("Recalcuate NFTY OPTION STRIKES   Success and expiries generated save local storage ");
+              
+
+
+          }) .catch((err  ) => {
+            // setError(JSON.stringify(err));
+            // setMarkets([]); // UI still renders safely
+            console.log("Recalcuate NFTY OPTION STRIKES  API down");
+        });
+
+         } catch (err) {
+
+          console.log("Recalculate NFTY OPTION STRIKES API down", err);
+
+        } finally {
+
+          setRecalcLoading(false);
+
+        }
+            
+    }
+
     const handleAction = (evt) => {
 
       // CHECK USER LOGGED IN 
@@ -2270,6 +2311,22 @@ export default function OptionChainTable({positionData}) {
                                     <SpotIndex/>
                                     
                                    {/**  ₹{spot > nifty50 ?  nifty50: spot} */} </span>
+                                    {/**  disabled={isConnected} 
+                                        ${isConnected       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'   : 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-md'
+                                          }
+                                          {isConnected ? 'Strikes Updated' : 'Recalculate'}
+                                    */}
+                                    <button 
+                                      onClick={ () =>{  console.log("recalculate clicked "); recalculateNiftySStrikes();   }}
+                                        disabled={recalcLoading}
+                                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md
+                                        
+                                           
+                                             `}
+                                  >  
+                                    {recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">"Recalculating..."</span> ): "Recalculate"}
+                                  </button>
+
                               </p>
                               <p className={`text-xs mt-1 font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
                                   Status: {isConnected ? 'Streaming Live' : 'Connecting...'}

@@ -25,6 +25,7 @@ var redirectUrl  = "https://successrate.netlify.app/.netlify/functions/netlifyst
 //var redirectUrl  = "https://store-stocks.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersauthcodeverify"
 var BASEREF  = "http://successrate.netlify.app"
 var MARKETSTATUS  ="https://scraper-api-eyiz.onrender.com"
+var MARKETSTATUS_RECALCULATE  ="https://artilleryfeed.onrender.com"
 var fyers= new fyersModel({"path":"./","enableLogging":true})
 fyers.setAppId(client_id)
 
@@ -43,6 +44,13 @@ var URL=fyers.generateAuthCode()
    
      // redirect_uri=https://192.168.1.8:56322/fyersauthcode&response_type=code&state=sample_state
 	 var axios = require('axios');  // "secret_key":"MGY8LRIY0M",
+const https = require('https');
+// or export NODE_TLS_REJECT_UNAUTHORIZED=0 
+const agent = new https.Agent({
+  rejectUnauthorized: false , keepAlive: false
+});
+
+
 const { isCallLikeExpression } = require('typescript');
 	 var data = { "client_id":client_id, " redirect_uri":redirectUrl,
 		"response_type":"code", "state":"sample_state"
@@ -467,6 +475,136 @@ try {
   }
 
 });
+
+/**
+   resulet is 
+
+   [["26M10",[{"id":"972568882","symbol":"NIFTY26M1023500CE","k":101,"expiry":"26M10"},
+   {"id":"520370664","symbol":"NIFTY26M1023500PE","k":114,"expiry":"26M10"},
+   {"id":"514652883","symbol":"NIFTY26M1023600CE","k":111,"expiry":"26M10"},
+   {"id":"379752033","symbol":"NIFTY26M1023600PE","k":105,"expiry":"26M10"},
+   {"id":"240532521","symbol":"NIFTY26M1023700CE","k":107,"expiry":"26M10"},
+   {"id":"446489451","symbol":"NIFTY26M1023700PE","k":113,"expiry":"26M10"},
+   {"id":"127860272","symbol":"NIFTY26M1023800CE","k":109,"expiry":"26M10"},
+   {"id":"878572368","symbol":"NIFTY26M1023800PE","k":105,"expiry":"26M10"},{"id":"4
+    ... 
+	["26M17",[{"id":"348903659","symbol":"NIFTY26M1723500CE","k":102,"expiry":"26M17"},
+	 {"id":"168428992","symbol":"NIFTY26M1723500PE","k":105,"expiry":"26M17"},
+	 {"id":"451550920","symbol":"NIFTY26M1723600CE","k":113,"expiry":"26M17"}
+    ...
+	["26M31",[{"id":"737827387","symbol":"NIFTY26M3124100CE","k":102,"expiry":"26M31"},
+	...
+	{"id":"755751642","symbol":"NIFTY-50","k":24100,"expiry":"NIFTY-50"}]]]
+
+ */
+
+router.get('/fyersniftyoptionrecalculate', async function (req,res) {
+// PROCEED recalculate-option-strikes
+// just return status from the https://192.168.1.3:8443/recalculate-option-strikes
+
+try {
+	   let totalexpiries = undefined;
+	  // var axios = require('axios');
+		//var data = {  "SessionToken": session_token,    "AppKey": "7`xZ6=v63s37L227e214j454mFN#h5Q4"};
+		var config = {
+			method: 'get',
+			url: MARKETSTATUS_RECALCULATE +  "/recalculate-option-strikes",
+			 httpsAgent: agent,  timeout: 8000,
+			headers: { 'Content-Type': 'application/json' , "Connection":"close" },
+			//data : data
+		};
+		if(axios !== undefined && https !== undefined && agent !== undefined )  {  
+      		await   axios(config)
+				.then(function (response) {
+					console.log("recalculate strike " + JSON.stringify(response.data));
+					totalexpiries = response.data;
+
+				})
+				.catch(function (error) {
+					console.log(error);
+					if(error.code === "ECONNABORTED"){
+					totalexpiries = 	 {
+							error:"Upstream timeout"
+							} ;
+					}
+					else { 
+					totalexpiries = {
+							error: "Recalculate Nifty Option strikes  Fetch Failed ",
+							message: error.message
+						}
+						 }
+				});
+       }
+	    else { 
+			console.log("axios / https / agent failed to initialize " );
+		}
+	 /*const response = await fetch(
+        MARKETSTATUS_RECALCULATE +  "/recalculate-option-strikes" ,   { agent }
+    );
+   
+
+
+   if (response === undefined) {
+       console.log("FETCH https://192.168.1.3:8443/recalculate-option-strikes  not okay ");
+		  setCORSHeaders( res )
+		res.send("{ data: error }" );
+    }
+
+     const totalexpiries = await response.json();
+	*/
+    let optionExpryRes =  {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+		  "Cache-Control": "public, max-age=300"
+      },
+      body: totalexpiries
+    };
+
+	 setCORSHeaders( res );
+	 res.send( JSON.stringify( optionExpryRes));
+
+
+
+
+  } catch (error) {
+
+			if(error.code === "ECONNABORTED"){
+				return res.status(504).json({
+				error:"Upstream timeout"
+				});
+		}
+
+
+
+    let ret =  {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify({
+        error: "Recalculate Nifty Option strikes  Fetch Failed ",
+        message: error.message
+      })
+    };
+		console.log(error)
+						//let wd1 = `NSE:${symbol}-EQ`;
+						//let ret = {  "symbol": wd1 , "status" : " Input error "+JSON.stringify(err) };
+						 setCORSHeaders( res );
+						res.send( JSON.stringify( ret));
+
+ 
+  }
+
+});
+
+
+
+
+
+
+
 
 // PROCEED NSE CSV file access using function  
 // just return the csv text 
