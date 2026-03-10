@@ -491,7 +491,7 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                      //  indexNiftySpot =  fetchNiftySpot(recentTickerToken);
                           (async () => {
                             try {
-                              const nifty = await fetchNiftySpot(ACCESS_TOKEN);
+                              const nifty = await fetchNiftySpot(recentTickerToken);
                                 console.log("📈 NIFTY SPOT =", nifty);
                               indexNiftySpot =    nifty;
                             } catch (err) {
@@ -1756,10 +1756,15 @@ function OptionRow({  idx ,  row, onAction }) {
 }
 
 
-export default function OptionChainTable({positionData}) {
+export default function OptionChainTable({positionData, activeIndexIn}) {
     const dispatch = useDispatch();
         const url =  "wss://artilleryfeed.onrender.com/";
 //"wss://push.truedata.in:8082?user=FYERS2334&password=KdRi5X55"; //'wss://localhost:8443/';
+            const [activeIndexCh, setActiveIndexCh] = useState(activeIndexIn);
+
+  useEffect(() => {
+    console.log("Updated OptionChainTable activeIndexCh:", activeIndexIn);
+  }, [activeIndexIn]);
      // 1. Call the external hook logic
     const { ws, connect ,strikeMap ,  resetStrikeMap } = useWebSocketStreamSeq(url, dispatch);
      // do not do this it will cause all parsed spot and stikes and symbols empty
@@ -2304,7 +2309,7 @@ export default function OptionChainTable({positionData}) {
                       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-6">
                           <div>
                               <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
-                                  <TrendingUp className="w-6 h-6 text-indigo-600" /> NIFTY  
+                                  <TrendingUp className="w-6 h-6 text-indigo-600" /> {activeIndexCh}  
                               </h1>
                               <p className="text-sm text-zinc-500 mt-1">
                                   Current Spot Price: <span className="font-semibold text-indigo-600">
