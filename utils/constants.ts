@@ -399,7 +399,8 @@ export const CommonConstants = {
 
       TRADE_LOGIN_URL:"https://api.icicidirect.com/apiuser/login?api_key=",
 
-       niftySPOTINDEX : 'niftySPOTINDEX'
+       niftySPOTINDEX : 'niftySPOTINDEX',
+       NIFTYOPTIONSTRIKES : 'NIFTYOPTIONSTRIKES'
     }
 
 /*  JSON.stringify( { "top_gainers":  otherData ,  "top_losers":loserData } )
