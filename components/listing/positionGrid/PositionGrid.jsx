@@ -1275,7 +1275,7 @@ const handleIndexActive = (e) => {
             timeId="banknity-time"
           />
           <IndexCard  spanId="nifty-price" statusId="nifty-status"
-            label="NIFTY 50" 
+            label="NIFTY" 
             symbol="NSE:NIFTY50-INDEX" 
             data={tickerMap['NSE:NIFTY50-INDEX']} 
                onClickIn={handleIndexActive}
