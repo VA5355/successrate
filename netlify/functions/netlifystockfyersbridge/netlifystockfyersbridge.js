@@ -58,7 +58,7 @@ const handler = async (event,context) => {
       return {
         statusCode: 200,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin':'https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 , https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com ',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
@@ -81,7 +81,7 @@ const handler = async (event,context) => {
       */
       app.get("/.netlify/functions/netlifystockfyersbridge/", async (req, res,next) => {
         // const result=await sendMail();
-        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Origin", "https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 , https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com");
         res.setHeader("Access-Control-Allow-Headers", "*");
        res.setHeader("Access-Control-Allow-Methods", "*");
         if (req.method === 'OPTIONS') return res.status(200).end();
