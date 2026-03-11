@@ -506,11 +506,14 @@ try {
 	   let totalexpiries = undefined;
 	  // var axios = require('axios');
 		//var data = {  "SessionToken": session_token,    "AppKey": "7`xZ6=v63s37L227e214j454mFN#h5Q4"};
+		// PASS Authorization token set in OptionChainTable   here to pass on to  artillery.onrender.com 
+		  
+		  let authHeader = req.headers['Authorization'];
 		var config = {
 			method: 'get',
 			url: MARKETSTATUS_RECALCULATE +  "/recalculate-option-strikes",
 			 httpsAgent: agent,  timeout: 8000,
-			headers: { 'Content-Type': 'application/json' , "Connection":"close" },
+			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'Authorization' : 'Bearer '+authHeader},
 			//data : data
 		};
 		if(axios !== undefined && https !== undefined && agent !== undefined )  {  
