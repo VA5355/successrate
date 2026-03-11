@@ -508,12 +508,37 @@ try {
 		//var data = {  "SessionToken": session_token,    "AppKey": "7`xZ6=v63s37L227e214j454mFN#h5Q4"};
 		// PASS Authorization token set in OptionChainTable   here to pass on to  artillery.onrender.com 
 		  
-		  let authHeader = req.headers['Authorization'];
+		  let authHeader = req.headers['Authorization'] ?? req.headers['authorization'];
+		  if(authHeader ===undefined){
+			  console.log("Authorization /authorization not set cannot proceed to artilleryfeed.onrender.com " );
+			  	totalexpiries = {
+							error: "Recalculate Nifty Option Authorization /authorization not set cannot proceed to artilleryfeed.onrender.com ",
+							message: 'Authorization /authorization not set'
+						}
+				 let ret =  {
+					statusCode: 500,
+					headers: {
+						"Access-Control-Allow-Origin": "*"
+					},
+					body: totalexpiries
+				};
+	        	//console.log(error)
+						//let wd1 = `NSE:${symbol}-EQ`;
+						//let ret = {  "symbol": wd1 , "status" : " Input error "+JSON.stringify(err) };
+						 setCORSHeaders( res );
+						res.send( JSON.stringify( ret));		
+
+
+
+
+
+
+		  }
 		var config = {
 			method: 'get',
 			url: MARKETSTATUS_RECALCULATE +  "/recalculate-option-strikes",
 			 httpsAgent: agent,  timeout: 8000,
-			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'Authorization' : 'Bearer '+authHeader},
+			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'Authorization' :authHeader},
 			//data : data
 		};
 		if(axios !== undefined && https !== undefined && agent !== undefined )  {  
