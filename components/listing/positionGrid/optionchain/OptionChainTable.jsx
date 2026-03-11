@@ -2116,7 +2116,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
           method: 'GET', // Or 'POST', 'PUT', etc.
         
           headers: {
-            'auth_code': 'Bearer '+recentTickerToken // cannot send Authorization without credentials 
+            'Authorization': 'Bearer '+recentTickerToken // cannot send Authorization without credentials 
             // Optional: specify content type if sending a body (e.g., for POST)
             // 'Content-Type': 'application/json',
           },
