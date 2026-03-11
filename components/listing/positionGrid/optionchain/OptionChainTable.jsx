@@ -2100,7 +2100,22 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
                          // this is Node JS program only  we have not deployed the stocknse-india-new.mjs to   https://scraper-api-eyiz.onrender.com
                          // also  https://scraper-api-eyiz.onrender.com is running as  a docker type script application not the mock-wss
                          // this SIMILAR to MARKET STATUS in netlifystockfyersbridge/route.js /fyersgetmarketstatus
-       fetch(MARKETSTATUS_RECALCULATE, { cache: "no-store" })
+        let recentTickerToken =  StorageUtils._retrieve(CommonConstants.recentTickerToken )
+                  if (recentTickerToken  !== null &&  recentTickerToken !== undefined) {
+                    console.log("Recalcuate NFTY OPTION STRIKES with token Being processed ");
+                  }
+       // Fetch options object
+        const options = {
+          method: 'GET', // Or 'POST', 'PUT', etc.
+          credentials: 'include', // **This is the key parameter**
+          headers: {
+            'Authorization': 'Bearer '+recentTickerToken
+            // Optional: specify content type if sending a body (e.g., for POST)
+            // 'Content-Type': 'application/json',
+          },
+          // body: JSON.stringify(yourData) // Optional: for POST/PUT requests
+        };                  
+       fetch(MARKETSTATUS_RECALCULATE, options)//{ cache: "no-store" }
           .then(async (r) =>  {
             if (!r.ok) throw new Error("Recalcuate  NFTY OPTION STRIKES API down");
             let mData = await r.json();
