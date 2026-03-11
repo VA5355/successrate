@@ -464,13 +464,8 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
          const expiries = extractExpiries(symbols);
          // get Spot from the Spot or the StorageUtils saved earlier in cache 
          let indexNiftySpot = baseSpot;
-          if (spot !==undefined) {
-               console.log("Nifty Spot from  artilery feed  ");
-                    console.log("Current spot  "+spot);
-                      indexNiftySpot = spot;
-          }
-          else { 
-               let recentSPOT  =  StorageUtils._retrieve(CommonConstants.niftySPOTINDEX)
+
+          let recentSPOT  =  StorageUtils._retrieve(CommonConstants.niftySPOTINDEX)
              if (recentSPOT.isValid && recentSPOT.data !== null &&  recentSPOT.data !== undefined) {
                  /*
                     let spot = m.last;
@@ -490,9 +485,10 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                  // MAKE    again hit to stock nse india and fyers python to get Nifty SPORT 
                      //  indexNiftySpot =  fetchNiftySpot(recentTickerToken);
                           (async () => {
-                            try {
-                              const nifty = await fetchNiftySpot(recentTickerToken);
-                                console.log("📈 NIFTY SPOT =", nifty);
+                            try { 
+                                let ttk  = recentTickerToken.data
+                              const nifty = await fetchNiftySpot(ttk);
+                                console.log("📈 NIFTY SPOT from  artilery feed =", nifty);
                               indexNiftySpot =    nifty;
                             } catch (err) {
                                 console.error(err.message);
@@ -501,8 +497,17 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
                 
                   }
 
-              }
-        }
+              }   
+               if (indexNiftySpot ===undefined  ){   
+                    if (spot !==undefined) {
+                        console.log("Nifty Spot hard coded   ");
+                              console.log("Current spot  "+spot);
+                                indexNiftySpot = spot;
+                    }
+                    else { 
+                        
+                  }
+             }
           let strikes = strikeMapper(indexNiftySpot, expiries);
 
 
@@ -2116,7 +2121,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
           method: 'GET', // Or 'POST', 'PUT', etc.
         
           headers: {
-            'Authorization': 'Bearer '+recentTickerToken // cannot send Authorization without credentials 
+            'Authorization': 'Bearer '+recentTickerToken.data // cannot send Authorization without credentials 
             // Optional: specify content type if sending a body (e.g., for POST)
             // 'Content-Type': 'application/json',
           },
