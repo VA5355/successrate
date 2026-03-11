@@ -2105,9 +2105,16 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
                     console.log("Recalcuate NFTY OPTION STRIKES with token Being processed ");
                   }
        // Fetch options object
+        //  credentials: 'include', **This is the key parameter**  this casues 
+       /*
+         Access to fetch at 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersniftyoptionrecalculate' from 
+         origin 'https://onedinaar.com' has been blocked by CORS policy: Response to preflight request doesn't pass 
+         access control check: The value of the 'Access-Control-Allow-Origin' header in the response must not be the 
+         wildcard '*' when the request's credentials mode is 'include'.         
+        */
         const options = {
           method: 'GET', // Or 'POST', 'PUT', etc.
-          credentials: 'include', // **This is the key parameter**
+        
           headers: {
             'Authorization': 'Bearer '+recentTickerToken
             // Optional: specify content type if sending a body (e.g., for POST)
