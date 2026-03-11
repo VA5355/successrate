@@ -54,11 +54,21 @@ var URL=fyers.generateAuthCode()
 const handler = async (event,context) => {
   try {
     const subject = event.queryStringParameters.name || 'World'
+          // ruled out gives error 
+    /* Access to fetch at 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersniftyoptionrecalculate' from origin
+    	 'https://onedinaar.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: 
+    	 The 'Access-Control-Allow-Origin' header contains multiple values 'https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 ,
+    	  https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com', but only one is allowed. 
+    	  Have the server send the header with a valid value.
+    	*/
+        //   //'Access-Control-Allow-Origin':'https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 , https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com ',	
+  	
+    	
     if (event.httpMethod === 'OPTIONS') {
       return {
         statusCode: 200,
         headers: {
-          'Access-Control-Allow-Origin': 'https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 , https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com ',
+          'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
@@ -81,7 +91,7 @@ const handler = async (event,context) => {
       */
       app.get("/.netlify/functions/netlifystockfyersticker/", async (req, res,next) => {
         // const result=await sendMail();
-        res.setHeader("Access-Control-Allow-Origin",'https://192.168.1.3:8888 , https://192.168.1.3:3000 , https://localhost:8888 , https://successrate.netlify.app , https://onedinaar.com , https://fyersfeed.onrender.com ');
+        res.setHeader("Access-Control-Allow-Origin",'*');
         res.setHeader("Access-Control-Allow-Headers", "*");
        res.setHeader("Access-Control-Allow-Methods", "*");
         if (req.method === 'OPTIONS') return res.status(200).end();
