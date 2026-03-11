@@ -2095,7 +2095,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
         try {
 
           setRecalcLoading(true);
-       const MARKETSTATUS_RECALCULATE =  "https://192.168.1.3:8888/.netlify/functions/netlifystockfyersbridge/api/fyersniftyoptionrecalculate";
+       const MARKETSTATUS_RECALCULATE =  "https://successrate.netlify.app/.netlify/functions/netlifystockfyersbridge/api/fyersniftyoptionrecalculate";
      // ONCE SPOT available trigger recalculate the Option Chain Strikes 
                          // this is Node JS program only  we have not deployed the stocknse-india-new.mjs to   https://scraper-api-eyiz.onrender.com
                          // also  https://scraper-api-eyiz.onrender.com is running as  a docker type script application not the mock-wss
