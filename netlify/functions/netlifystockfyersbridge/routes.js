@@ -538,7 +538,7 @@ try {
 			method: 'get',
 			url: MARKETSTATUS_RECALCULATE +  "/recalculate-option-strikes",
 			 httpsAgent: agent,  timeout: 8000,
-			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'Authorization' :authHeader},
+			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'x-auth-token' : authHeader}, // 'Authorization' :authHeader seems blocked 
 			//data : data
 		};
 		if(axios !== undefined && https !== undefined && agent !== undefined )  {  
