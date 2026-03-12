@@ -2405,7 +2405,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
                           */}
                  
                       <div className="grid gap-6 sm:gap-12"> {/* strikeMap   && dedupeStrikeMap(strikeMap)*/}
-                        {strikeMap?.size > 0 &&    
+                        {strikeMap?.size > 0 && (  dedupeStrikeMap(strikeMap) )&&    
                                  Array.from(strikeMap.entries())?.map(([key, value] , idx) => { 
                                 
                                  let rawRow= value ; // value[1]; //tradeRow[1];
