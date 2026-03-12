@@ -2341,14 +2341,14 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
                               <p className="text-sm text-zinc-500 mt-1">
                                   Current Spot Price: <span className="font-semibold text-indigo-600">
                                     <SpotIndex/>  </span>
-                              
-                                    <button 
+                                    {isConnected &&  (<button 
                                       onClick={ () =>{  console.log("recalculate clicked "); recalculateNiftySStrikes();   }}
                                         disabled={recalcLoading}
                                       className="px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md"
                                   >  
                                     {recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">Recalculating...</span> ): "Recalculate"}
-                                  </button>
+                                  </button>)}
+                                    
 
                               </p>
                               <p className={`text-xs mt-1 font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
