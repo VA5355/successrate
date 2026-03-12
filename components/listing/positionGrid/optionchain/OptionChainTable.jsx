@@ -220,9 +220,11 @@ const WebSocketContext = createContext(defaultContextValue);
             // Set initial connected state based on the instance state
            // setIsConnected(ws.current.readyState === WebSocket.OPEN);
             setIsConnected(wsInstance.readyState === WebSocket.OPEN);
+            setShouldDisplay(true)
         } else {
             // If the instance is null, we are disconnected
             setIsConnected(false);
+             setShouldDisplay(false)
         }
        // Cleanup function for unmounting the component
         return () => {
@@ -341,14 +343,18 @@ const WebSocketContext = createContext(defaultContextValue);
     );
 }
 // Header Component (Updated with Connect Button)
-const Header = () => {
+const Header = ( { setRecalculate }) => {
     const { isConnected ,openSubscriptionRequest } = useWebSocket();
-    
+    useEffect ( () => {
+          // set Recalculate button 
+          console.log("we are connected through webscoker")
+           setRecalculate(sh =>  sh = (isConnected ===true));
+    }, [isConnected])
     return (
         <div className="bg-gray-800 text-white p-4 shadow-lg flex justify-between items-center">
             <h1 className="text-xl font-bold">Option Chain Viewer</h1>
             <div className="flex items-center space-x-3">
-                <button 
+                <button id="buttonConnected"
                     onClick={ () =>{  console.log("open clicked"); openSubscriptionRequest();   }}
                     disabled={isConnected}
                     className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 
@@ -365,6 +371,55 @@ const Header = () => {
             </div>
         </div>
     );
+};
+// Recalcuate Component (Updated with Connect Button)
+const Recalculate = ({recalcLoading }) => {
+     /*    <button 
+                    onClick={ () =>{  console.log("Recalculate clicked"); openSubscriptionRequest();   }}
+                    disabled={shouldDisplay}
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 
+                        ${shouldDisplay 
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                            : 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-md'
+                        }`}
+                >
+                    {shouldDisplay ? 'At Spot' : 'Recalculate'}
+                </button>
+     */
+      const [ shouldDisplay , setShouldDisplay] = useState( shUp => { 
+           // get 
+            let butCon =   document.getElementById("buttonConnected");
+            if (butCon !== undefined && butCon !== null){
+                 let socketState =  butCon.getAttribute('value');
+                  if(socketState === 'Connected'){
+                    shUp = true;
+                    console.log(" recalculate will show  ")
+                      return true;
+                  }
+                  else {
+                     console.log(" recalculate hidden   ")
+                     shUp = false;
+                    return false;
+                  }
+
+            }
+            else {
+               console.log(" recalculate hidden Websocket button not found   ")
+              shUp = false;
+              return false;   // recalculateNiftOptionStrikes
+            }
+      });
+    
+    return (   <>  {shouldDisplay && <button 
+                                      onClick={ () =>{  console.log("recalculate clicked "); recalculateNiftySStrikes();   }}
+                                        disabled={recalcLoading && !shouldDisplay}
+                                      className="px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md"
+                                  >  
+                                    { recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">At Spot </span> ): "Recalculate"}
+                                  </button>}
+                                  </>
+                )
+  
 };
 
 
@@ -2093,7 +2148,77 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
     }
     // Action log
     const [log, setLog] = useState([]);
+   const [ shouldDisplay , setShouldDisplay] = useState( shUp => { 
+           // get 
+            let butCon =   document.getElementById("buttonConnected");
+            if (butCon !== undefined && butCon !== null){
+                 let socketState =  butCon.getAttribute('value');
+                  if(socketState === 'Connected'){
+                    shUp = true;
+                    console.log(" recalculate will show  ")
+                      return true;
+                  }
+                  else {
+                     console.log(" recalculate hidden   ")
+                     shUp = false;
+                    return false;
+                  }
 
+            }
+            else {
+               console.log(" recalculate hidden Websocket button not found   ")
+              shUp = false;
+              return false;
+            }
+      });
+    const recalculatOptionstrikes = (et ) => {
+
+           try {
+
+          setRecalcLoading(true);
+                let recentTickerToken =  StorageUtils._retrieve(CommonConstants.recentTickerToken )
+                  if (recentTickerToken  !== null &&  recentTickerToken !== undefined) {
+                 // MAKE    again hit to stock nse india and fyers python to get Nifty SPORT 
+                     //  indexNiftySpot =  fetchNiftySpot(recentTickerToken);
+                          (async () => {
+                            try { 
+                                let ttk  = recentTickerToken.data
+                               await recalculateNiftOptionStrikes(ttk).then(optionExpiriesCalculated => {
+
+                                   let total_array_expiries = JSON.parse(JSON.stringify(optionExpiriesCalculated));
+                                  StorageUtils._save(CommonConstants.NIFTYOPTIONSTRIKES,  {  total_array_expiries } );
+                                  console.log("Recalcuate NFTY OPTION STRIKES   Success and expiries generated save local storage ");
+
+                               }).catch((err1) => {
+                                     console.log("Recalcuate NFTY OPTION STRIKES  API down "+JSON.stringify(err1));
+
+                               });
+                              
+                            } catch (err) {
+                                console.log ("Recalculation invocation issue  " +JSON.stringify(err));
+                            }
+                          })();
+                
+                  }
+                  else { 
+
+                    console.log ("Recalculation needs user to be logged in  "  );
+                  }
+
+              
+     
+
+         } catch (err) {
+
+          console.log("Recalculate NFTY OPTION STRIKES parameters are not sufficient ",JSON.stringify(err));
+
+        } finally {
+
+          setRecalcLoading(false);
+
+        }
+
+    }
     const recalculateNiftySStrikes =(evt) => { 
      
      
@@ -2328,7 +2453,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
       {/* Conditionally render the table if showModal is false url="wss://localhost:8443/" dispatch={dispatch}*/}
       {!showModal && <>
                     <WebSocketProvider wsInstance={ws} openConnection={connect} >  
-                     <Header/>
+                     <Header setRecalculate={ setShouldDisplay}/>
                 <div className=" w-full bg-zinc-50 sm:bg-white p-1 sm:p-2"> {/* min-h-screen (gap between positon removed)  p-3 sm:p-6  */}
                     <div className="mx-auto overflow-hidden">{/*   max-w-4xl  */}
                       
@@ -2341,13 +2466,15 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
                               <p className="text-sm text-zinc-500 mt-1">
                                   Current Spot Price: <span className="font-semibold text-indigo-600">
                                     <SpotIndex/>  </span>
-                                    {isConnected &&  (<button 
-                                      onClick={ () =>{  console.log("recalculate clicked "); recalculateNiftySStrikes();   }}
-                                        disabled={recalcLoading}
+                                   {/* <Recalculate recalcLoading={recalcLoading}/> */} 
+                                   <>  {shouldDisplay && <button 
+                                      onClick={ () =>{  console.log("recalculate clicked "); /*recalculatOptionstrikes();*/ recalculateNiftySStrikes();   }}
+                                        disabled={recalcLoading && !shouldDisplay}
                                       className="px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 bg-cyan-600 hover:bg-cyan-700 text-white shadow-md"
                                   >  
-                                    {recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">Recalculating...</span> ): "Recalculate"}
-                                  </button>)}
+                                    { recalcLoading ? (<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full">At Spot </span> ): "Recalculate"}
+                                  </button>}
+                                  </>
                                     
 
                               </p>
