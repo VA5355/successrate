@@ -45,6 +45,7 @@ import isEqual from 'lodash.isequal';
  import OptionChainTableSideway from "./optionchain/OptionChainTable-Sideway"; // ✅ import the big component
  import OptionChainTableSingleUI from "./optionchain/OptionChainTableSingleUI"; // ✅ import the big component
 import OptionChainTabs from "./optionchain/OptionChainTabs";
+import PlatformNotice from "../subscription/PlatformNotice";
 
 import  {  PositionBookMobileView as  MobileView }   from "./PositionBookMobileView";
 const PositionRow = {
@@ -1205,7 +1206,14 @@ const handleIndexActive = (e) => {
 
         </div>
       {/* <div className="hidden md:flex flex justify-between  relative items-center">*/}
-      
+      {/* Platform Notice Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <PlatformNotice />
+        </motion.div>
        {/*  CLICK MARKET DATA   TICKER FOR 3 BANKNIFY NIFTY and SENSEX  */}      
    {/*  <div className="hidden md:flex relative items-center">
                    

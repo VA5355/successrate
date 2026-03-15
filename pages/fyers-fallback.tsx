@@ -107,11 +107,11 @@ export default function FyersFallback(props: Props) {
       if (triggerredirectpython === "true") {
         if (state === "python_test") {
           window.location.assign(
-            `https://localhost:9384/redirect?auth_code=${auth_code}&state=python_test`
+            `https://fyersindicespython.onrender.com/redirect?auth_code=${auth_code}&state=python_test`
           );
         } else if (state === "python_state") {
           window.location.assign(
-            `https://localhost:9384/redirect-start?auth_code=${auth_code}&state=python`
+            `https://fyersindicespython.onrender.com/redirect-start?auth_code=${auth_code}&state=python`
           );
         } else if (state === "python_order_state") {
           window.location.assign(

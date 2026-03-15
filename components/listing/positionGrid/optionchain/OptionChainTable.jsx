@@ -131,7 +131,7 @@ const WebSocketContext = createContext(defaultContextValue);
 
 
 // 3. The Provider Component which holds the connection logic
- const WebSocketProvider = ({ children, url , wsInstance, dispatch,  openConnection}) => {
+ const WebSocketProvider = ({ children, url , wsInstance, dispatch,  openConnection , setIsConnectedButton}) => {
      const [isConnected, setIsConnected] = useState(false);
       const [isConnecting, setIsConnecting] = useState(false);
        const [ optionsWebMap, setOptionsWebMap ]  = useState([]);
@@ -220,10 +220,12 @@ const WebSocketContext = createContext(defaultContextValue);
             // Set initial connected state based on the instance state
            // setIsConnected(ws.current.readyState === WebSocket.OPEN);
             setIsConnected(wsInstance.readyState === WebSocket.OPEN);
+               setIsConnectedButton('button1');
             setShouldDisplay(true)
         } else {
             // If the instance is null, we are disconnected
             setIsConnected(false);
+            setIsConnectedButton('button2');
              setShouldDisplay(false)
         }
        // Cleanup function for unmounting the component
@@ -343,8 +345,16 @@ const WebSocketContext = createContext(defaultContextValue);
     );
 }
 // Header Component (Updated with Connect Button)
-const Header = ( { setRecalculate }) => {
+const Header = ( { setRecalculate , inputActiveBtn }) => {
     const { isConnected ,openSubscriptionRequest } = useWebSocket();
+     // 'activeButton' can be 'button1', 'button2', or null/initial state
+  const [activeButton, setActiveButton] = useState(  inputActiveBtn  ); //  useState( btn =>  { inputActiveBtn ==='button1' ? 'button1' : 'button2' } );
+
+  const handleButtonClick = (buttonName) => {
+    setActiveButton(buttonName);
+  };
+
+    
     useEffect ( () => {
           // set Recalculate button 
           console.log("we are connected through webscoker")
@@ -354,8 +364,9 @@ const Header = ( { setRecalculate }) => {
         <div className="bg-gray-800 text-white p-4 shadow-lg flex justify-between items-center">
             <h1 className="text-xl font-bold">Option Chain Viewer</h1>
             <div className="flex items-center space-x-3">
+                {activeButton === 'button1' ? ( <> 
                 <button id="buttonConnected"
-                    onClick={ () =>{  console.log("open clicked"); openSubscriptionRequest();   }}
+                    onClick={ () =>{  handleButtonClick('button2'); console.log("open clicked"); openSubscriptionRequest();   }}
                     disabled={isConnected}
                     className={`px-4 py-2 text-sm font-semibold rounded-lg transition duration-200 
                         ${isConnected 
@@ -365,6 +376,15 @@ const Header = ( { setRecalculate }) => {
                 >
                     {isConnected ? 'Connected' : 'Connect WebSocket'}
                 </button>
+                </> ) : ( <>   <button id="buttonConnecting" 
+                         
+                             disabled={!isConnected}
+                   class="flex items-center gap-3 px-6 py-3 bg-grey-100 text-white rounded-lg opacity-80 "> 
+                   <div class="rounded-full w-5 h-5 border-3 border-t-transparent border border-yellow-300 text-yellow-800   animate-spin"> </div>
+                         Connecting ....
+                   </button> </>)}         
+
+
                 <span className={`px-3 py-1 text-sm rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}>
                     Status: {isConnected ? 'Live' : 'Offline'}
                 </span>
@@ -2148,6 +2168,7 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
     }
     // Action log
     const [log, setLog] = useState([]);
+     const [isConnectedButton, setIsConnectedButton] = useState(false);
    const [ shouldDisplay , setShouldDisplay] = useState( shUp => { 
            // get 
             let butCon =   document.getElementById("buttonConnected");
@@ -2452,9 +2473,9 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
       </>}
       {/* Conditionally render the table if showModal is false url="wss://localhost:8443/" dispatch={dispatch}*/}
       {!showModal && <>
-                    <WebSocketProvider wsInstance={ws} openConnection={connect} >  
-                     <Header setRecalculate={ setShouldDisplay}/>
-                <div className=" w-full bg-zinc-50 sm:bg-white p-1 sm:p-2"> {/* min-h-screen (gap between positon removed)  p-3 sm:p-6  */}
+                    <WebSocketProvider wsInstance={ws} openConnection={connect} setIsConnectedButton = {setIsConnectedButton}>  
+                     <Header setRecalculate={ setShouldDisplay} inputActiveBtn = {'button1' }/>
+                <div className=" w-full bg-zinc-50 sm:bg-white p-1 sm:p-2"> {/* min-h-screen (gap between positon removed)  p-3 sm:p-6 isConnectedButton */}
                     <div className="mx-auto overflow-hidden">{/*   max-w-4xl  */}
                       
                             {/* Header and Filter */}

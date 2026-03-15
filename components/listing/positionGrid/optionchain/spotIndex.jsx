@@ -136,7 +136,7 @@ export default function SpotIndex() {
           setTimeout(() => fetchMarketData(isAlive), delay);
         } else {
           setError("API unreachable. Showing sample data.");
-          setMarkets(getMockData());
+         // setMarkets(getMockData());
           setIsUsingMock(true);
           setLastUpdated(`${new Date().toLocaleTimeString()} (Demo)`);
         }
