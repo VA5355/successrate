@@ -109,6 +109,7 @@ export const EquityReduxProvider = ({children}: { children: React.ReactNode }) =
          const text = await res.text();
          const lines = text.split('\n').filter(Boolean);
           const bestMacthes1 = { bestMatches: [...mt] }; // 🔁 clone to avoid frozen reference
+          if(lines  !==undefined && Array.isArray(lines) ){  
          const parsed = lines.map(line => {
            //const [symbol, name, ...rest] = line.split(','); // modify based on CSV structure
            const result = parseLine(line);
@@ -146,6 +147,7 @@ export const EquityReduxProvider = ({children}: { children: React.ReactNode }) =
               };
               return {  symbol, name };
            });
+          }
            if(bestMacthes1["bestMatches"] !==undefined && Array.isArray(bestMacthes1["bestMatches"]) )
            {  
              console.log("bestMacthes total recros " + bestMacthes1["bestMatches"].length);
