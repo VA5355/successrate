@@ -20,9 +20,49 @@ import { API, FYERSAPINSECSV ,FYERSAPIMARKETFEEDRENDER ,  FYERSAPITICKERACCESTOK
 //const PositionLoginFeed = ({ onFeed , colorSensex , colorBank ,colorNifty}) => {
 let  tickerData = undefined;
 
+
+const  doubleParse  = (tg) =>{
+   
+    console.log("tick stringified  "+ JSON.stringify(tg)  )
+     let scrapDataW = JSON.stringify(tg)
+         scrapDataW = scrapDataW.trim().replace("data:","");
+        //  console.log(" "+ scrapDataW )
+      let     cleaned = scrapDataW.trim();
+            console.log("cleanded tick "+ cleaned )
+    let parsed  = JSON.parse(cleaned);
+        // if still string → parse again
+    let jsonData = '';
+    if (typeof parsed === "string") {
+      jsonData = JSON.parse(parsed);
+    }
+     
+    console.log("double parsed  JSON.parse(JSON.stringify( JSON.stringify(tg)))  ")
+     console.log( jsonData.ltp + "  " + jsonData.symbol +  " " + jsonData.type  )
+
+    return jsonData ; 
+  };
 const  setTickerData  = (tg) =>{
     tickerData = tg;
-
+    if(tg.data !==undefined && tg.data.ltp !==undefined  && tg.data.symbol !== undefined && tg.data.type !==undefined){
+       console.log("setTickerData JSON  "+  tg.data.ltp + "  " + tg.data.symbol +  " " + tg.data.type )
+    }
+    console.log("tick data "+ JSON.stringify(tg)  )
+     let scrapDataW = JSON.stringify(tg)
+         scrapDataW = scrapDataW.trim().replace("data:","");
+       //   console.log("scrapDataW "+ scrapDataW )
+      let     cleaned = scrapDataW.trim();
+         //   console.log("cleanded scrapDataW "+ cleaned )
+    let parsed  = JSON.parse(cleaned);
+        // if still string → parse again
+    let jsonData = '';
+    if (typeof parsed === "string") {
+      jsonData = JSON.parse(parsed);
+    }
+      tickerData = jsonData;
+       if(tg.data !==undefined && tg.data.ltp !==undefined  && tg.data.symbol !== undefined && tg.data.type !==undefined){
+       console.log("setTickerData JSON Final  "+  tg.data.ltp + "  " + tg.data.symbol +  " " + tg.data.type )
+    }
+    //console.log("json :: data "+ jsonData.ltp + "  " + jsonData.symbol +  " " + jsonData.type  )
   };
 let  isConnected = undefined;
   const  setIsConnected  = (tg) =>{
@@ -280,10 +320,20 @@ export const startEventSource = (connectionStatus,tickerMap, onFeed) => {
         };
         es.onmessage = async (event) => {
          try {
-          const data = JSON.parse(event.data);
+          let data = JSON.parse(event.data);
+          let doubleQoutes_data = '';
           if (data !== undefined) { // last price
-           const {ltp, symbol, type  } = data;   
+           let  {ltp, symbol, type  } = data;   
            setTickerData(data); 
+            if (typeof ltp === "undefined" && typeof type === "undefined") {
+                // perform dboule parse due to escaped double quotes
+                doubleQoutes_data =     doubleParse( data);
+                    ltp  = doubleQoutes_data.ltp;
+                      symbol =  doubleQoutes_data.symbol;
+                     type =  doubleQoutes_data.type;
+                     data = doubleQoutes_data;
+
+            }
            if (typeof ltp !== "undefined" && typeof type !== "undefined") {
          //    console.log("Indices Quote availalbe.");
                       // ✅ generic updates (positions, cache)
