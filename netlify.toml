@@ -28,7 +28,7 @@
 [[headers]]
 for = "/api/*"
   [headers.values]
-    Access-Control-Allow-Origin = "https://storenotify.in, https://sheer-maryjo-storenotify-4c573750.koyeb.app, https://successrate.netlify.app, http://localhost:4200, http://localhost:3450, http://localhost:8888, http://fyersbook.netlify.app, https://storenotiftycom.netlify.app, https://atmdemoaivenmysql.onrender.com, https://rzp.io https://store-stocks.netlify.app https://fyersindicespython.onrender.com https://fyersorders.onrender.com https://onedinaar.com https://fyerstickers.onrender.com"
+    Access-Control-Allow-Origin = "https://storenotify.in, https://sheer-maryjo-storenotify-4c573750.koyeb.app, https://successrate.netlify.app, http://localhost:4200, http://localhost:3450, http://localhost:8888, http://fyersbook.netlify.app, https://storenotiftycom.netlify.app, https://atmdemoaivenmysql.onrender.com, https://rzp.io https://store-stocks.netlify.app https://fyersindicespython.onrender.com https://fyersorders.onrender.com https://onedinaar.com https://fyerstickers.onrender.com https://rendersocketio-k4d8.onrender.com"
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Credentials = "true"
