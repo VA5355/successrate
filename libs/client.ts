@@ -34,8 +34,8 @@ const FYERSAPISELLORDER = 'https://successrate.netlify.app/.netlify/functions/ne
 
 const FYERSAPITICKERURL = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetticker'
 const FYERSAPITHREESECQUOTE = 'https://successrate.netlify.app/.netlify/functions/netlifystockfyersticker/api/fyersgetbsecequote'
-const FYERSAPIMARKETFEEDRENDER = 'https://fyersindicespython.onrender.com/stream' // ?accessToken=
-//const FYERSAPIMARKETFEEDRENDER = 'https://fyerstickers.onrender.com/stream'
+//const FYERSAPIMARKETFEEDRENDER = 'https://fyersindicespython.onrender.com/stream' // ?accessToken=
+const FYERSAPIMARKETFEEDRENDER = 'https://fyerstickers.onrender.com/stream'
 const FYERSAPIORDERSRENDER = 'https://fyersorders.onrender.com/stream' // ?accessToken=
 const FYERSAPIPOSITIONSRENDER = 'https://fyers-positions-socket-git.onrender.com/stream' // ?accessToken=
 const FYERSAPIMARKETCUSTOMFEED = 'https://fyersindicespython.onrender.com/stream' // ?accessToken=
