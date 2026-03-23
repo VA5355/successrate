@@ -137,3 +137,84 @@ export async function fetchNiftySpot(accessToken) {
   //throw new Error("Unable to fetch NIFTY spot");
 
 }
+/** 
+ *  NIFTY OPTION RECALCULATE STIRKES in Option chain
+ 
+ */
+export async function recalculateNiftOptionStrikes(accessToken) {
+
+
+	/*var config = {
+			method: 'get',
+			url: FYERS_RECAL ,
+			 httpsAgent: agent,  timeout: 8000,
+			headers: { 'Content-Type': 'application/json' , "Connection":"close" ,'x-auth-token' : authHeader}, // 'Authorization' :authHeader seems blocked 
+			//data : data
+		};
+   */ 
+
+    try { 
+ 
+    const url = `${FYERS_URL}?accessToken=${accessToken}`;
+
+    const response = await fetch(FYERS_RECAL,{
+          method: 'GET',
+          
+          headers: {
+            'Content-Type': 'application/json','x-auth-token' : 'Bearer '+accessToken
+          },
+        });
+          const json = await response.json();
+    if (!json){
+        totalexpiries = {
+							error: "Recalculate Nifty Option strikes totalexpiries JSON not reported ",
+							message: 'JSON format error '
+						}
+      }
+      //throw new Error("recalculated artillery backend responded errorlt ");
+      totalexpiries =json;
+    
+		if(totalexpiries !== undefined && Array.isArray(totalexpiries))  {  
+      	/*	await   axios(config)
+				.then(function (response) {
+					console.log("recalculate strike " + JSON.stringify(response.data));
+					totalexpiries = response.data;
+
+				})
+				.catch(function (error) {
+					console.log(error);
+					if(error.code === "ECONNABORTED"){
+					totalexpiries = 	 {
+							error:"Upstream timeout"
+							} ;
+					}
+					else { 
+					totalexpiries = {
+							error: "Recalculate Nifty Option strikes  Fetch Failed ",
+							message: error.message
+						}
+						 }
+				});*/
+        return totalexpiries;
+
+
+       }
+        else { 
+        console.log("totalexpiries were not published by artilery " );
+        	totalexpiries = {
+							error: "Recalculate Nifty Option strikes totalexpiries not proper format ",
+							message: error.message
+						}
+            return totalexpiries
+
+        }
+      } catch(error){
+        	totalexpiries = {
+							error: "Recalculate Nifty Option strikes  Fetch Failed ",
+							message: error.message
+						}
+           return totalexpiries
+      }
+
+  }
+ 

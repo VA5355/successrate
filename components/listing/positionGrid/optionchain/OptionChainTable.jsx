@@ -479,7 +479,7 @@ const mockExpiryDates = [  //this is a configuration setting to be set every cha
     '2026-03-10', 
     '2026-03-17', 
     '2026-03-24', // Default selected
-    '2026-03-31', 
+    '2026-03-30', 
     '2026-04-07',
     '2026-04-14',
     '2026-04-21',
@@ -496,7 +496,7 @@ const mockStrikes = [ // this alsos is a configuration setting for change in eve
    { expiry: '2026-03-10', strike: "25900", call: { ltp: "247.65", bid: "247.10", ask: "247.70" }, put: { ltp: "205.30", bid: "205.10", ask: "205.40" } },
     { expiry: '2026-03-17', strike: "26000", call: { ltp: "200.50", bid: "200.10", ask: "200.70" }, put: { ltp: "225.15", bid: "225.00", ask: "225.20" }, isATM: true },
     { expiry: '2026-03-24', strike: "26100", call: { ltp: "155.10", bid: "155.00", ask: "155.20" }, put: { ltp: "250.75", bid: "250.60", ask: "250.80" } },
-    { expiry: '2026-03-31', strike: "26200", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
+    { expiry: '2026-03-30', strike: "26200", call: { ltp: "300.00", bid: "299.80", ask: "300.20" }, put: { ltp: "280.00", bid: "279.90", ask: "280.10" }, isATM: true },
 ];
 
 
@@ -720,7 +720,7 @@ function ExpiryFilter({ selectedExpiry, onExpiryChange, expiryOptions , dispatch
             // This calls the sendSubscriptionRequest function exposed by the Context.
             if (Array.isArray(newSymbols) && newSymbols.length >0 ) {
                if(isConnected){ 
-                resetStrikeMap();
+               // resetStrikeMap();
                 sendSubscriptionRequest(newSymbols); }
                
             }
@@ -2344,7 +2344,10 @@ export default function OptionChainTable({positionData, activeIndexIn}) {
         table.set('26M10','26310')  
           table.set('26M17','26317') 
 	  table.set('26M24','26324')  
-          table.set('26M31','26331') 
+          table.set('26M30','26330') 
+           table.set('26A07','26407') 
+            table.set('26A14','26414') 
+             table.set('26A21','26421') 
         console.log(`Selected or slided evt.row.strike : ${JSON.stringify(evt.row.expiry)}`); 
         console.log(`Order type evt.row.orderType : ${JSON.stringify(evt.row.orderType)}  schedueld: ${JSON.stringify(evt.row.scheduled)}`); 
 

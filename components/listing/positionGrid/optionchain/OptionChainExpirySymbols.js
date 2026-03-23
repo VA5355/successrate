@@ -368,10 +368,47 @@ const expirySymbols = [
   { id: "402460022", symbol: "NIFTY26M1726400PE", k: 95 },
 //24
 
- { id: "302550033", symbol: "NIFTY26M2423100CE", k: 44 },
-  { id: "302550034", symbol: "NIFTY26M2423100PE", k: 11 },
-  { id: "302550035", symbol: "NIFTY26M2423200CE", k: 44 },
-  { id: "302550036", symbol: "NIFTY26M2423200PE", k: 11 },
+ { id: "302600000", symbol: "NIFTY26M2421900CE", k: 0 },
+  { id: "302600001", symbol: "NIFTY26M2421900PE", k: 0 },
+
+  { id: "302600002", symbol: "NIFTY26M2422000CE", k: 0 },
+  { id: "302600003", symbol: "NIFTY26M2422000PE", k: 0 },
+
+  { id: "302600004", symbol: "NIFTY26M2422100CE", k: 0 },
+  { id: "302600005", symbol: "NIFTY26M2422100PE", k: 0 },
+
+  { id: "302600006", symbol: "NIFTY26M2422200CE", k: 0 },
+  { id: "302600007", symbol: "NIFTY26M2422200PE", k: 0 },
+
+  { id: "302600008", symbol: "NIFTY26M2422300CE", k: 0 },
+  { id: "302600009", symbol: "NIFTY26M2422300PE", k: 0 },
+
+  { id: "302600010", symbol: "NIFTY26M2422400CE", k: 0 },
+  { id: "302600011", symbol: "NIFTY26M2422400PE", k: 0 },
+
+  { id: "302600012", symbol: "NIFTY26M2422500CE", k: 0 },
+  { id: "302600013", symbol: "NIFTY26M2422500PE", k: 0 },
+
+  { id: "302600014", symbol: "NIFTY26M2422600CE", k: 0 },
+  { id: "302600015", symbol: "NIFTY26M2422600PE", k: 0 },
+
+  { id: "302600016", symbol: "NIFTY26M2422700CE", k: 0 },
+  { id: "302600017", symbol: "NIFTY26M2422700PE", k: 0 },
+
+  { id: "302600018", symbol: "NIFTY26M2422800CE", k: 0 },
+  { id: "302600019", symbol: "NIFTY26M2422800PE", k: 0 },
+
+  { id: "302600020", symbol: "NIFTY26M2422900CE", k: 0 },
+  { id: "302600021", symbol: "NIFTY26M2422900PE", k: 0 },
+
+  { id: "302600022", symbol: "NIFTY26M2423000CE", k: 0 },
+  { id: "302600023", symbol: "NIFTY26M2423000PE", k: 0 },
+
+  { id: "302600024", symbol: "NIFTY26M2423100CE", k: 0 },
+  { id: "302600025", symbol: "NIFTY26M2423100PE", k: 0 },
+
+  { id: "302600026", symbol: "NIFTY26M2423200CE", k: 0 },
+  { id: "302600027", symbol: "NIFTY26M2423200PE", k: 0 },
   { id: "302550037", symbol: "NIFTY26M2423300CE", k: 44 },
   { id: "302550038", symbol: "NIFTY26M2423300PE", k: 11 },
     { id: "302550039", symbol: "NIFTY26M2423400CE", k: 44 },
@@ -434,71 +471,109 @@ const expirySymbols = [
 
   //31
 
-   { id: "302550055", symbol: "NIFTY26M3123100CE", k: 44 },
-  { id: "302550056", symbol: "NIFTY26M3123100PE", k: 11 },
-  { id: "302550057", symbol: "NIFTY26M3123200CE", k: 44 },
-  { id: "302550058", symbol: "NIFTY26M3123200PE", k: 11 },
-  { id: "302550059", symbol: "NIFTY26M3123300CE", k: 44 },
-  { id: "302550060", symbol: "NIFTY26M3123300PE", k: 11 },
-    { id: "302550061", symbol: "NIFTY26M3123400CE", k: 44 },
-  { id: "302550062", symbol: "NIFTY26M3123400PE", k: 11 },
+{ id: "302600028", symbol: "NIFTY26M3021900CE", k: 0 },
+  { id: "302600029", symbol: "NIFTY26M3021900PE", k: 0 },
+
+  { id: "302600030", symbol: "NIFTY26M3022000CE", k: 0 },
+  { id: "302600031", symbol: "NIFTY26M3022000PE", k: 0 },
+
+  { id: "302600032", symbol: "NIFTY26M3022100CE", k: 0 },
+  { id: "302600033", symbol: "NIFTY26M3022100PE", k: 0 },
+
+  { id: "302600034", symbol: "NIFTY26M3022200CE", k: 0 },
+  { id: "302600035", symbol: "NIFTY26M3022200PE", k: 0 },
+
+  { id: "302600036", symbol: "NIFTY26M3022300CE", k: 0 },
+  { id: "302600037", symbol: "NIFTY26M3022300PE", k: 0 },
+
+  { id: "302600038", symbol: "NIFTY26M3022400CE", k: 0 },
+  { id: "302600039", symbol: "NIFTY26M3022400PE", k: 0 },
+
+  { id: "302600040", symbol: "NIFTY26M3022500CE", k: 0 },
+  { id: "302600041", symbol: "NIFTY26M3022500PE", k: 0 },
+
+  { id: "302600042", symbol: "NIFTY26M3022600CE", k: 0 },
+  { id: "302600043", symbol: "NIFTY26M3022600PE", k: 0 },
+
+  { id: "302600044", symbol: "NIFTY26M3022700CE", k: 0 },
+  { id: "302600045", symbol: "NIFTY26M3022700PE", k: 0 },
+
+  { id: "302600046", symbol: "NIFTY26M3022800CE", k: 0 },
+  { id: "302600047", symbol: "NIFTY26M3022800PE", k: 0 },
+
+  { id: "302600048", symbol: "NIFTY26M3022900CE", k: 0 },
+  { id: "302600049", symbol: "NIFTY26M3022900PE", k: 0 },
+
+  { id: "302600050", symbol: "NIFTY26M3023000CE", k: 0 },
+  { id: "302600051", symbol: "NIFTY26M3023000PE", k: 0 },
+
+  { id: "302600052", symbol: "NIFTY26M3023100CE", k: 0 },
+  { id: "302600053", symbol: "NIFTY26M3023100PE", k: 0 },
+
+  { id: "302600054", symbol: "NIFTY26M3023200CE", k: 0 },
+  { id: "302600055", symbol: "NIFTY26M3023200PE", k: 0 },
+  { id: "302550059", symbol: "NIFTY26M3023300CE", k: 44 },
+  { id: "302550060", symbol: "NIFTY26M3023300PE", k: 11 },
+    { id: "302550061", symbol: "NIFTY26M3023400CE", k: 44 },
+  { id: "302550062", symbol: "NIFTY26M3023400PE", k: 11 },
+
+ 
+
+  { id: "302550063", symbol: "NIFTY26M3023500PE", k: 90 },
+  { id: "302550064", symbol: "NIFTY26M3023500CE", k: 95 },
 
 
-  { id: "302550063", symbol: "NIFTY26M3123500PE", k: 90 },
-  { id: "302550064", symbol: "NIFTY26M3123500CE", k: 95 },
+{ id: "302550065", symbol: "NIFTY26M3023600CE", k: 12 },
+  { id: "302550066", symbol: "NIFTY26M3023600PE", k: 18 },
 
+     { id: "302550067", symbol: "NIFTY26M3023700CE", k: 13 },
+  { id: "302550068", symbol: "NIFTY26M3023700PE", k: 23 },
+     { id: "302550069", symbol: "NIFTY26M3023800CE", k: 15 },
+  { id: "302550070", symbol: "NIFTY26M3023800PE", k: 21 },
+   { id: "302550071", symbol: "NIFTY26M3023900CE", k: 44 },
+  { id: "302550072", symbol: "NIFTY26M3023900PE", k: 11 },
 
-{ id: "302550065", symbol: "NIFTY26M3123600CE", k: 12 },
-  { id: "302550066", symbol: "NIFTY26M3123600PE", k: 18 },
+   { id: "302550073", symbol: "NIFTY26M3024100CE", k: 54 },
+  { id: "302550074", symbol: "NIFTY26M3024100PE", k: 62 },
+     { id: "302550075", symbol: "NIFTY26M3024200CE", k: 54 },
+  { id: "302550076", symbol: "NIFTY26M3024200PE", k: 62 },
 
-     { id: "302550067", symbol: "NIFTY26M3123700CE", k: 13 },
-  { id: "302550068", symbol: "NIFTY26M3123700PE", k: 23 },
-     { id: "302550069", symbol: "NIFTY26M3123800CE", k: 15 },
-  { id: "302550070", symbol: "NIFTY26M3123800PE", k: 21 },
-   { id: "302550071", symbol: "NIFTY26M3123900CE", k: 44 },
-  { id: "302550072", symbol: "NIFTY26M3123900PE", k: 11 },
-
-   { id: "302550073", symbol: "NIFTY26M3124100CE", k: 54 },
-  { id: "302550074", symbol: "NIFTY26M3124100PE", k: 62 },
-     { id: "302550075", symbol: "NIFTY26M3124200CE", k: 54 },
-  { id: "302550076", symbol: "NIFTY26M3124200PE", k: 62 },
-
-    { id: "302550077", symbol: "NIFTY26M3124300CE", k: 44 },
-  { id: "302550078", symbol: "NIFTY26M3124300PE", k: 11 },
+    { id: "302550077", symbol: "NIFTY26M3024300CE", k: 44 },
+  { id: "302550078", symbol: "NIFTY26M3024300PE", k: 11 },
 
 
 
-      { id: "402479999", symbol: "NIFTY26M3124400CE", k: 12 },
-  { id: "402480000", symbol: "NIFTY26M3124400PE", k: 18 },
+      { id: "402479999", symbol: "NIFTY26M3024400CE", k: 12 },
+  { id: "402480000", symbol: "NIFTY26M3024400PE", k: 18 },
 
-{ id: "402480001", symbol: "NIFTY26M3124400CE", k: 12 },
-  { id: "402480002", symbol: "NIFTY26M3124400PE", k: 18 },
+{ id: "402480001", symbol: "NIFTY26M3024400CE", k: 12 },
+  { id: "402480002", symbol: "NIFTY26M3024400PE", k: 18 },
 
-    { id: "402480001", symbol: "NIFTY26M3124500CE", k: 13 },
-  { id: "402480002", symbol: "NIFTY26M3124500PE", k: 23 },
-     { id: "402480003", symbol: "NIFTY26M3124600CE", k: 15 },
-  { id: "402480004", symbol: "NIFTY26M3124600PE", k: 21 },
-   { id: "402480005", symbol: "NIFTY26M3124700CE", k: 44 },
-  { id: "402480006", symbol: "NIFTY26M3124700PE", k: 11 },
+    { id: "402480001", symbol: "NIFTY26M3024500CE", k: 13 },
+  { id: "402480002", symbol: "NIFTY26M3024500PE", k: 23 },
+     { id: "402480003", symbol: "NIFTY26M3024600CE", k: 15 },
+  { id: "402480004", symbol: "NIFTY26M3024600PE", k: 21 },
+   { id: "402480005", symbol: "NIFTY26M3024700CE", k: 44 },
+  { id: "402480006", symbol: "NIFTY26M3024700PE", k: 11 },
 
-   { id: "402480007", symbol: "NIFTY26M3124800CE", k: 54 },
-  { id: "402480008", symbol: "NIFTY26M3124800PE", k: 62 },
+   { id: "402480007", symbol: "NIFTY26M3024800CE", k: 54 },
+  { id: "402480008", symbol: "NIFTY26M3024800PE", k: 62 },
 
-    { id: "402480009", symbol: "NIFTY26M3124900CE", k: 44 },
-  { id: "402480010", symbol: "NIFTY26M3124900PE", k: 11 },
+    { id: "402480009", symbol: "NIFTY26M3024900CE", k: 44 },
+  { id: "402480010", symbol: "NIFTY26M3024900PE", k: 11 },
 
-      { id: "402480011", symbol: "NIFTY26M3126000CE", k: 44 },
-  { id: "402480012", symbol: "NIFTY26M3126000PE", k: 11 },
-  { id: "402480013", symbol: "NIFTY26M3126100CE", k: 44 },
-  { id: "402480014", symbol: "NIFTY26M3126100PE", k: 11 },
-  { id: "402480015", symbol: "NIFTY26M3126200CE", k: 44 },
-  { id: "402480016", symbol: "NIFTY26M3126200PE", k: 11 },
-    { id: "402480017", symbol: "NIFTY26M3126300CE", k: 44 },
-  { id: "402480018", symbol: "NIFTY26M3126300PE", k: 11 },
+      { id: "402480011", symbol: "NIFTY26M3026000CE", k: 44 },
+  { id: "402480012", symbol: "NIFTY26M3026000PE", k: 11 },
+  { id: "402480013", symbol: "NIFTY26M3026100CE", k: 44 },
+  { id: "402480014", symbol: "NIFTY26M3026100PE", k: 11 },
+  { id: "402480015", symbol: "NIFTY26M3026200CE", k: 44 },
+  { id: "402480016", symbol: "NIFTY26M3026200PE", k: 11 },
+    { id: "402480017", symbol: "NIFTY26M3026300CE", k: 44 },
+  { id: "402480018", symbol: "NIFTY26M3026300PE", k: 11 },
 
 
-  { id: "402480021", symbol: "NIFTY26M3126400CE", k: 90 },
-  { id: "402480022", symbol: "NIFTY26M3126400PE", k: 95 },
+  { id: "402480021", symbol: "NIFTY26M3026400CE", k: 90 },
+  { id: "402480022", symbol: "NIFTY26M3026400PE", k: 95 },
 
 // APRIL SERIES 
 
@@ -663,6 +738,48 @@ const expirySymbols = [
         tableGlobalExipryMapper.set('26J13', '2026-01-13')
   tableGlobalExipryMapper.set('26J20', '2026-01-20')
     tableGlobalExipryMapper.set('26J27', '2026-01-27')
+
+
+export function generateOptionChain({
+  spot,
+  step = 100,
+  steps = 7,
+  expiryCode, // e.g. "26M24"
+  symbolsArray
+}) {
+
+  // 1. Round spot to nearest strike
+  const atm = Math.round(spot / step) * step;
+
+  // 2. Create lookup map (VERY IMPORTANT for performance)
+  const symbolMap = new Map();
+  for (const item of symbolsArray) {
+    symbolMap.set(item.symbol, item);
+  }
+
+  const results = [];
+
+  // 3. Generate strikes
+  for (let i = -steps; i <= steps; i++) {
+    const strike = atm + (i * step);
+
+    const ceSymbol = `NIFTY${expiryCode}${strike}CE`;
+    const peSymbol = `NIFTY${expiryCode}${strike}PE`;
+
+    results.push({
+      strike,
+      CE: symbolMap.get(ceSymbol) || null,
+      PE: symbolMap.get(peSymbol) || null,
+      ceSymbol,
+      peSymbol
+    });
+  }
+
+  return results;
+}
+
+
+
 
   export default expirySymbols;
 

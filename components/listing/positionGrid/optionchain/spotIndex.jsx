@@ -1,4 +1,5 @@
 "use client";
+import React from 'react';
  import { StorageUtils } from '@/libs/cache';
       import { CommonConstants } from '@/utils/constants';
 import { motion } from "framer-motion";
@@ -166,7 +167,7 @@ export default function SpotIndex() {
         )}
 
         {markets.map((m, idx) => (
-           <> 
+           <React.Fragment key={`${m.market}-${m.index}-${idx}`}>
           {/* <motion.div
             key={`${m.market}-${idx}`}
             whileTap={{ scale: 0.97 }}
@@ -175,13 +176,13 @@ export default function SpotIndex() {
              Body 
             <div className="mt-3 space-y-1 text-xs text-zinc-600">*/}
               {m.index && idx ==0 && (
-                <div className="font-medium text-zinc-800">
+                <div key={`${m.market}-${idx}`} className="font-medium text-zinc-800">
                   {m.last} &nbsp; pts: {Math.round(m.variation)} &nbsp; {m.percentChange} %
                 </div>
               )}
  
            {/* </div> 
-          </motion.div>*/}  </>
+          </motion.div>*/} </React.Fragment>  
         ))}
       </motion.div>
 
